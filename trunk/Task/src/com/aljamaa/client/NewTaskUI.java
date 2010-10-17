@@ -1,6 +1,7 @@
 package com.aljamaa.client;
 
 import com.aljamaa.entity.Task;
+import com.aljamaa.entity.TaskSeed;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
@@ -14,10 +15,12 @@ import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.PushButton;
+import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 
 public class NewTaskUI extends Composite {
 
@@ -34,8 +37,12 @@ public class NewTaskUI extends Composite {
 	
 	public NewTaskUI() {
 		
-		Grid grid = new Grid(6, 2);
-		initWidget(grid);
+		VerticalPanel mainPanel = new VerticalPanel();
+		mainPanel.setHeight("250px");
+		initWidget(mainPanel);
+		Grid grid = new Grid(4, 2);
+		mainPanel.add(grid);
+		grid.setWidth("389px");
 		
 		Label label = new Label("Name");
 		grid.setWidget(0, 0, label);
@@ -84,18 +91,22 @@ public class NewTaskUI extends Composite {
 //		dialog.show();
 		
 		disclosurePanel = new DisclosurePanel("New panel");
+		mainPanel.add(disclosurePanel);
 		disclosurePanel.add(taskRepeat);		
-		grid.setWidget(4, 1, disclosurePanel);
+		disclosurePanel.setAnimationEnabled(true);
 		
 		PushButton pushButton = new PushButton("Create Task");
+		mainPanel.add(pushButton);
 		pushButton.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				createTask();
+//				createTask();
+				createSeed();
 			}
 		});
-		grid.setWidget(5, 1, pushButton);
 		pushButton.setWidth("100");
-		grid.getCellFormatter().setWidth(5, 1, "");
+		
+		TaskCell taskCell = new TaskCell();
+		mainPanel.add(taskCell);
 	}
 	
 	public void createTask()
@@ -122,6 +133,19 @@ public class NewTaskUI extends Composite {
 	}
 	
 	public void createSeed(){
+		TaskSeed taskSeed = taskRepeat.getTaskSeed();
+		taskSeed.setPriority(priorityComboBox.getSelectedIndex());
+		taskService.createTaskSeed(taskSeed, new AsyncCallback<String>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+			}
+			
+			@Override
+			public void onSuccess(String result) {
+				nameTextBox.setValue(result);
+			}
+		});
 		
 	}
 

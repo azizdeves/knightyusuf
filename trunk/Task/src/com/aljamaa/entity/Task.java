@@ -36,11 +36,13 @@ public class Task implements IsSerializable{
 	private long seedId;
 	
 	@Persistent
-	private long groupId;
+	private int group;
 
 	@Persistent
 	private Date date;
 
+	@Persistent
+	private boolean alarm;
 	
 	public Task() {
 	}
@@ -60,6 +62,30 @@ public class Task implements IsSerializable{
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public long getSeedId() {
+		return seedId;
+	}
+
+	public void setSeedId(long seedId) {
+		this.seedId = seedId;
+	}
+
+	public int getGroupId() {
+		return group;
+	}
+
+	public void setGroupId(int groupId) {
+		this.group = groupId;
+	}
+
+	public boolean isAlarm() {
+		return alarm;
+	}
+
+	public void setAlarm(boolean alarm) {
+		this.alarm = alarm;
 	}
 
 	public String getName() {
