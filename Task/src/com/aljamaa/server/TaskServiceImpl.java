@@ -2,6 +2,7 @@ package com.aljamaa.server;
 
 import com.aljamaa.client.TaskService;
 import com.aljamaa.entity.Task;
+import com.aljamaa.entity.TaskSeed;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -17,5 +18,9 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
 		String serverInfo = getServletContext().getServerInfo();
 		String userAgent = getThreadLocalRequest().getHeader("User-Agent");
 		return task.getName()+"woooooow";
+	}
+	
+	public String createTaskSeed(TaskSeed taskSeed) throws IllegalArgumentException  {
+		return "gooood";
 	}
 }

@@ -25,6 +25,9 @@ public class TaskSeed implements IsSerializable {
 	private int min;
 	
 	@Persistent
+	private int type;
+	
+	@Persistent
 	private int every;
 	
 	@Persistent
@@ -43,12 +46,16 @@ public class TaskSeed implements IsSerializable {
 	private Date last;
 	
 	@Persistent
-	private long groupId;
+	private int group;
 
+	@Persistent
+	private boolean alarm;
 
-	public TaskSeed(String name, int min, int every, int priority,
-			boolean[] param, Date start, Date end, long groupId) {
-		super();
+	public TaskSeed() {
+	}
+
+	public TaskSeed(String name, int type, int min, int every, int priority,
+			boolean[] param, Date start, Date end, int groupId) {
 		this.name = name;
 		this.min = min;
 		this.every = every;
@@ -56,7 +63,17 @@ public class TaskSeed implements IsSerializable {
 		this.param = param;
 		this.start = start;
 		this.end = end;
-		this.groupId = groupId;
+		this.group = groupId;
+		this.type = type;
+	}
+
+	
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
 	}
 
 	public Long getId() {
@@ -140,12 +157,12 @@ public class TaskSeed implements IsSerializable {
 		this.last = last;
 	}
 
-	public long getGroupId() {
-		return groupId;
+	public int getGroupId() {
+		return group;
 	}
 
-	public void setGroupId(long groupId) {
-		this.groupId = groupId;
+	public void setGroupId(int groupId) {
+		this.group = groupId;
 	}
 
 	
