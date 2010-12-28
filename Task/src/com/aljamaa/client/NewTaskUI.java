@@ -21,11 +21,11 @@ import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.Button;
 
 public class NewTaskUI extends Composite {
 
-	private final TaskServiceAsync taskService = GWT
-	.create(TaskService.class);
+	private final TaskServiceAsync taskService = GWT.create(TaskService.class);
 	TextBox nameTextBox;
 	RadioButton boolRadioButton;
 	RadioButton numericRadioButton;
@@ -34,9 +34,9 @@ public class NewTaskUI extends Composite {
 	DateBox dateBox;
 	TaskRepeat taskRepeat;		
 	DisclosurePanel disclosurePanel ;
-	
-	public NewTaskUI() {
-		
+	DialogBox dlg;
+	public NewTaskUI(final DialogBox dlg) {
+		setDlg(dlg);
 		VerticalPanel mainPanel = new VerticalPanel();
 		mainPanel.setHeight("250px");
 		initWidget(mainPanel);
@@ -90,40 +90,53 @@ public class NewTaskUI extends Composite {
 //		dialog.add(taskRepeat);
 //		dialog.show();
 		
-		disclosurePanel = new DisclosurePanel("New panel");
+		disclosurePanel = new DisclosurePanel("Repeat");
+//		disclosurePanel.setOpen(false);
 		mainPanel.add(disclosurePanel);
 		disclosurePanel.add(taskRepeat);		
 		disclosurePanel.setAnimationEnabled(true);
 		
-		PushButton pushButton = new PushButton("Create Task");
-		mainPanel.add(pushButton);
-		pushButton.addClickHandler(new ClickHandler() {
+		HorizontalPanel horizontalPanel_1 = new HorizontalPanel();
+		mainPanel.add(horizontalPanel_1);
+		mainPanel.setCellHorizontalAlignment(horizontalPanel_1, HasHorizontalAlignment.ALIGN_CENTER);
+		
+		Button btnCreatetask = new Button("CreateTask");
+		btnCreatetask.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-//				createTask();
-				createSeed();
+				createTask();
 			}
 		});
-		pushButton.setWidth("100");
+		horizontalPanel_1.add(btnCreatetask);
 		
-		TaskCell taskCell = new TaskCell();
-		mainPanel.add(taskCell);
+		Button btnCancel = new Button("Cancel");
+		btnCancel.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				dlg.hide();
+			}
+			
+		});
+		btnCancel.setText("Cancel");
+		horizontalPanel_1.add(btnCancel);
 	}
-	
+
 	public void createTask()
 	{
 		Task task = new Task();
 		task.setName(nameTextBox.getValue());
-		task.setMin(Integer.parseInt(minTextBox.getValue()));
+		if(numericRadioButton.getValue())
+			task.setMin(Integer.parseInt(minTextBox.getValue()));
+		else
+			task.setMin(-1);
+			
 		task.setPriority(priorityComboBox.getSelectedIndex());
 		task.setDate(dateBox.getValue());
-		taskService.createTask(task, new AsyncCallback<String>() {
-			
+		task.setMominId("mominid");
+		
+		taskService.createTask(task, new AsyncCallback<String>() {			
 			@Override
 			public void onSuccess(String result) {
-				nameTextBox.setValue(result);
-				
-			}
-			
+				nameTextBox.setValue(result);				
+			}			
 			@Override
 			public void onFailure(Throwable caught) {
 				
@@ -131,21 +144,9 @@ public class NewTaskUI extends Composite {
 		});
 		
 	}
-	
-	public void createSeed(){
-		TaskSeed taskSeed = taskRepeat.getTaskSeed();
-		taskSeed.setPriority(priorityComboBox.getSelectedIndex());
-		taskService.createTaskSeed(taskSeed, new AsyncCallback<String>() {
 
-			@Override
-			public void onFailure(Throwable caught) {
-			}
-			
-			@Override
-			public void onSuccess(String result) {
-				nameTextBox.setValue(result);
-			}
-		});
+	public void setDlg(DialogBox dlg) {
+		this.dlg=dlg;
 		
 	}
 

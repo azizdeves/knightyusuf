@@ -70,6 +70,7 @@ public class TaskRepeat extends Composite {
 		
 		repeatWeekPanel = new HorizontalPanel();
 		verticalPanel.add(repeatWeekPanel);
+		repeatWeekPanel.setVisible(false);
 		
 		Label label_3 = new Label("Repeat on");
 		repeatWeekPanel.add(label_3);
@@ -97,6 +98,7 @@ public class TaskRepeat extends Composite {
 		repeatWeekPanel.add(dayCheckBox[6]);
 		
 		repeatMonthPanel = new HorizontalPanel();
+		repeatMonthPanel.setVisible(false);
 		verticalPanel.add(repeatMonthPanel);
 		
 		Label label_4 = new Label("Repeat by day of the");
@@ -116,6 +118,7 @@ public class TaskRepeat extends Composite {
 		label_5.setWidth("76px");
 		
 		DateBox dateBox = new DateBox();
+		dateBox.setEnabled(false);
 		startPanel.add(dateBox);
 		
 		HorizontalPanel endPanel = new HorizontalPanel();
@@ -127,6 +130,7 @@ public class TaskRepeat extends Composite {
 		label_6.setWidth("66px");
 		
 		RadioButton radioButton_2 = new RadioButton("endDateRadio", "Never");
+		radioButton_2.setValue(true);
 		radioButton_2.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				if(event.getValue().equals(true))
@@ -151,6 +155,7 @@ public class TaskRepeat extends Composite {
 		radioButton_3.setWidth("72px");
 		
 		endDateBox = new DateBox();
+		endDateBox.setEnabled(false);
 		endPanel.add(endDateBox);
 		
 	}
