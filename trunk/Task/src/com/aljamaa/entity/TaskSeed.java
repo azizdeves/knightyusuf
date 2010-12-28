@@ -32,7 +32,11 @@ public class TaskSeed implements IsSerializable {
 	
 	@Persistent
 	private int priority;
-	
+	/**
+	 * si le type du seed est monthly alors:<br>
+	 * param[0]=true --> repeat by day of the week<br>
+	 * param[0]=false --> repeat by day of the month
+	 */
 	@Persistent
 	private boolean[] param;
 	
@@ -125,10 +129,20 @@ public class TaskSeed implements IsSerializable {
 		this.every = every;
 	}
 
+	/**
+	 * si le type du seed est monthly alors:<br>
+	 * param[0]=true --> repeat by day of the week<br>
+	 * param[0]=false --> repeat by day of the month
+	 */
 	public boolean[] getParam() {
 		return param;
 	}
 
+	/**
+	 * si le type du seed est monthly alors:<br>
+	 * param[0]=true --> repeat by day of the week<br>
+	 * param[0]=false --> repeat by day of the month
+	 */
 	public void setParam(boolean[] param) {
 		this.param = param;
 	}

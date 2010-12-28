@@ -9,10 +9,16 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
 
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class Task implements IsSerializable{
+	static public  final int EVERY_DAY = 1;
+	static public  final int EVERY_WEEK = 2;
+	static public  final int EVERY_MONTH =3 ;
+	static public  final int EVERY_YEAR = 4;
+	
 	@PrimaryKey
 	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
 	private Long id;
@@ -37,6 +43,9 @@ public class Task implements IsSerializable{
 	
 	@Persistent
 	private int group;
+	
+	@Persistent
+	private int duration;
 
 	@Persistent
 	private Date date;
@@ -47,6 +56,15 @@ public class Task implements IsSerializable{
 	public Task() {
 	}
 
+	public Task(String name, int min, int priority, long seedId,String momin,
+			Date date) {
+		this.name = name;
+		this.min = min;
+		this.priority = priority;
+		this.seedId = seedId;
+		this.date = date;
+		this.mominId=momin;
+	}
 	public Task(String name, int min, int priority, long seedId,
 			Date date) {
 		this.name = name;
@@ -55,7 +73,29 @@ public class Task implements IsSerializable{
 		this.seedId = seedId;
 		this.date = date;
 	}
+	
+	public Task(TaskSeed seed){
+		this(seed.getName(),seed.getMin(),seed.getPriority(),seed.getId(),seed.getMominId(),null);
+	}
 
+	/**
+	 * obtenir la date du jour i suivant la date d
+	 * @param d
+	 * @param i numero dur jour dans la semaine(0-6)
+	 * @return
+	 */
+	@SuppressWarnings("deprecation")
+	static public Date moveToDay(Date d,int i)
+	{
+		if(i>0)
+			CalendarUtil.addDaysToDate(d, (i>=d.getDay()?0:7)+i-d.getDay());
+		else 
+			CalendarUtil.addDaysToDate(d, (i<=d.getDay()?0:-7)+i-d.getDay());
+			
+		return d;
+			
+	}
+	
 	public Long getId() {
 		return id;
 	}
@@ -72,13 +112,24 @@ public class Task implements IsSerializable{
 		this.seedId = seedId;
 	}
 
-	public int getGroupId() {
+
+
+	public int getGroup() {
 		return group;
 	}
 
-	public void setGroupId(int groupId) {
-		this.group = groupId;
+	public void setGroup(int group) {
+		this.group = group;
 	}
+
+	public int getDuration() {
+		return duration;
+	}
+
+	public void setDuration(int duration) {
+		this.duration = duration;
+	}
+
 
 	public boolean isAlarm() {
 		return alarm;

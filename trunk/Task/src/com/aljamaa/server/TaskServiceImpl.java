@@ -1,6 +1,10 @@
 package com.aljamaa.server;
 
+import java.util.Date;
+import java.util.List;
+
 import com.aljamaa.client.TaskService;
+import com.aljamaa.dao.TaskDao;
 import com.aljamaa.entity.Task;
 import com.aljamaa.entity.TaskSeed;
 
@@ -15,12 +19,22 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
 
 	public String createTask(Task task) throws IllegalArgumentException {
 
-		String serverInfo = getServletContext().getServerInfo();
-		String userAgent = getThreadLocalRequest().getHeader("User-Agent");
-		return task.getName()+"woooooow";
+		TaskDao tdao= new TaskDao();
+		tdao.saveTask(task);
+		return "dao";
 	}
 	
 	public String createTaskSeed(TaskSeed taskSeed) throws IllegalArgumentException  {
 		return "gooood";
 	}
+
+	@Override
+	public List<Task> getWeekTasks(Date startWeek) {
+		
+ 		TaskDao tdao= new TaskDao();
+		return tdao.getWeekTasks("momin", startWeek);
+		
+	}
+	
+	
 }
