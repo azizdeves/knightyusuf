@@ -69,6 +69,7 @@ public class TaskSeed implements IsSerializable {
 		this.end = end;
 		this.group = groupId;
 		this.type = type;
+		this.last=start;
 	}
 
 	

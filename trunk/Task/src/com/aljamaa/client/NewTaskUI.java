@@ -1,5 +1,7 @@
 package com.aljamaa.client;
 
+import java.util.Date;
+
 import com.aljamaa.entity.Task;
 import com.aljamaa.entity.TaskSeed;
 import com.google.gwt.core.client.GWT;
@@ -16,6 +18,7 @@ import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.ToggleButton;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -35,14 +38,18 @@ public class NewTaskUI extends Composite {
 	TaskRepeat taskRepeat;		
 	DisclosurePanel disclosurePanel ;
 	DialogBox dlg;
+	ListBox hourCB;
+	ListBox minCB;
+	
+	
 	public NewTaskUI(final DialogBox dlg) {
 		setDlg(dlg);
 		VerticalPanel mainPanel = new VerticalPanel();
-		mainPanel.setHeight("250px");
+		mainPanel.setSize("417px", "250px");
 		initWidget(mainPanel);
 		Grid grid = new Grid(4, 2);
 		mainPanel.add(grid);
-		grid.setWidth("389px");
+		grid.setWidth("427px");
 		
 		Label label = new Label("Name");
 		grid.setWidget(0, 0, label);
@@ -81,8 +88,25 @@ public class NewTaskUI extends Composite {
 		Label label_4 = new Label("Date");
 		grid.setWidget(3, 0, label_4);
 		
+		HorizontalPanel datePan =  new  HorizontalPanel();
 		dateBox = new DateBox();
-		grid.setWidget(3, 1, dateBox);
+		datePan.add(dateBox);
+		grid.setWidget(3, 1, datePan);
+		
+		hourCB = new ListBox();
+		for(int i=0;i<24;i++)
+		hourCB.addItem(""+i);
+
+		datePan.add(hourCB);
+		
+		minCB = new ListBox();
+		minCB.addItem("00");
+		minCB.addItem("10");
+		minCB.addItem("20");
+		minCB.addItem("30");
+		minCB.addItem("40");
+		minCB.addItem("50");
+		datePan.add(minCB);
 		
 		taskRepeat = new TaskRepeat();
 		
@@ -129,19 +153,25 @@ public class NewTaskUI extends Composite {
 			task.setMin(-1);
 			
 		task.setPriority(priorityComboBox.getSelectedIndex());
-		task.setDate(dateBox.getValue());
+		Date d = CalendarUtil.copyDate(dateBox.getValue());
+		d.setHours(14);
+		d.setHours(hourCB.getSelectedIndex());
+		d.setMinutes(minCB.getSelectedIndex()*10);
+		task.setDate(d);
 		task.setMominId("mominid");
 		
 		taskService.createTask(task, new AsyncCallback<String>() {			
 			@Override
 			public void onSuccess(String result) {
-				nameTextBox.setValue(result);				
+				nameTextBox.setValue(result);	
+				
 			}			
 			@Override
 			public void onFailure(Throwable caught) {
 				
 			}
 		});
+		WeekCalendar.weekCalendar.initData();
 		
 	}
 

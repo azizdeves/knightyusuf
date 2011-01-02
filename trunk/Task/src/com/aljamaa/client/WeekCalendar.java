@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TreeSet;
 
 import com.aljamaa.entity.Task;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -23,9 +24,11 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 
 public class WeekCalendar extends Composite {
 
+	static TreeSet<Task> modifiedTasks;
 	private final TaskServiceAsync taskService = GWT.create(TaskService.class);
 	VerticalPanel mainVerticalPanel;
 	HorizontalPanel horizontalPanel;
@@ -35,11 +38,17 @@ public class WeekCalendar extends Composite {
 	Label[] headerDays;
 	NewTaskUI newTskUi;
 	final DialogBox dlg;
+	Label stateLabel;
+	static WeekCalendar weekCalendar;
 
 	public WeekCalendar() {
 
+		weekCalendar = this;
+		modifiedTasks = new TreeSet<Task>();
 		startWeek = Task.moveToDay(new Date(), 0);
 		startWeek.setHours(0);
+		startWeek.setMinutes(0);
+		startWeek.setSeconds(0);
 		
 		dlg=new DialogBox();
 		taskCells = new ArrayList[7];
@@ -48,6 +57,7 @@ public class WeekCalendar extends Composite {
 		initWidget(mainVerticalPanel);
 
 		HorizontalPanel horizontalPanel_1 = new HorizontalPanel();
+		horizontalPanel_1.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 		mainVerticalPanel.add(horizontalPanel_1);
 
 		Button prevWeekBtn = new Button("Previous Boutton");
@@ -79,14 +89,39 @@ public class WeekCalendar extends Composite {
 					dlg.setText("Add a new Task");				
 					dlg.add(newTskUi);
 				}
-//				else
-//					newTskUi.setDlg(dlg);
-//				dlg.setAnimationEnabled(true);
 				dlg.show();
 				dlg.center();
 			}
 		});
 		horizontalPanel_1.add(addTaskBtn);
+		
+		Button saveBtn = new Button("Save");
+		saveBtn.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				stateLabel.setText("Saving...");
+				int i=0;
+				Task [] tsks = new Task[modifiedTasks.size()];
+				for(Task t : modifiedTasks)
+					tsks[i++] = t;
+				taskService.save(tsks, new AsyncCallback<String>() {
+					@Override
+					public void onSuccess(String result) {
+						modifiedTasks.clear();
+						stateLabel.setText("");
+						
+					}
+					@Override
+					public void onFailure(Throwable caught) {
+						stateLabel.setText("Error Saving");
+						
+					}
+				});
+			}
+		});
+		horizontalPanel_1.add(saveBtn);
+		
+		stateLabel = new Label();
+		horizontalPanel_1.add(stateLabel);
 
 		MenuBar menuBar = new MenuBar(false);
 		mainVerticalPanel.add(menuBar);
@@ -106,21 +141,7 @@ public class WeekCalendar extends Composite {
 			dayVerticalPanel[i].setSize( "100px", "");
 			headerDays[i] = new Label();
 		}
-
-//		Task[] tasks = new Task[3];
-//		tasks[1]= new Task("task1", 0, 1, 0, new Date());
-//		tasks[2]= new Task("tasksd1", 100, 1, 0, new Date(new Long("1287860878096")));
-//		//		tasks[3]= new Task("tezeask1", 5, 1, 0, new Date());
-//		tasks[0]= new Task("ta55sk1", 0, 1, 0, new Date());
-
 		initData();
-		//initView();
-		//		TaskCell taskCell = new TaskCell();
-		//		verticalPanel_1.add(taskCell);
-		//		
-		//		TaskCell taskCell_1 = new TaskCell();
-		//		verticalPanel_1.add(taskCell_1);
-
 	}
 
 	public void initData()
@@ -133,13 +154,9 @@ public class WeekCalendar extends Composite {
 				for(ArrayList<TaskCell> tc : taskCells) tc.clear();
 				for(Task t : tasks)
 				{
-					int d = (int) ((t.getDate().getTime() - startWeek.getTime())/86400000);
-					if(d>-1 && d<7)
-						taskCells[d].add(new TaskCell(t));
-					
+						taskCells[t.getDate().getDay()].add(new TaskCell(t));					
 				}
-				initView();
-				
+				initView();				
 			}
 			
 			@Override
@@ -153,7 +170,6 @@ public class WeekCalendar extends Composite {
 	{
 		ArrayList<TaskCell> taskCellsDay;
 		DateTimeFormat format =  DateTimeFormat.getFormat("EEE dd/MM");
-		//format.format(startWeek);
 		Date d = CalendarUtil.copyDate(startWeek);
 		for(int i = 0 ; i<7 ; i++ )
 		{

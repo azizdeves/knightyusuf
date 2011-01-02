@@ -13,7 +13,7 @@ import com.google.gwt.user.datepicker.client.CalendarUtil;
 
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class Task implements IsSerializable{
+public class Task implements IsSerializable, Comparable{
 	static public  final int EVERY_DAY = 1;
 	static public  final int EVERY_WEEK = 2;
 	static public  final int EVERY_MONTH =3 ;
@@ -54,10 +54,12 @@ public class Task implements IsSerializable{
 	private boolean alarm;
 	
 	public Task() {
+		eval=-1;
 	}
 
 	public Task(String name, int min, int priority, long seedId,String momin,
 			Date date) {
+		this();
 		this.name = name;
 		this.min = min;
 		this.priority = priority;
@@ -113,6 +115,21 @@ public class Task implements IsSerializable{
 	}
 
 
+
+	@Override
+	public boolean equals(Object obj) {
+		return obj != null && this.id == ((Task) obj).getId();
+	}	
+
+	@Override
+	public int hashCode() {		
+		return 0;
+	}
+
+	@Override
+	public String toString() {		
+		return "id: "+id+"  name: "+name+"  eval:"+eval+" min:"+min;
+	}
 
 	public int getGroup() {
 		return group;
@@ -194,6 +211,12 @@ public class Task implements IsSerializable{
 	public void setDate(Date date) {
 		this.date = date;
 	}
+
+	@Override
+	public int compareTo(Object o) {
+		return id.compareTo(((Task) o).getId());
+	}
+	
 	
 	
 
