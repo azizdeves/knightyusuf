@@ -2,6 +2,7 @@ package com.aljamaa.client;
 
 import java.util.Date;
 import java.util.List;
+import java.util.TreeSet;
 
 import com.aljamaa.entity.TaskSeed;
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -18,4 +19,6 @@ public interface TaskService extends RemoteService {
 	String createTaskSeed(TaskSeed taskSeed); 
 	
 	List<com.aljamaa.entity.Task> getWeekTasks(Date startWeek);
+	
+	String save (com.aljamaa.entity.Task[] tasks);
 }

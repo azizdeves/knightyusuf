@@ -3,7 +3,9 @@ package com.aljamaa.dao;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.TreeSet;
 
 import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
@@ -49,6 +51,7 @@ public class TaskDao {
 	public void saveTask(Task task)
 	{
 		pm.makePersistent(task);
+//		pm.close();
 	}
 	
 	public void saveTasks(ArrayList<Task> tasks)
@@ -59,5 +62,13 @@ public class TaskDao {
 	{
 		pm.deletePersistent(c);
 		pm.close();
+	}
+
+	public void saveTask(Task[] tasks) {
+		for (Task o : tasks) {
+			saveTask(o);
+			
+		}
+		
 	}
 }

@@ -2,6 +2,7 @@ package com.aljamaa.server;
 
 import java.util.Date;
 import java.util.List;
+import java.util.TreeSet;
 
 import com.aljamaa.client.TaskService;
 import com.aljamaa.dao.TaskDao;
@@ -33,6 +34,14 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
 		
  		TaskDao tdao= new TaskDao();
 		return tdao.getWeekTasks("momin", startWeek);
+		
+	}
+
+	@Override
+	public String save(Task[] tasks) {
+		TaskDao tdao= new TaskDao();
+		tdao.saveTask(tasks);
+		return "";
 		
 	}
 	
