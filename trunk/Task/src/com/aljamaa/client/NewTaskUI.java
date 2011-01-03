@@ -1,6 +1,7 @@
 package com.aljamaa.client;
 
 import java.util.Date;
+import java.util.TimeZone;
 
 import com.aljamaa.entity.Task;
 import com.aljamaa.entity.TaskSeed;
@@ -44,6 +45,7 @@ public class NewTaskUI extends Composite {
 	
 	public NewTaskUI(final DialogBox dlg) {
 		setDlg(dlg);
+//		TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 		VerticalPanel mainPanel = new VerticalPanel();
 		mainPanel.setSize("417px", "250px");
 		initWidget(mainPanel);
@@ -154,9 +156,9 @@ public class NewTaskUI extends Composite {
 			
 		task.setPriority(priorityComboBox.getSelectedIndex());
 		Date d = CalendarUtil.copyDate(dateBox.getValue());
-		d.setHours(14);
-		d.setHours(hourCB.getSelectedIndex());
-		d.setMinutes(minCB.getSelectedIndex()*10);
+		d.setTime(Date.UTC(d.getYear(), d.getMonth(), d.getDate(), hourCB.getSelectedIndex(), minCB.getSelectedIndex()*10, 0));
+//		d.setHours(hourCB.getSelectedIndex());
+//		d.setMinutes(minCB.getSelectedIndex()*10);
 		task.setDate(d);
 		task.setMominId("mominid");
 		

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.TreeSet;
 
 import javax.jdo.PersistenceManager;
@@ -24,9 +25,15 @@ public class TaskDao {
 	
 	public List<Task> getWeekTasks(String momin, Date startWeek)
 	{		
+		TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+//		startWeek = Task.moveToDay(new Date(), -1);
+//		startWeek.setHours(0);
+//		startWeek.setMinutes(0);
+//		startWeek.setSeconds(0);
+		//TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 		//Query query=pm.newQuery("select from Cmnt");//+Cmnt.class.getSimpleName());//+" where key=="+key+" order by date desc  range "+(p*10)+","+((p+1)*10));
 		Query query = pm.newQuery(Task.class);
-	    query.setFilter("mominId == momin && date >= start  &&  date  <= end");
+	    query.setFilter("mominId == momin && date >= start  &&  date  < end");
 //	    query.setFilter(" date >= start  &&  date  <= end");
 //	    query.setRange(p*10,(p+1)*10+1);	    
 	    query.setOrdering("date a sc");
@@ -50,6 +57,7 @@ public class TaskDao {
 
 	public void saveTask(Task task)
 	{
+		TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 		pm.makePersistent(task);
 //		pm.close();
 	}

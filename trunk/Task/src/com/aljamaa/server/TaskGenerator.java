@@ -26,10 +26,10 @@ public class TaskGenerator {
 		Task task=null;
 		Date last = seed.getLast();
 		for(int i=0;i<10;i++){
-			CalendarUtil.addDaysToDate(last,seed.getEvery());
 			task = new Task(seed);
 			task.setDate(last);
 			list.add(task);
+			CalendarUtil.addDaysToDate(last,seed.getEvery());
 		}		
 		//TODO update seed
 		//seed.setLast(last);
@@ -45,16 +45,16 @@ public class TaskGenerator {
 //		CalendarUtil.addDaysToDate(last,1);
 		int d=last.getDay();
 		for(int i=0; i<10; ){
-			for(;d<7;d++,i++){
+			for(;d<7;d++){
 				if(seed.getParam()[d]){
 					task = new Task(seed);
-					task.setDate(Task.moveToDay(last,d));
+					task.setDate(Task.moveToDay(CalendarUtil.copyDate(last),d+1));
 					list.add(task);
-					
+					i++;
 				}
 			}
-			CalendarUtil.addDaysToDate(last,7*seed.getEvery());
-			
+//			Task.moveToDay(last, 1);
+			CalendarUtil.addDaysToDate(last,7*seed.getEvery());			
 			d=0;
 		}		
 		return list;
