@@ -17,8 +17,9 @@ public class TaskSeedServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		TaskSeed seed = new TaskSeed("namessed", Task.EVERY_DAY, 200, 3, 0, null, new Date(), null, 0);
-		TaskGenerator.everyDay(seed);
+//		TaskSeed seed = new TaskSeed("namessed", Task.EVERY_DAY, 200, 1, 0, null, new Date(), null, 0);
+		TaskSeed seed = new TaskSeed("namessed", Task.EVERY_DAY, 200, 1, 0, new boolean[]{false,true,false,false,true,false,false}, new Date(), null, 0);
+		TaskGenerator.everyWeek(seed);
 	}
 	
 

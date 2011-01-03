@@ -39,7 +39,7 @@ public class Task implements IsSerializable, Comparable{
 	private int priority;
 	
 	@Persistent
-	private long seedId;
+	private Long seedId;
 	
 	@Persistent
 	private int group;
@@ -57,7 +57,7 @@ public class Task implements IsSerializable, Comparable{
 		eval=-1;
 	}
 
-	public Task(String name, int min, int priority, long seedId,String momin,
+	public Task(String name, int min, int priority, Long seedId,String momin,
 			Date date) {
 		this();
 		this.name = name;
@@ -67,7 +67,7 @@ public class Task implements IsSerializable, Comparable{
 		this.date = date;
 		this.mominId=momin;
 	}
-	public Task(String name, int min, int priority, long seedId,
+	public Task(String name, int min, int priority, Long seedId,
 			Date date) {
 		this.name = name;
 		this.min = min;
@@ -77,22 +77,32 @@ public class Task implements IsSerializable, Comparable{
 	}
 	
 	public Task(TaskSeed seed){
-		this(seed.getName(),seed.getMin(),seed.getPriority(),seed.getId(),seed.getMominId(),null);
+		this(seed.getName(),
+				seed.getMin(),
+				seed.getPriority(),
+				seed.getId(), 
+				seed.getMominId(),
+				null);
 	}
 
 	/**
 	 * obtenir la date du jour i suivant la date d
 	 * @param d
-	 * @param i numero dur jour dans la semaine(0-6)
+	 * @param i numero dur jour dans la semaine(1-7)
 	 * @return
 	 */
 	@SuppressWarnings("deprecation")
 	static public Date moveToDay(Date d,int i)
 	{
-		if(i>0)
+		if(i>0){
+			i--;
 			CalendarUtil.addDaysToDate(d, (i>=d.getDay()?0:7)+i-d.getDay());
-		else 
+		}
+		else {
+			i=-i-1;
+			
 			CalendarUtil.addDaysToDate(d, (i<=d.getDay()?0:-7)+i-d.getDay());
+		}
 			
 		return d;
 			
@@ -106,11 +116,11 @@ public class Task implements IsSerializable, Comparable{
 		this.id = id;
 	}
 
-	public long getSeedId() {
+	public Long getSeedId() {
 		return seedId;
 	}
 
-	public void setSeedId(long seedId) {
+	public void setSeedId(Long seedId) {
 		this.seedId = seedId;
 	}
 
@@ -196,13 +206,13 @@ public class Task implements IsSerializable, Comparable{
 		this.priority = priority;
 	}
 
-	public long getSeedKey() {
-		return seedId;
-	}
-
-	public void setSeedKey(long seedKey) {
-		this.seedId = seedKey;
-	}
+//	public long getSeedKey() {
+//		return seedId;
+//	}
+//
+//	public void setSeedKey(long seedKey) {
+//		this.seedId = seedKey;
+//	}
 
 	public Date getDate() {
 		return date;

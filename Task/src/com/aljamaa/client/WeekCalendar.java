@@ -40,13 +40,21 @@ public class WeekCalendar extends Composite {
 	final DialogBox dlg;
 	Label stateLabel;
 	static WeekCalendar weekCalendar;
+	static int timeZoneOffset = new Date().getTimezoneOffset()/60;
 
 	public WeekCalendar() {
 
 		weekCalendar = this;
 		modifiedTasks = new TreeSet<Task>();
-		startWeek = Task.moveToDay(new Date(), 0);
-		startWeek.setHours(0);
+		if(timeZoneOffset > 0){
+		startWeek = Task.moveToDay(new Date(), -7);
+		startWeek.setHours(24-timeZoneOffset);
+		}
+		else{
+			startWeek = Task.moveToDay(new Date(), -1);
+			startWeek.setHours(timeZoneOffset);
+		}
+		
 		startWeek.setMinutes(0);
 		startWeek.setSeconds(0);
 		
