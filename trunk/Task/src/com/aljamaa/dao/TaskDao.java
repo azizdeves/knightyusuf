@@ -12,6 +12,7 @@ import javax.jdo.PersistenceManager;
 import javax.jdo.Query;
 
 import com.aljamaa.entity.Task;
+import com.aljamaa.entity.TaskSeed;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
@@ -26,23 +27,31 @@ public class TaskDao {
 	public List<Task> getWeekTasks(String momin, Date startWeek)
 	{		
 		TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
-//		startWeek = Task.moveToDay(new Date(), -1);
-//		startWeek.setHours(0);
-//		startWeek.setMinutes(0);
-//		startWeek.setSeconds(0);
-		//TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 		//Query query=pm.newQuery("select from Cmnt");//+Cmnt.class.getSimpleName());//+" where key=="+key+" order by date desc  range "+(p*10)+","+((p+1)*10));
 		Query query = pm.newQuery(Task.class);
 	    query.setFilter("mominId == momin && date >= start  &&  date  < end");
 //	    query.setFilter(" date >= start  &&  date  <= end");
 //	    query.setRange(p*10,(p+1)*10+1);	    
-	    query.setOrdering("date a sc");
+	    query.setOrdering("date asc");
 	   
 	    query.declareParameters("String momin , java.util.Date start, java.util.Date end");
 	    Date end = CalendarUtil.copyDate(startWeek);
 	    CalendarUtil.addDaysToDate(end,7);
 	    List<Task> list =new  ArrayList((List<Task>)query.execute("mominid",startWeek,end ));
 	    return list;
+		//return (List<Cmnt>) query.execute(key);
+	}
+	
+	public List<TaskSeed> getSeedToUpdate()
+	{		
+		TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+		//Query query=pm.newQuery("select from Cmnt");//+Cmnt.class.getSimpleName());//+" where key=="+key+" order by date desc  range "+(p*10)+","+((p+1)*10));
+		Query query = pm.newQuery(TaskSeed.class);
+	    query.setRange(0,1);	    
+		query.setOrdering("update asc");
+		
+		List<TaskSeed> list =new  ArrayList((List<Task>)query.execute( ));
+		return list;
 		//return (List<Cmnt>) query.execute(key);
 	}
 	
@@ -58,25 +67,31 @@ public class TaskDao {
 	public void saveTask(Task task)
 	{
 		TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+		task.setMominId("mominid");
 		pm.makePersistent(task);
 //		pm.close();
 	}
 	
-	public void saveTasks(ArrayList<Task> tasks)
-	{
-		pm.makePersistent(tasks);
-	}
+//	public void saveTasks(List<Task> list)
+//	{
+//		pm.makePersistent(list);
+//	}
 	public void deleteTask(Task c)
 	{
 		pm.deletePersistent(c);
 		pm.close();
 	}
 
-	public void saveTask(Task[] tasks) {
-		for (Task o : tasks) {
-			saveTask(o);
+	public void saveTask(Object[] tasks) {
+		for (Object o : tasks) {
+			saveTask((Task) o);
 			
 		}
+		
+	}
+
+	public void saveSeed(TaskSeed seed) {
+		pm.makePersistent(seed);
 		
 	}
 }

@@ -219,7 +219,7 @@ public class Task implements IsSerializable, Comparable{
 	}
 
 	public void setDate(Date date) {
-		this.date = date;
+		this.date = CalendarUtil.copyDate(date);
 	}
 
 	@Override

@@ -21,4 +21,6 @@ public interface TaskService extends RemoteService {
 	List<com.aljamaa.entity.Task> getWeekTasks(Date startWeek);
 	
 	String save (com.aljamaa.entity.Task[] tasks);
+	
+	String createSeed(TaskSeed seed);
 }
