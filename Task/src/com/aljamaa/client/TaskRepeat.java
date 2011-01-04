@@ -179,12 +179,12 @@ public class TaskRepeat extends Composite {
 	
 	public int getType()
 	{
-		return typeRepeatCombo.getSelectedIndex();
+		return typeRepeatCombo.getSelectedIndex()+1;
 	}
 
 	public int getEvery()
 	{
-		return repeatEveryCombo.getSelectedIndex();
+		return repeatEveryCombo.getSelectedIndex()+1;
 	}
 	public boolean[] getDaysSelected()
 	{
@@ -205,10 +205,10 @@ public class TaskRepeat extends Composite {
 		TaskSeed taskSeed = new  TaskSeed();
 		taskSeed.setType(getType());
 		taskSeed.setEvery(getEvery());
-		if(getType()==1)
+		if(getType()==2)
 			taskSeed.setParam(getDaysSelected());
 		else
-			if(getType() == 2)
+			if(getType() == 3)
 				taskSeed.setParam(isDayOfWeek());
 		taskSeed.setEnd(endDateBox.getValue());
 		return taskSeed;

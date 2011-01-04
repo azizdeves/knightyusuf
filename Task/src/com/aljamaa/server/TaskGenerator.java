@@ -16,11 +16,15 @@ public class TaskGenerator {
 	{
 		List< Task> list = new ArrayList<Task>();
 		switch(seed.getType()){
-		case Task.EVERY_DAY:
+		case Task.EVERY_DAY:  list = everyDay(seed);break;
+		case Task.EVERY_WEEK : list = everyWeek(seed);break;
+		case Task.EVERY_MONTH : list = everyMonth(seed);break;
+		case Task.EVERY_YEAR : list = everyYear(seed);break;
 		}		
 		return list;
 	}
 	
+
 	static public List<Task> everyDay(TaskSeed seed){
 		List< Task> list = new ArrayList<Task>();
 		Task task=null;
@@ -65,16 +69,28 @@ public class TaskGenerator {
 		Task task;
 		Date last = seed.getLast();
 		for(int i=0;i<10;i++){
-				if(seed.getParam()[0]){
-//					CalendarUtil.addDaysToDate(moveToDay(last,d),7);
-					task = new Task(seed);
-					task.setDate(last);
-					list.add(task);				
+			if(seed.getParam()[0]){
+				CalendarUtil.addDaysToDate(last,28*seed.getEvery());
+				task = new Task(seed);
+				task.setDate(last);
+			}else{
+				//TODO
+				task = new Task(seed);
+				task.setDate(last);
+				
 			}
+			list.add(task);				
 		}		
 		return list;
 	}
-//	/**
+	
+	private static List<Task> everyYear(TaskSeed seed) {
+		// TODO Auto-generated method stub
+		List< Task> list = new ArrayList<Task>();
+		return list;
+	}
+	
+	//	/**
 //	 * obtenir la date du jour i suivant la date d
 //	 * @param d
 //	 * @param i numero dur jour dans la semaine(0-6)

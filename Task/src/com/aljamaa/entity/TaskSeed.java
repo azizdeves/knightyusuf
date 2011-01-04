@@ -8,6 +8,7 @@ import javax.jdo.annotations.Persistent;
 import javax.jdo.annotations.PrimaryKey;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import com.google.gwt.user.datepicker.client.CalendarUtil;
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
 public class TaskSeed implements IsSerializable {
@@ -50,10 +51,16 @@ public class TaskSeed implements IsSerializable {
 	private Date last;
 	
 	@Persistent
+	private Date update;
+
+	@Persistent
 	private int group;
 
 	@Persistent
 	private boolean alarm;
+	
+	@Persistent
+	private int duration;
 
 	public TaskSeed() {
 	}
@@ -70,6 +77,16 @@ public class TaskSeed implements IsSerializable {
 		this.group = groupId;
 		this.type = type;
 		this.last=start;
+	}
+
+	public void setTaskAttributes(Task task){
+		this.name=task.getName();
+		this.min = task.getMin();
+		this.priority = task.getPriority();
+		this.group=task.getGroup();
+		this.duration=task.getDuration();
+		this.start = CalendarUtil.copyDate(task.getDate());
+		this.last = CalendarUtil.copyDate(task.getDate());
 	}
 
 	
@@ -178,6 +195,14 @@ public class TaskSeed implements IsSerializable {
 
 	public void setGroupId(int groupId) {
 		this.group = groupId;
+	}
+
+	public void setUpdate(Date update) {
+		this.update = update;
+	}
+
+	public Date getUpdate() {
+		return update;
 	}
 
 	

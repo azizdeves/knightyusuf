@@ -30,7 +30,7 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public List<Task> getWeekTasks(Date startWeek) {
+	public List<Task> getWeekTasks(Date startWeek) throws IllegalArgumentException  {
 		
  		TaskDao tdao= new TaskDao();
 		return tdao.getWeekTasks("momin", startWeek);
@@ -38,12 +38,20 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public String save(Task[] tasks) {
+	public String save(Task[] tasks) throws IllegalArgumentException {
 		TaskDao tdao= new TaskDao();
 		tdao.saveTask(tasks);
-		return "";
-		
+		return "";		
 	}
-	
+
+	@Override
+	public  String createSeed(TaskSeed seed) throws IllegalArgumentException {
+		TaskDao dao = new TaskDao();
+		dao.saveSeed(seed);
+		List <Task> list = TaskGenerator.generate(seed);
+		dao.saveTask(list.toArray());
+		return null;
+	}
+
 	
 }

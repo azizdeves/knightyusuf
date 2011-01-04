@@ -17,5 +17,6 @@ public interface TaskServiceAsync {
 	throws IllegalArgumentException;
 	void getWeekTasks(Date startWeek, AsyncCallback<List<com.aljamaa.entity.Task>> callback)throws IllegalArgumentException;
 	void save(com.aljamaa.entity.Task[] objects, AsyncCallback<String> asyncCallback)throws IllegalArgumentException;
+	void createSeed(TaskSeed seed, AsyncCallback<String> callback);
 
 }
