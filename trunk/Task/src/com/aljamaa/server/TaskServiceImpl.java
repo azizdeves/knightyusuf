@@ -2,12 +2,17 @@ package com.aljamaa.server;
 
 import java.util.Date;
 import java.util.List;
-import java.util.TreeSet;
+
+import java.util.logging.Logger;
 
 import com.aljamaa.client.TaskService;
 import com.aljamaa.dao.TaskDao;
 import com.aljamaa.entity.Task;
 import com.aljamaa.entity.TaskSeed;
+
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -18,20 +23,27 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 public class TaskServiceImpl extends RemoteServiceServlet implements
 		TaskService {
 
+	private static final Logger log = Logger.getLogger(TaskServiceImpl.class.getName());
 	public String createTask(Task task) throws IllegalArgumentException {
 
 		TaskDao tdao= new TaskDao();
 		tdao.saveTask(task);
-		return "dao";
+		UserService usrSrvc = UserServiceFactory.getUserService();
+		return usrSrvc.getCurrentUser().getEmail() ;
 	}
 	
-	public String createTaskSeed(TaskSeed taskSeed) throws IllegalArgumentException  {
-		return "gooood";
-	}
+
 
 	@Override
 	public List<Task> getWeekTasks(Date startWeek) throws IllegalArgumentException  {
-		
+//		usrSrvc.createLoginURL("destination");
+		UserService usrSrvc = UserServiceFactory.getUserService();
+		User u=usrSrvc.getCurrentUser();
+		log.info("loggin "+usrSrvc.createLoginURL("")+"  logout: "+usrSrvc.createLogoutURL(""));
+		 if(u!=null)
+			 log.info("loggedwwwwww "+u.getEmail());
+		 else log.info("wwwwwwwww user==null");
+		 
  		TaskDao tdao= new TaskDao();
 		return tdao.getWeekTasks("momin", startWeek);
 		

@@ -1,5 +1,6 @@
 package com.aljamaa.entity;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.jdo.annotations.IdGeneratorStrategy;
@@ -13,7 +14,7 @@ import com.google.gwt.user.datepicker.client.CalendarUtil;
 
 
 @PersistenceCapable(identityType = IdentityType.APPLICATION)
-public class Task implements IsSerializable, Comparable{
+public class Task implements Serializable, Comparable{
 	static public  final int EVERY_DAY = 1;
 	static public  final int EVERY_WEEK = 2;
 	static public  final int EVERY_MONTH =3 ;

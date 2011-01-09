@@ -13,8 +13,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface TaskServiceAsync {
 	void createTask(com.aljamaa.entity.Task task, AsyncCallback<String> callback)
 			throws IllegalArgumentException;
-	void createTaskSeed(TaskSeed taskSeed, AsyncCallback<String> callback)
-	throws IllegalArgumentException;
 	void getWeekTasks(Date startWeek, AsyncCallback<List<com.aljamaa.entity.Task>> callback)throws IllegalArgumentException;
 	void save(com.aljamaa.entity.Task[] objects, AsyncCallback<String> asyncCallback)throws IllegalArgumentException;
 	void createSeed(TaskSeed seed, AsyncCallback<String> callback);

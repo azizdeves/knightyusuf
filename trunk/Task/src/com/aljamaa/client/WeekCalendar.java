@@ -24,6 +24,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 
 public class WeekCalendar extends Composite {
@@ -47,8 +48,8 @@ public class WeekCalendar extends Composite {
 		weekCalendar = this;
 		modifiedTasks = new TreeSet<Task>();
 		if(timeZoneOffset > 0){
-		startWeek = Task.moveToDay(new Date(), -7);
-		startWeek.setHours(24-timeZoneOffset);
+			startWeek = Task.moveToDay(new Date(), -7);
+			startWeek.setHours(24-timeZoneOffset);
 		}
 		else{
 			startWeek = Task.moveToDay(new Date(), -1);
@@ -92,13 +93,8 @@ public class WeekCalendar extends Composite {
 		Button addTaskBtn = new Button("Add Task");
 		addTaskBtn.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				if(newTskUi==null){
-					newTskUi=new NewTaskUI(dlg);
-					dlg.setText("Add a new Task");				
-					dlg.add(newTskUi);
-				}
-				dlg.show();
-				dlg.center();
+				getNwTskUi().task=null;
+				shwNwTskDlg();
 			}
 		});
 		horizontalPanel_1.add(addTaskBtn);
@@ -144,10 +140,14 @@ public class WeekCalendar extends Composite {
 		for(int i = 0 ; i< 7 ; i++){
 
 			taskCells[i] = new ArrayList<TaskCell>();
-			dayVerticalPanel[i] = new VerticalPanel();
+			dayVerticalPanel[i] = new VerticalPanel(){public void onBrowserEvent(com.google.gwt.user.client.Event event) {
+				if(event==null);
+				};
+			};
 			horizontalPanel.add(dayVerticalPanel[i]);			
 			dayVerticalPanel[i].setSize( "100px", "");
 			headerDays[i] = new Label();
+//			dayVerticalPanel[i].onBrowserEvent();
 		}
 		initData();
 	}
@@ -169,7 +169,13 @@ public class WeekCalendar extends Composite {
 			
 			@Override
 			public void onFailure(Throwable caught) {
-				
+				 try {
+				       throw caught;
+				     } catch (IllegalArgumentException e) {
+				    	 
+				     } catch (Throwable e) {
+						e.printStackTrace();
+					} 
 			}
 		});
 	}
@@ -192,4 +198,23 @@ public class WeekCalendar extends Composite {
 			CalendarUtil.addDaysToDate(d,1);			
 		}
 	}
+	
+
+	public void shwNwTskDlg() {
+		
+		getNwTskUi().init();
+		dlg.show();
+		dlg.center();
+	}
+	public NewTaskUI getNwTskUi()
+	{
+		if(newTskUi==null){
+			newTskUi=new NewTaskUI(dlg);
+			dlg.setText("Add a new Task");				
+			dlg.add(newTskUi);
+		}
+		return newTskUi;
+		
+	}
 }
+

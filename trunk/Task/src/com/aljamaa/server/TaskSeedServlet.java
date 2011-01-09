@@ -19,6 +19,8 @@ public class TaskSeedServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 	throws ServletException, IOException {
 
+		if(req.getParameter("k")!=null)
+			return;
 		TaskDao dao = new TaskDao();
 		List<TaskSeed> lst = dao.getSeedToUpdate();
 		if(lst.size()==0) return;

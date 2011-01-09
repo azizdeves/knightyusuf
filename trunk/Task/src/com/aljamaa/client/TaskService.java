@@ -16,11 +16,11 @@ public interface TaskService extends RemoteService {
 
 	String createTask(com.aljamaa.entity.Task task);
 
-	String createTaskSeed(TaskSeed taskSeed); 
 	
-	List<com.aljamaa.entity.Task> getWeekTasks(Date startWeek);
+	
+	List<com.aljamaa.entity.Task> getWeekTasks(Date startWeek) throws IllegalArgumentException;
 	
 	String save (com.aljamaa.entity.Task[] tasks);
 	
-	String createSeed(TaskSeed seed);
+	String createSeed(TaskSeed seed) throws IllegalArgumentException;
 }
