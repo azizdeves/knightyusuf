@@ -28,6 +28,8 @@ import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Button;
 
@@ -45,6 +47,9 @@ public class NewTaskUI extends Composite {
 	DialogBox dlg;
 	ListBox hourCB;
 	ListBox minCB;
+	Task task;
+	TaskSeed seed;
+	Button btnCreatetask ;
 
 
 	public NewTaskUI(final DialogBox dlg) {
@@ -79,6 +84,17 @@ public class NewTaskUI extends Composite {
 		numericRadioButton = new RadioButton("new name", "numeric");
 		horizontalPanel.add(numericRadioButton);
 		numericRadioButton.setWidth("120");
+		ValueChangeHandler<Boolean> evalTypChangeHndlr =new ValueChangeHandler<Boolean>() {			
+			@Override
+			public void onValueChange(ValueChangeEvent<Boolean> event) {
+				if(numericRadioButton.getValue())
+					minTextBox.setEnabled(true);
+				else
+					minTextBox.setEnabled(false);
+			}
+		};
+		numericRadioButton.addValueChangeHandler(evalTypChangeHndlr );
+		boolRadioButton.addValueChangeHandler(evalTypChangeHndlr);
 
 		Label label_2 = new Label("Min:");
 		horizontalPanel.add(label_2);
@@ -88,10 +104,10 @@ public class NewTaskUI extends Composite {
 		minTextBox.setWidth("26px");
 
 		Label label_3 = new Label("Priority");
-		grid.setWidget(2, 0, label_3);
+//		grid.setWidget(2, 0, label_3);
 
 		priorityComboBox = new ListBox();
-		grid.setWidget(2, 1, priorityComboBox);
+//		grid.setWidget(2, 1, priorityComboBox);
 
 		Label label_4 = new Label("Date");
 		grid.setWidget(3, 0, label_4);
@@ -132,7 +148,7 @@ public class NewTaskUI extends Composite {
 		mainPanel.add(horizontalPanel_1);
 		mainPanel.setCellHorizontalAlignment(horizontalPanel_1, HasHorizontalAlignment.ALIGN_CENTER);
 
-		Button btnCreatetask = new Button("CreateTask");
+		btnCreatetask = new Button("SaveTask");
 		btnCreatetask.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				createTask();
@@ -150,10 +166,40 @@ public class NewTaskUI extends Composite {
 		btnCancel.setText("Cancel");
 		horizontalPanel_1.add(btnCancel);
 	}
+	
+	public void init(){
+		if(task!=null)
+		{
+			nameTextBox.setText(task.getName());
+			dateBox.setValue(task.getDate(), false);
+			hourCB.setItemSelected(task.getDate().getHours(), true);
+			minCB.setItemSelected(task.getDate().getMinutes()/10, true);
+			if(task.getMin()<3)
+			{
+				boolRadioButton.setValue(true);
+				minTextBox.setValue("");
+				minTextBox.setEnabled(false);
+			}else{
+				numericRadioButton.setValue(true);
+				minTextBox.setValue(task.getMin()+"");
+				minTextBox.setEnabled(true);
+			}	
+		}
+		else{
+			nameTextBox.setText("");
+			dateBox.setValue(new Date(), false);
+			hourCB.setItemSelected(0, true);
+			minCB.setItemSelected(0, true);
+			boolRadioButton.setValue(true);
+			minTextBox.setValue("");
+			minTextBox.setEnabled(false);
+		}
+	}
 
 	public void createTask()
 	{
-		Task task = new Task();
+		if(task == null)
+			task = new Task();
 		task.setName(nameTextBox.getValue());
 		if(numericRadioButton.getValue())
 			task.setMin(Integer.parseInt(minTextBox.getValue()));
@@ -180,18 +226,16 @@ public class NewTaskUI extends Composite {
 				public void onFailure(Throwable caught) {
 					
 				}
-
 			});
-
 		}
 		//diclosure panel closed
 		else{
-
-
+			btnCreatetask.setEnabled(false);
 			taskService.createTask(task, new AsyncCallback<String>() {			
 				@Override
 				public void onSuccess(String result) {
-					nameTextBox.setValue(result);	
+					nameTextBox.setText(result);
+					btnCreatetask.setEnabled(true);
 
 				}			
 				@Override
