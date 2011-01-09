@@ -37,3 +37,95 @@ taskCell {
 	font-size: 10pt;
 	background-color: skyblue;
 }
+.eval1 {
+
+background: url(eval.png) no-repeat -45px -15px;
+width : 14px;
+height  : 14px;  
+}
+.eval2 {
+background: url(eval.png) no-repeat 0px -15px;
+width : 14px;
+height  : 14px; 
+}
+.eval0 {
+
+background: url(eval.png) no-repeat -90px -15px;
+width : 14px;
+height  : 14px;  
+}
+.evalText {
+	margin: 0px;
+	padding: 0px;
+	font-stretch: ultra-condensed;
+	font-size: 10px;
+	width : 23px;
+	height : 13px;
+	border  : 0px;      
+	background-color: #FFFF77;
+	text-align: center;  
+}
+.evalTextKo {
+	margin: 0px;
+	padding: 0px;
+	font-stretch: ultra-condensed;
+	font-size: 10px;
+	background-color: #FFaaaa;
+	width : 23px;
+	height : 13px; 
+	border  : 0px;      
+	text-align: center;  
+}
+.evalTextOk {
+	margin: 0px;
+	padding: 0px;
+	font-stretch: ultra-condensed;
+	font-size: 10px;
+	background-color: #aaffaa;
+	width : 23px;
+	height : 13px;    
+	border  : 0px;   
+	text-align: center;  
+}
+.evalTextFocus {
+	margin: 0px;
+	padding: 0px;
+	font-stretch: ultra-condensed;
+	font-size: 10px;
+	background-color: #FFF;
+	width : 30px;
+	height : 13px;    
+	border  : 1px;     
+}
+.nameTsk {
+	margin: 0px;
+	padding: 0px;
+	font-stretch: ultra-condensed;
+	font-size: 11px;
+	width   :70px; 
+}
+.timeTsk {
+
+	margin: 0px;
+	padding: 0px;
+	font-stretch: ultra-condensed;
+	font-size: 8px;
+	}
+.tskcell {
+	background:  url(task/gwt/standard/images/hborder.png) repeat-x 0px -2003px;
+	width  :135px; 
+	height  :24px;
+	border-top: 0px solid;
+	border-right: 0px solid;
+	border-bottom: 0px solid;
+	border-left: 1px solid #DDD; 
+}
+.tskcell:hover {
+	background:  url(task/gwt/standard/images/hborder.png) repeat-x 0px -990px;
+	width  :135px; 
+	height  :24px;
+	border-top: 0px solid;
+	border-right: 0px solid;
+	border-bottom: 0px solid;
+	border-left: 1px solid #DDD; 
+}
