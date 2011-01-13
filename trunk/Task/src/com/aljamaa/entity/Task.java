@@ -3,63 +3,68 @@ package com.aljamaa.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+import javax.jdo.annotations.PrimaryKey;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+import org.datanucleus.jpa.annotations.Extension;
+
+
+
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@Entity
 public class Task implements Serializable, Comparable{
 	static public  final int EVERY_DAY = 1;
 	static public  final int EVERY_WEEK = 2;
 	static public  final int EVERY_MONTH =3 ;
 	static public  final int EVERY_YEAR = 4;
 	
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@Extension(vendorName = "datanucleus", key = "gae.encoded-pk", value = "true")
 	private Long id;
 	
-	@Persistent
+	
 	private String name;
 	
-	@Persistent
+	
 	private String mominId;
 	
-	@Persistent
+	
 	private int min;
 	
-	@Persistent
+	
 	private int eval;
 	
-	@Persistent
+	
 	private int priority;
 	
-	@Persistent
+	
 	private Long seedId;
 	
-	@Persistent
+	
 	private int group;
 	
-	@Persistent
+	
 	private int duration;
 
-	@Persistent
+	
 	private Date date;
 
-	@Persistent
+	
 	private boolean alarm;
 	
 	public Task() {
 		eval=-1;
 	}
 
-	public Task(String name, int min, int priority, Long seedId,String momin,
-			Date date) {
+	public Task(String name, int min, int priority, Long seedId,String momin,Date date) {
 		this();
 		this.name = name;
 		this.min = min;
@@ -139,7 +144,7 @@ public class Task implements Serializable, Comparable{
 
 	@Override
 	public String toString() {		
-		return "id: "+id+"  name: "+name+"  eval:"+eval+" min:"+min;
+		return "id: "+id+"  name: "+name+"  eval:"+eval+" min:"+min+" date:"+date;
 	}
 
 	public int getGroup() {

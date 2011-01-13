@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
 
+import com.aljamaa.entity.Task;
 import com.aljamaa.entity.TaskSeed;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -23,4 +24,8 @@ public interface TaskService extends RemoteService {
 	String save (com.aljamaa.entity.Task[] tasks);
 	
 	String createSeed(TaskSeed seed) throws IllegalArgumentException;
+
+
+
+	List<Task> friendCalend(Date startWeek, String string, String string2) throws Exception;
 }

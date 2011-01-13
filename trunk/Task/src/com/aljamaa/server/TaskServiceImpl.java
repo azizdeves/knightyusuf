@@ -1,12 +1,15 @@
 package com.aljamaa.server;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import java.util.logging.Logger;
 
 import com.aljamaa.client.TaskService;
 import com.aljamaa.dao.TaskDao;
+import com.aljamaa.entity.Momin;
 import com.aljamaa.entity.Task;
 import com.aljamaa.entity.TaskSeed;
 
@@ -37,15 +40,24 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public List<Task> getWeekTasks(Date startWeek) throws IllegalArgumentException  {
 //		usrSrvc.createLoginURL("destination");
-		UserService usrSrvc = UserServiceFactory.getUserService();
-		User u=usrSrvc.getCurrentUser();
-		log.info("loggin "+usrSrvc.createLoginURL("")+"  logout: "+usrSrvc.createLogoutURL(""));
-		 if(u!=null)
-			 log.info("loggedwwwwww "+u.getEmail());
-		 else log.info("wwwwwwwww user==null");
+//		UserService usrSrvc = UserServiceFactory.getUserService();
+//		User u=usrSrvc.getCurrentUser();
+//		log.info("loggin "+usrSrvc.createLoginURL("")+"  logout: "+usrSrvc.createLogoutURL(""));
+//		 if(u!=null)
+//			 log.info("loggedwwwwww "+u.getEmail());
+//		 else log.info("wwwwwwwww user==null");
 		 
  		TaskDao tdao= new TaskDao();
-		return tdao.getWeekTasks("momin", startWeek);
+		Momin m= new Momin();
+		m.setFriendsCalendar(Arrays.asList("moad","yoyo3","yoyo"));
+		HashMap<String, String> map = new HashMap<String, String>();
+		map.put("cle","valeur");
+		m.setProperties(map);
+		m.setId("idde5");
+		tdao.save(m);
+		tdao.get(); 		
+ 		
+ 		return tdao.getWeekTasks("momin", startWeek);
 		
 	}
 
@@ -63,6 +75,26 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
 		List <Task> list = TaskGenerator.generate(seed);
 		dao.saveTask(list.toArray());
 		return null;
+	}
+
+	@Override
+	public List<Task> friendCalend(Date start, String momin, String group) throws Exception {
+		
+		TaskDao dao = new TaskDao();
+		if(getCurrentMomin().getFriendsCalendar().contains(momin+"&#"+group))
+			return dao.getFriendTask(momin, Integer.parseInt(group), start);
+		throw new Exception("");
+		
+	}
+	
+	public Momin getCurrentMomin()
+	{
+		TaskDao dao = new TaskDao();
+		
+		UserService usrSrvc = UserServiceFactory.getUserService();
+		User u=usrSrvc.getCurrentUser();
+		return dao.getMomin(u.getUserId());
+
 	}
 
 	

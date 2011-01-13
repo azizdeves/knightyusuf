@@ -1,65 +1,65 @@
 package com.aljamaa.entity;
 
 import java.util.Date;
-import javax.jdo.annotations.IdGeneratorStrategy;
-import javax.jdo.annotations.IdentityType;
-import javax.jdo.annotations.PersistenceCapable;
-import javax.jdo.annotations.Persistent;
-import javax.jdo.annotations.PrimaryKey;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 
-@PersistenceCapable(identityType = IdentityType.APPLICATION)
+@Entity
 public class TaskSeed implements IsSerializable {
-	@PrimaryKey
-	@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Persistent
+	
 	private String name;
 	
-	@Persistent
+	
 	private String mominId;
 	
-	@Persistent
+	
 	private int min;
 	
-	@Persistent
+	
 	private int type;
 	
-	@Persistent
+	
 	private int every;
 	
-	@Persistent
+	
 	private int priority;
 	/**
 	 * si le type du seed est monthly alors:<br>
 	 * param[0]=true --> repeat by day of the week<br>
 	 * param[0]=false --> repeat by day of the month
 	 */
-	@Persistent
+	
 	private boolean[] param;
 	
-	@Persistent
+	
 	private Date start;
 
-	@Persistent
+	
 	private Date end;
 	
-	@Persistent
+	
 	private Date last;
 	
-	@Persistent
+	
 	private Date update;
 
-	@Persistent
+	
 	private int group;
 
-	@Persistent
+	
 	private boolean alarm;
 	
-	@Persistent
+	
 	private int duration;
 
 	public TaskSeed() {

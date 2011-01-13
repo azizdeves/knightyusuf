@@ -9,14 +9,15 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
-import javax.jdo.PersistenceManager;
-import javax.jdo.Query;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
 import net.sf.jsr107cache.CacheFactory;
 import net.sf.jsr107cache.CacheManager;
 
+import com.aljamaa.entity.Momin;
 import com.aljamaa.entity.Task;
 import com.aljamaa.entity.TaskSeed;
 import com.google.appengine.api.datastore.Key;
@@ -26,9 +27,9 @@ import com.google.gwt.user.datepicker.client.CalendarUtil;
 public class TaskDao {
 
 	static Cache cache;
-	PersistenceManager pm;
+	EntityManager em;
 	public TaskDao() {
-		pm=PMF.get().getPersistenceManager();
+		em=EMF.get().createEntityManager();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -37,35 +38,42 @@ public class TaskDao {
 		TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 		String keyWeek = momin + startWeek.toGMTString().substring(0, 11);
 		List<Task> list = (List<Task>) getCache().get(keyWeek);
-//		if(list != null)
-//			return list;
-		//Query query=pm.newQuery("select from Cmnt");//+Cmnt.class.getSimpleName());//+" where key=="+key+" order by date desc  range "+(p*10)+","+((p+1)*10));
-		Query query = pm.newQuery(Task.class);
-	    query.setFilter("mominId == momin && date >= start  &&  date  < end");
-//	    query.setFilter(" date >= start  &&  date  <= end");
-//	    query.setRange(p*10,(p+1)*10+1);	    
-	    query.setOrdering("date asc");
-	   
-	    query.declareParameters("String momin , java.util.Date start, java.util.Date end");
+		if(list!=null)
+			return list;
+		
+		Query query = em.createQuery("select from "+Task.class.getName()+" t where t.mominId = :momin AND t.date >= :start  AND  t.date  < :end order by date asc");	   
 	    Date end = CalendarUtil.copyDate(startWeek);
 	    CalendarUtil.addDaysToDate(end,7);
-	    list =new  ArrayList((List<Task>)query.execute("mominid",startWeek,end ));
+	    query.setParameter("momin","mominid");
+	    query.setParameter("start",startWeek);
+	    query.setParameter("end",end);	    
+	    list =new  ArrayList((List<Task>)query.getResultList());
+	    
 	    getCache().put(keyWeek, list);
+	    
 	    return list;
-		//return (List<Cmnt>) query.execute(key);
+	}
+	
+	public List<Task> getFriendTask(String momin , int group , Date start){
+		Query query = em.createQuery("select from "+Task.class.getName()+" t where t.mominId = :momin AND  group =:group AND  t.date >= :start  AND  t.date  < :end order by date asc");	   
+	    Date end = CalendarUtil.copyDate(start);
+	    CalendarUtil.addDaysToDate(end,7);
+	    query.setParameter("momin","mominid");
+	    query.setParameter("group",group);
+	    query.setParameter("start",start);
+	    query.setParameter("end",end);	    
+	    ArrayList<Task> list= new ArrayList<Task>();
+	    list =new  ArrayList((List<Task>)query.getResultList());
+	    return list;
 	}
 	
 	public List<TaskSeed> getSeedToUpdate()
-	{		
+	{		//TODO use of cursor
 		TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
-		//Query query=pm.newQuery("select from Cmnt");//+Cmnt.class.getSimpleName());//+" where key=="+key+" order by date desc  range "+(p*10)+","+((p+1)*10));
-		Query query = pm.newQuery(TaskSeed.class);
-	    query.setRange(0,1);	    
-		query.setOrdering("update asc");
+		Query query = em.createQuery("select from "+TaskSeed.class.getName()+" s order by s.update asc ");
 		
-		List<TaskSeed> list =new  ArrayList((List<Task>)query.execute( ));
+		List<TaskSeed> list =new  ArrayList((List<Task>)query.getResultList());
 		return list;
-		//return (List<Cmnt>) query.execute(key);
 	}
 	
 	public Cache getCache()
@@ -84,7 +92,7 @@ public class TaskDao {
 	public Task getTaskById(Long  id)
 	{
 			Key key=KeyFactory.createKey(Task.class.getSimpleName(), id);
-			Task kh=pm.getObjectById(Task.class,key);
+			Task kh=em.find(Task.class,key);
 			return kh;
 	}
 	
@@ -96,7 +104,8 @@ public class TaskDao {
 		String keyWeek = "momin" + startWeek.toGMTString().substring(0, 11);
 		TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 		task.setMominId("mominid");
-		pm.makePersistent(task);
+		em.persist(task);
+		em.getTransaction().commit();
 		getCache().put(keyWeek, null);
 //		pm.close();
 	}
@@ -107,8 +116,8 @@ public class TaskDao {
 //	}
 	public void deleteTask(Task c)
 	{
-		pm.deletePersistent(c);
-		pm.close();
+		em.remove(c);
+		em.close();
 	}
 
 	public void saveTask(Object[] tasks) {
@@ -120,7 +129,28 @@ public class TaskDao {
 	}
 
 	public void saveSeed(TaskSeed seed) {
-		pm.makePersistent(seed);
+		em.persist(seed);
 		
+	}
+	
+	public void save(Momin m){
+		em.getTransaction().begin();
+		em.persist(m);
+		em.flush();
+		em.getTransaction().commit();
+//		em.close();
+	}
+	public List<Momin> get(){	
+			
+			Query query = em.createQuery("select from "+Momin.class.getName()+" t where t.friendsCalendar = :momin ");	   
+		    query.setParameter("momin","yoyo3");
+		    ArrayList<Momin> list =new  ArrayList((List<Task>)query.getResultList());		    
+		    return list;
+		
+	}
+	
+	public Momin getMomin(String id)
+	{
+		return em.find(Momin.class, id);
 	}
 }
