@@ -7,6 +7,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TreeSet;
 
+import com.aljamaa.entity.Momin;
 import com.aljamaa.entity.Task;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
@@ -19,6 +20,8 @@ import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.datepicker.client.DatePicker;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.MenuBar;
@@ -26,6 +29,7 @@ import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.ListBox;
 
 public class WeekCalendar extends Composite {
 
@@ -42,6 +46,8 @@ public class WeekCalendar extends Composite {
 	Label stateLabel;
 	static WeekCalendar weekCalendar;
 	static int timeZoneOffset = new Date().getTimezoneOffset()/60;
+	static Momin momin;
+	ListBox groupListLb;
 
 	public WeekCalendar() {
 
@@ -135,6 +141,21 @@ public class WeekCalendar extends Composite {
 
 		horizontalPanel = new HorizontalPanel();
 		mainVerticalPanel.add(horizontalPanel);
+		
+		groupListLb = new ListBox();
+		mainVerticalPanel.add(groupListLb);
+		{
+			int i=1;
+			for(String f : momin.getFriendsCalendar())
+				groupListLb.addItem("friend"+i++, f);
+		}
+		groupListLb.addChangeHandler(new ChangeHandler() {			
+			@Override
+			public void onChange(ChangeEvent event) {
+						}
+		});
+		groupListLb.setVisibleItemCount(5);
+		
 
 		dayVerticalPanel = new VerticalPanel[7];
 		for(int i = 0 ; i< 7 ; i++){
@@ -153,20 +174,19 @@ public class WeekCalendar extends Composite {
 	}
 
 	public void initData()
-	{
-		//startWeek = new Date();
-		taskService.getWeekTasks(startWeek, new AsyncCallback<List<Task>>() {
-			
+	{		
+		String selectedGroup = groupListLb.getValue(groupListLb.getSelectedIndex());
+		if(selectedGroup.equals("")){
+		taskService.getWeekTasks(startWeek, new AsyncCallback<List<Task>>() {			
 			@Override
 			public void onSuccess(List<Task> tasks) {				
 				for(ArrayList<TaskCell> tc : taskCells) tc.clear();
 				for(Task t : tasks)
 				{
-						taskCells[t.getDate().getDay()].add(new TaskCell(t));					
+					taskCells[t.getDate().getDay()].add(new TaskCell(t));					
 				}
 				initView();				
-			}
-			
+			}			
 			@Override
 			public void onFailure(Throwable caught) {
 				 try {
@@ -178,6 +198,33 @@ public class WeekCalendar extends Composite {
 					} 
 			}
 		});
+		}else{
+			String[]  param=selectedGroup.split("&#");
+			taskService.friendCalend(startWeek, param[0],param[1], new AsyncCallback<List<Task>>() {					
+				@Override
+				public void onSuccess(List<Task> tasks) {				
+					for(ArrayList<TaskCell> tc : taskCells) tc.clear();
+					for(Task t : tasks)
+					{
+							taskCells[t.getDate().getDay()].add(new TaskCell(t));					
+					}
+					initView();				
+				}
+				
+				@Override
+				public void onFailure(Throwable caught) {
+					 try {
+					       throw caught;
+					     } catch (IllegalArgumentException e) {
+					    	 
+					     } catch (Throwable e) {
+							e.printStackTrace();
+						} 
+				}
+			});	
+			
+			
+		}
 	}
 
 	public void initView ()
