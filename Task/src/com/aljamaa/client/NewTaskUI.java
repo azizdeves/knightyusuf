@@ -3,6 +3,7 @@ package com.aljamaa.client;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import com.aljamaa.entity.Task;
@@ -32,6 +33,9 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.InlineLabel;
+import com.google.gwt.event.logical.shared.OpenHandler;
+import com.google.gwt.event.logical.shared.OpenEvent;
 
 public class NewTaskUI extends Composite {
 
@@ -50,6 +54,8 @@ public class NewTaskUI extends Composite {
 	Task task;
 	TaskSeed seed;
 	Button btnCreatetask ;
+	ListBox groupCB;
+	Button deleteBtn;
 
 
 	public NewTaskUI(final DialogBox dlg) {
@@ -107,6 +113,16 @@ public class NewTaskUI extends Composite {
 //		grid.setWidget(2, 0, label_3);
 
 		priorityComboBox = new ListBox();
+		
+		InlineLabel groupLabel = new InlineLabel("Group");
+		grid.setWidget(2, 0, groupLabel);
+		
+		
+		groupCB = new ListBox();
+		for(int i=0 ; i<10 ; i++)
+			groupCB.addItem(""+(i+1), ""+i);
+		grid.setWidget(2, 1, groupCB);
+		
 //		grid.setWidget(2, 1, priorityComboBox);
 
 		Label label_4 = new Label("Date");
@@ -134,11 +150,12 @@ public class NewTaskUI extends Composite {
 
 		taskRepeat = new TaskRepeat();
 
-		//		DialogBox dialog = new DialogBox(false,false);
-		//		dialog.add(taskRepeat);
-		//		dialog.show();
-
 		disclosurePanel = new DisclosurePanel("Repeat");
+		disclosurePanel.addOpenHandler(new OpenHandler<DisclosurePanel>() {
+			public void onOpen(OpenEvent<DisclosurePanel> event) {
+				initTaskRepeat();
+			}
+		});
 		//		disclosurePanel.setOpen(false);
 		mainPanel.add(disclosurePanel);
 		disclosurePanel.add(taskRepeat);		
@@ -154,6 +171,14 @@ public class NewTaskUI extends Composite {
 				createTask();
 			}
 		});
+		
+		deleteBtn = new Button("Delete");
+		deleteBtn.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				deleteTask();
+			}
+		});
+		horizontalPanel_1.add(deleteBtn);
 		horizontalPanel_1.add(btnCreatetask);
 
 		Button btnCancel = new Button("Cancel");
@@ -161,19 +186,51 @@ public class NewTaskUI extends Composite {
 			public void onClick(ClickEvent event) {
 				dlg.hide();
 			}
-
 		});
 		btnCancel.setText("Cancel");
 		horizontalPanel_1.add(btnCancel);
 	}
 	
+	protected void initTaskRepeat() {
+		if(task!=null){
+			taskService.getSeed(task.getSeedId(), new AsyncCallback<TaskSeed>() {
+				public void onSuccess(TaskSeed result) {
+					taskRepeat.init(result);
+				}
+				public void onFailure(Throwable caught) {
+					
+				}
+			});
+		}
+	}
+
+	public void deleteTask() {
+		if(task==null)
+			return;		
+		btnCreatetask.setEnabled(false);
+		deleteBtn.setEnabled(false);
+		taskService.deleteTask(task.getId(), new AsyncCallback<Long>() {
+				public void onSuccess(Long id) {		
+					weekCalendar().deleteTask(task);
+					weekCalendar().initView(true);
+					dlg.hide();
+				}
+				public void onFailure(Throwable caught) {				
+					btnCreatetask.setEnabled(true);
+					deleteBtn.setEnabled(true);
+				}
+		});
+	}
+
 	public void init(){
+		btnCreatetask.setEnabled(true);
 		if(task!=null)
 		{
 			nameTextBox.setText(task.getName());
 			dateBox.setValue(task.getDate(), false);
 			hourCB.setItemSelected(task.getDate().getHours(), true);
 			minCB.setItemSelected(task.getDate().getMinutes()/10, true);
+			groupCB.setItemSelected(task.getGroup(), true);
 			if(task.getMin()<3)
 			{
 				boolRadioButton.setValue(true);
@@ -184,6 +241,7 @@ public class NewTaskUI extends Composite {
 				minTextBox.setValue(task.getMin()+"");
 				minTextBox.setEnabled(true);
 			}	
+			deleteBtn.setEnabled(true);
 		}
 		else{
 			nameTextBox.setText("");
@@ -193,6 +251,8 @@ public class NewTaskUI extends Composite {
 			boolRadioButton.setValue(true);
 			minTextBox.setValue("");
 			minTextBox.setEnabled(false);
+			groupCB.setItemSelected(0, true);
+			deleteBtn.setEnabled(false);
 		}
 	}
 
@@ -206,46 +266,93 @@ public class NewTaskUI extends Composite {
 		else
 			task.setMin(-1);
 		
+		task.setGroup(groupCB.getSelectedIndex());
 		task.setPriority(priorityComboBox.getSelectedIndex());
 		Date d = CalendarUtil.copyDate(dateBox.getValue());
 		d.setTime(Date.UTC(d.getYear(), d.getMonth(), d.getDate(), hourCB.getSelectedIndex(), minCB.getSelectedIndex()*10, 0));
-		//		d.setHours(hourCB.getSelectedIndex());
-		//		d.setMinutes(minCB.getSelectedIndex()*10);
 		task.setDate(d);
-		task.setMominId("mominid");
-		
 		if(disclosurePanel.isOpen()){
 			TaskSeed seed = taskRepeat.getTaskSeed();
 			seed.setTaskAttributes(task);
-			taskService.createSeed(seed, new AsyncCallback<String>() {
-				@Override
-				public void onSuccess(String result) {
-					
+			taskService.createSeed(seed, new AsyncCallback<List<Task>>() {
+				public void onSuccess(List<Task> tsks) {
+					weekCalendar().addTasks(tsks);
+					weekCalendar().initView(true);					
 				}
-				@Override
-				public void onFailure(Throwable caught) {
-					
-				}
+				public void onFailure(Throwable caught) {				}
 			});
 		}
 		//diclosure panel closed
 		else{
-			btnCreatetask.setEnabled(false);
-			taskService.createTask(task, new AsyncCallback<String>() {			
-				@Override
-				public void onSuccess(String result) {
-					nameTextBox.setText(result);
-					btnCreatetask.setEnabled(true);
-
-				}			
-				@Override
-				public void onFailure(Throwable caught) {
-
-				}
-			});
+			saveTask();
 		}
-		WeekCalendar.weekCalendar.initData();
+		//weekCalendar().initData();
+	}
+	public void saveTask() {
+		taskService.createTask(task, new AsyncCallback<Task>() {			
+			public void onSuccess(Task tsk) {
+				dlg.hide();
+				btnCreatetask.setEnabled(true);
+				weekCalendar().addTask(tsk);
+				weekCalendar().initView(true);
+			}			
+			public void onFailure(Throwable caught) {			}
+		});		
+	}
 
+	public void updateSeedDlg(){
+		final DialogBox dlg =new DialogBox();
+		HorizontalPanel hp = new HorizontalPanel();
+		final Button oneBt = new Button("just this task");
+		Button afterBt = new Button("all tasks");
+		Button cancelBt = new Button("Cancel");
+		hp.add(oneBt);		hp.add(afterBt);			hp.add(cancelBt);
+		
+		dlg.add(hp);
+		dlg.center();
+		dlg.show();
+		
+		oneBt.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				oneBt.setEnabled(false);
+				saveTask();
+				dlg.hide();
+			}
+		});
+		afterBt.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+//				oneBt.setEnabled(false);
+				updateSeed();
+				dlg.hide();
+			}
+		});
+		cancelBt.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				dlg.hide();				
+			}
+		});		
+	
+	}
+	
+	public void updateSeed(){
+		
+		TaskSeed seed = taskRepeat.getTaskSeed();
+		seed.setTaskAttributes(task);
+		seed.setLast(new Date());
+//		d.setTime(Date.UTC(d.getYear(), d.getMonth(), d.getDate(), hourCB.getSelectedIndex(), minCB.getSelectedIndex()*10, 0));
+		taskService.updateSeed(seed, new AsyncCallback<String>() {
+			public void onSuccess(String result) {
+				
+			}
+			public void onFailure(Throwable caught) {
+				
+			}
+		});
+	}
+	
+
+	public WeekCalendar weekCalendar() {
+		return WeekCalendar.weekCalendar;
 	}
 
 	public void setDlg(DialogBox dlg) {

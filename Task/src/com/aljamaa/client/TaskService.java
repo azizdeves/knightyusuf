@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeSet;
 
+import com.aljamaa.entity.Momin;
 import com.aljamaa.entity.Task;
 import com.aljamaa.entity.TaskSeed;
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -15,17 +16,20 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath("task")
 public interface TaskService extends RemoteService {
 
-	String createTask(com.aljamaa.entity.Task task);
-
+	com.aljamaa.entity.Task createTask(com.aljamaa.entity.Task task)	;
 	
+	com.aljamaa.entity.Task[]  save (com.aljamaa.entity.Task[] tasks);
 	
-	List<com.aljamaa.entity.Task> getWeekTasks(Date startWeek) throws IllegalArgumentException;
+	List<com.aljamaa.entity.Task> createSeed(TaskSeed seed) throws IllegalArgumentException;
 	
-	String save (com.aljamaa.entity.Task[] tasks);
+	TaskSeed getSeed(long id)throws Exception;
+	String updateSeed(TaskSeed seed)throws Exception;
+
+	List<com.aljamaa.entity.Task> getWeekTasks(Date startWeek, String user, String group) throws IllegalArgumentException, Exception;
 	
-	String createSeed(TaskSeed seed) throws IllegalArgumentException;
-
-
-
-	List<Task> friendCalend(Date startWeek, String string, String string2) throws Exception;
+	Momin getCurrentMomin() throws Exception;
+	
+	String shareGroup(String email, int group) throws Exception;
+	
+	Long deleteTask(Long id) ;
 }

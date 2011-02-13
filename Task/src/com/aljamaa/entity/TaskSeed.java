@@ -1,7 +1,10 @@
 package com.aljamaa.entity;
 
 import java.util.Date;
+
+import javax.persistence.Basic;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -38,7 +41,7 @@ public class TaskSeed implements IsSerializable {
 	 * param[0]=true --> repeat by day of the week<br>
 	 * param[0]=false --> repeat by day of the month
 	 */
-	
+	@Basic(fetch=FetchType.EAGER)
 	private boolean[] param;
 	
 	
@@ -206,6 +209,8 @@ public class TaskSeed implements IsSerializable {
 	}
 
 	
-	
+	public String toString(){
+		return "id: "+id+" name: "+name+" Up:"+update+"  Last: "+last;
+	}
 
 }

@@ -134,7 +134,7 @@ public class Task implements Serializable, Comparable{
 
 	@Override
 	public boolean equals(Object obj) {
-		return obj != null && this.id == ((Task) obj).getId();
+		return obj != null && this.id.equals( ((Task) obj).getId());
 	}	
 
 	@Override
@@ -188,18 +188,33 @@ public class Task implements Serializable, Comparable{
 		this.mominId = mominId;
 	}
 
+	/**
+	 * if min = -1 the eval is of type boolean
+	 * otherwise its numeric
+	 */
 	public int getMin() {
 		return min;
 	}
 
+	/**
+	 * if min = -1 the eval is of type boolean
+	 * otherwise its numeric
+	 * @param min
+	 */
 	public void setMin(int min) {
 		this.min = min;
 	}
-
+/**
+ * if eval=-1 = ?    0=y   1=n 
+ * @return
+ */
 	public int getEval() {
 		return eval;
 	}
 
+	/**
+	 * if eval=-1 = ?    0=y   1=n 
+	 */
 	public void setEval(int eval) {
 		this.eval = eval;
 	}
@@ -230,7 +245,7 @@ public class Task implements Serializable, Comparable{
 
 	@Override
 	public int compareTo(Object o) {
-		return id.compareTo(((Task) o).getId());
+		return -id.compareTo(((Task) o).getId());
 	}
 	
 	
