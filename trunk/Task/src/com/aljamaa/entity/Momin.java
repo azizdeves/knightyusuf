@@ -1,17 +1,16 @@
 package com.aljamaa.entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 
 @Entity
-public class Momin {
+public class Momin implements Serializable{
 	
 	@Id	
 	String id;
@@ -23,13 +22,25 @@ public class Momin {
 	@Basic(fetch = FetchType.EAGER)
 	List<String> friendsCalendar;
 	
-	@Lob
-	HashMap<String, String> properties;
+//	@Lob
+//	HashMap<String, String> properties;
 	
 //	@Extension(vendorName = "datanucleus",            key = "gae.unindexed",            value = "true")
 
 	public String getId() {
 		return id;
+	}
+
+	public Momin clon()  {
+		Momin m = new Momin();
+		m.setEmail(email);
+		if(this.getFriendsCalendar()!=null)
+			m.setFriendsCalendar(new ArrayList<String>(friendsCalendar));
+		
+		m.setId(id);
+		m.setName(name);
+	
+		return m;
 	}
 
 	public void setId(String id) {
@@ -60,13 +71,13 @@ public class Momin {
 		this.friendsCalendar = friendsCalendar;
 	}
 //
-	public HashMap<String, String> getProperties() {
-		return properties;
-	}
-
-	public void setProperties(HashMap<String, String> properties) {
-		this.properties = properties;
-	}
+//	public HashMap<String, String> getProperties() {
+//		return properties;
+//	}
+//
+//	public void setProperties(HashMap<String, String> properties) {
+//		this.properties = properties;
+//	}
 	
 	
 	

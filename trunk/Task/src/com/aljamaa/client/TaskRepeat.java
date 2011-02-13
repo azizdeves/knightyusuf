@@ -24,7 +24,11 @@ public class TaskRepeat extends Composite {
 	ListBox repeatEveryCombo;
 	CheckBox dayCheckBox[];
 	RadioButton dayOfWeekRadioButton;
+	RadioButton dayOfMonthRadioButton;
 	DateBox endDateBox;
+	RadioButton neverRB;
+	RadioButton untilRB;
+	TaskSeed seed;
 
 	
 	public TaskRepeat() {
@@ -107,8 +111,8 @@ public class TaskRepeat extends Composite {
 		dayOfWeekRadioButton = new RadioButton("repeatByRadio", "week");
 		repeatMonthPanel.add(dayOfWeekRadioButton);
 		
-		RadioButton radioButton_1 = new RadioButton("repeatByRadio", "month");
-		repeatMonthPanel.add(radioButton_1);
+		dayOfMonthRadioButton = new RadioButton("repeatByRadio", "month");
+		repeatMonthPanel.add(dayOfMonthRadioButton);
 		
 		HorizontalPanel startPanel = new HorizontalPanel();
 		verticalPanel.add(startPanel);
@@ -129,9 +133,9 @@ public class TaskRepeat extends Composite {
 		endPanel.add(label_6);
 		label_6.setWidth("66px");
 		
-		RadioButton radioButton_2 = new RadioButton("endDateRadio", "Never");
-		radioButton_2.setValue(true);
-		radioButton_2.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+		neverRB = new RadioButton("endDateRadio", "Never");
+		neverRB.setValue(true);
+		neverRB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				if(event.getValue().equals(true))
 					endDateBox.setEnabled(false);
@@ -139,11 +143,11 @@ public class TaskRepeat extends Composite {
 					endDateBox.setEnabled(true);
 			}
 		});
-		endPanel.add(radioButton_2);
-		radioButton_2.setWidth("85px");
+		endPanel.add(neverRB);
+		neverRB.setWidth("85px");
 		
-		RadioButton radioButton_3 = new RadioButton("endDateRadio", "Until");
-		radioButton_3.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+		untilRB = new RadioButton("endDateRadio", "Until");
+		untilRB.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 			public void onValueChange(ValueChangeEvent<Boolean> event) {
 				if(event.getValue().equals(true))
 					endDateBox.setEnabled(true);
@@ -151,8 +155,8 @@ public class TaskRepeat extends Composite {
 					endDateBox.setEnabled(false);
 			}
 		});
-		endPanel.add(radioButton_3);
-		radioButton_3.setWidth("72px");
+		endPanel.add(untilRB);
+		untilRB.setWidth("72px");
 		
 		endDateBox = new DateBox();
 		endDateBox.setEnabled(false);
@@ -199,6 +203,52 @@ public class TaskRepeat extends Composite {
 		boolean[] param = new boolean[1];		
 		param[0]= dayOfWeekRadioButton.getValue();
 		return param;
+	}
+	
+	public void init(TaskSeed seed){
+		if(seed.getEnd()!=null){
+			untilRB.setValue(true);
+			endDateBox.setValue(seed.getEnd());
+			endDateBox.setEnabled(true);
+		}else{
+			neverRB.setValue(true);
+			endDateBox.setEnabled(false);
+		}
+		switch(seed.getType())
+		{
+		case 1:
+			typeRepeatCombo.setSelectedIndex(0);
+			repeatWeekPanel.setVisible(false);
+			repeatMonthPanel.setVisible(false);
+			
+			break;
+		case 2:
+			typeRepeatCombo.setSelectedIndex(1);
+			repeatWeekPanel.setVisible(true);
+			repeatMonthPanel.setVisible(false);
+			for(int i=0;i<7;i++){
+					dayCheckBox[i].setValue(seed.getParam()[i]);
+			}
+			break;
+		case 3:
+			typeRepeatCombo.setSelectedIndex(2);
+			repeatWeekPanel.setVisible(false);
+			repeatMonthPanel.setVisible(true);
+			if(seed.getParam()[0])
+				dayOfWeekRadioButton.setValue(true);
+			else
+				dayOfMonthRadioButton.setValue(true);
+			
+			break;
+		case 4:
+			typeRepeatCombo.setSelectedIndex(3);
+			repeatWeekPanel.setVisible(false);
+			repeatMonthPanel.setVisible(false);
+			
+			break;
+		}
+		repeatEveryCombo.setSelectedIndex(seed.getEvery()-1);
+		
 	}
 	
 	public TaskSeed getTaskSeed(){

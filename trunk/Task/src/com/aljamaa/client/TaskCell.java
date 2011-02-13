@@ -1,8 +1,10 @@
 package com.aljamaa.client;
 
+import java.util.Comparator;
 import java.util.Date;
 
 import com.aljamaa.entity.Task;
+import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.BlurEvent;
 import com.google.gwt.event.dom.client.BlurHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -17,10 +19,21 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.shared.EventHandler;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.DOM;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.EventPreview;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.Event.NativePreviewHandler;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SourcesMouseEvents;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.Image;
@@ -29,131 +42,182 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.SimpleCheckBox;
-
-public class TaskCell extends Composite {
+//
+//class Grid2 extends Grid{
+//	public Grid2(int i, int j) {
+//		super(i,j);
+//	}
+//
+//	public  <H extends EventHandler> HandlerRegistration addHandler2(final H handler, GwtEvent.Type<H> type){
+//		return addHandler(handler, type);
+//	}
+//}
+public class TaskCell extends Composite implements Comparable{
 
 	Task task;
 	PriorityButton evalCheckBox;
 	TextBox evalTextBox;
 	Grid grid;
+	boolean readOnly;
 	static PopupPanel pop;
+	static boolean dragging = false;
+	Label nameLabel;
+	
+	
+	static Comparator<Task> dateTaskComp= new Comparator<Task>() {
+		public int compare(Task o1, Task o2) {
+			return o1.compareTo(o2);
+		}
+	};
+	static Comparator<Task> idTaskComp= new Comparator<Task>() {
+		public int compare(Task o1, Task o2) {
+			return o1.compareTo(o2);
+		}
+	};
 
 	/**
 	 * @wbp.parser.constructor
 	 */
 	public TaskCell() {
-
 		grid = new Grid(1, 3);
 		grid.setStyleName("tskcell");
 		initWidget(grid);
-
 	}
-	public TaskCell(Task task) {
+	public TaskCell(Task task , boolean readOnly) {
 		this();
+		this.readOnly = readOnly;
 		this.task = task;
 		initView();
 	}
 
 	public void initView()
 	{
+		
 		DateTimeFormat format =  DateTimeFormat.getFormat("HH:mm");
 		Label timeLabel = new Label(format.format(task.getDate()));
 		timeLabel.setStyleName("timeTsk");
 		grid.setWidget(0, 0, timeLabel);
 
-		Label nameLabel = new Label();
+		nameLabel = new Label();
 		if(task.getName().length()>12)
 			nameLabel.setText(task.getName().substring(0, 12)+"..");
 		else
 			nameLabel.setText(task.getName());
 		
 		pop = new PopupPanel(true);
-		nameLabel.addMouseOverHandler(new MouseOverHandler() {			
-			@Override
-			public void onMouseOver(MouseOverEvent event) {
-				pop.clear();
-				pop.add(new Label(task.getName()));
-				pop.setPopupPosition(event.getClientX()+10, event.getClientY()+10);
-				pop.show();
-			}
-		});
 		
-		nameLabel.addMouseOutHandler(new MouseOutHandler() {			
-			@Override
-			public void onMouseOut(MouseOutEvent event) {
-				pop.hide();
-			}
-		});		
-		
+		nameLabel.sinkEvents(Event.MOUSEEVENTS | Event.ONDBLCLICK);
+		grid.sinkEvents(Event.MOUSEEVENTS | Event.ONDBLCLICK);
 		nameLabel.setStyleName("nameTsk");
 		grid.setWidget(0, 1, nameLabel);
 
 		if( task.getMin() < 2 ){
-			evalCheckBox = new PriorityButton(3 , "eval" ,task.getEval()+1);
+			evalCheckBox = new PriorityButton(3 , "eval" ,task.getEval()+1, readOnly);
 			evalCheckBox.setValue(task.getEval()+1);
 			grid.setWidget(0, 2, evalCheckBox);
-			evalCheckBox.addClickHandler(new ClickHandler() {			
-				@SuppressWarnings("unchecked")
-				@Override
-				public void onClick(ClickEvent event) {
-					task.setEval(evalCheckBox.getValue()-1);
-					WeekCalendar.modifiedTasks.add(task);				
-				}
-			});
+			if(!readOnly)
+				evalCheckBox.addClickHandler(new ClickHandler() {			
+					public void onClick(ClickEvent event) {
+						task.setEval(evalCheckBox.getValue()-1);
+						WeekCalendar.modifiedTasks.add(task);				
+					}
+				});
 		}else{
 			evalTextBox = new TextBox();
 			setEvalText(true);
+			
+			evalTextBox.setReadOnly(readOnly);
 			grid.setWidget(0, 2, evalTextBox);
 			
-			evalTextBox.addChangeHandler(new ChangeHandler() {				
-				@Override
-				public void onChange(ChangeEvent event) {
-					if(!evalTextBox.getValue().isEmpty())
-						task.setEval(Integer.parseInt(evalTextBox.getValue()));
-					else
-						task.setEval(-1);
+			if(!readOnly)
+				evalTextBox.addChangeHandler(new ChangeHandler() {				
+					public void onChange(ChangeEvent event) {
+						if(!evalTextBox.getValue().isEmpty())
+							task.setEval(Integer.parseInt(evalTextBox.getValue()));
+						else
+							task.setEval(-1);
+	
+						WeekCalendar.modifiedTasks.add(task);									
+					}
+				});
+			if(!readOnly)
+				evalTextBox.addFocusHandler(new FocusHandler() {				
+					public void onFocus(FocusEvent event) {		
+						setEvalText(false);
+						evalTextBox.setStyleName("evalTextFocus");
+					}			
+				});
 
-					WeekCalendar.modifiedTasks.add(task);									
-				}
-			});
-			evalTextBox.addFocusHandler(new FocusHandler() {				
-				@Override
-				public void onFocus(FocusEvent event) {		
-					setEvalText(false);
-					evalTextBox.setStyleName("evalTextFocus");
-				}			
-			});
-
-			evalTextBox.addBlurHandler(new BlurHandler() {
-				@Override
-				public void onBlur(BlurEvent event) {					
-					setEvalText(true);
-				}
-			});
+			if(!readOnly)
+				evalTextBox.addBlurHandler(new BlurHandler() {
+					public void onBlur(BlurEvent event) {					
+						setEvalText(true);
+					}
+				});
 		}
-		
-		nameLabel.addClickHandler(new ClickHandler() {			
-			@Override
-			public void onClick(ClickEvent event) {
-				WeekCalendar.weekCalendar.getNwTskUi().task = task;
-				WeekCalendar.weekCalendar.shwNwTskDlg();
-			}
-		});
-		
-//		DoubleClickHandler dbClkHndlr = new DoubleClickHandler() {			
-//			@Override
-//			public void onDoubleClick(DoubleClickEvent event) {
-//				
-//			}
-//		};
-		
-
+		if(!readOnly)  ;
+			nameLabel.addClickHandler(new ClickHandler() {			
+				public void onClick(ClickEvent event) {
+					WeekCalendar.weekCalendar.getNwTskUi().task = task;
+					WeekCalendar.weekCalendar.shwNwTskDlg();
+				}
+			});
+			
+//		DOM.addEventPreview(this);
 	}
-
+	
+	
 	@Override
 	public void onBrowserEvent(Event event) {
-		// TODO Auto-generated method stub
 		super.onBrowserEvent(event);
+		switch (DOM.eventGetType(event)) {
+		case Event.ONDBLCLICK:
+			WeekCalendar.weekCalendar.shwNwTskDlg();
+			break;
+	      case Event.ONMOUSEDOWN:
+//	    	  startDrag(event);
+	    	  break;
+	      case Event.ONMOUSEUP:
+	    	  if(dragging)
+	    		  stopDrag(event);
+	    	  break;
+	      case Event.ONMOUSEMOVE:
+	    	  if(dragging)
+	    		  move(event);
+	    	  break;
+	      case Event.ONMOUSEOVER:
+	    	  showPopup( event) ;					
+//	    	  event.stopPropagation();
+//	    	  event.cancelBubble(true);
+//	    	  DOM.eventCancelBubble(event, true);
+	    	  break;
+	      case Event.ONMOUSEOUT:
+	    	  pop.hide();
+//	    	  stopDrag(event);
+	    	  break;
+		}
+	}
+	public void startDrag(Event event){
+		dragging = true;
+		 DOM.setStyleAttribute(getElement(), "position", "absolute");
+		 DOM.setCapture(getElement());
+		 
+	}
+	
+	public  void move(Event event) {
+		
+		int x = event.getClientX();
+		int y = event.getClientY();
+//		int newX = Math.max(0, x + getAbsoluteLeft() - dragStartX);
+//		int newY = Math.max(0, y + getAbsoluteTop() - dragStartY);
+		
+		
+        DOM.setStyleAttribute(getElement(), "left", x+"px");
+        DOM.setStyleAttribute(getElement(), "top",y+"px");
+	}
+	public void stopDrag(Event event) {
+		dragging = false;
+		DOM.releaseCapture(getElement());
 	}
 	private String condenseNumber(int num){
 		if(num > 999)
@@ -195,8 +259,37 @@ public class TaskCell extends Composite {
 			}			
 			evalTextBox.setText(eval+"");
 		}
-
 	}
+	
+	public void showPopup(Event event) {
+		if(dragging)
+			return;
+		pop.clear();
+		pop.add(new Label(task.getName()));
+		pop.setPopupPosition(event.getClientX()+10, event.getClientY()+10);
+		pop.show();				
+	}
+//	public Element getInnerPop(){
+//		HTML pop = new HTML("<div>"+task.getName()+"</div>");
+//		
+//	}
+//@Override
+//public boolean onEventPreview(Event event) {
+////	if (DOM.eventGetType(event) == Event.ONMOUSEDOWN &&
+////	        DOM.isOrHasChild(getElement(), DOM.eventGetTarget(event))) {
+////		if(dragging){
+//	      DOM.eventPreventDefault(event);
+////		return false;
+////	    }
+//	return true;
+//}
+@Override
+public int compareTo(Object o) {
+	return (int) (task.getDate().getTime()-((TaskCell)o).task.getDate().getTime());
+//	return task.compareTo(o);
+	
+}
+
 
 
 

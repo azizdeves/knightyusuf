@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.logging.Logger;
 
 import com.aljamaa.entity.Task;
 import com.aljamaa.entity.TaskSeed;
@@ -11,6 +12,9 @@ import com.aljamaa.entity.TaskSeed;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 
 public class TaskGenerator {
+	
+
+	private static final Logger log = Logger.getLogger(TaskGenerator.class.getName());
 	
 	static public List<Task> generate(TaskSeed seed)
 	{
@@ -30,23 +34,22 @@ public class TaskGenerator {
 		Task task=null;
 		Date last = seed.getLast();
 		for(int i=0;i<10;i++){
+			log.info(last+"//// ");
 			task = new Task(seed);
-			task.setDate(last);
+			task.setDate(last);//il copie last
 			list.add(task);
 			CalendarUtil.addDaysToDate(last,seed.getEvery());
 		}		
 		//TODO update seed
-		//seed.setLast(last);
+		seed.setLast(last);
 		return list;
 	}
 
 
 	static public List<Task> everyWeek(TaskSeed seed){
-//		GregorianCalendar.getInstance().;
 		List< Task> list = new ArrayList<Task>();
 		Task task;
 		Date last = seed.getLast();
-//		CalendarUtil.addDaysToDate(last,1);
 		int d=last.getDay();
 		for(int i=0; i<10; ){
 			for(;d<7;d++){
@@ -57,7 +60,6 @@ public class TaskGenerator {
 					i++;
 				}
 			}
-//			Task.moveToDay(last, 1);
 			CalendarUtil.addDaysToDate(last,7*seed.getEvery());			
 			d=0;
 		}		
@@ -81,12 +83,13 @@ public class TaskGenerator {
 			}
 			list.add(task);				
 		}		
+		seed.setLast(last);
 		return list;
 	}
 	
 	private static List<Task> everyYear(TaskSeed seed) {
-		// TODO Auto-generated method stub
 		List< Task> list = new ArrayList<Task>();
+//		seed.setLast(last);
 		return list;
 	}
 	
