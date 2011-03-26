@@ -1,0 +1,11 @@
+<!-- Indices written at Fri, 25 Mar 2011 22:33:05 UTC -->
+
+<datastore-indexes>
+
+    <!-- Used 13 times in query history -->
+    <datastore-index kind="Task" ancestor="false" source="auto">
+        <property name="mominId" direction="asc"/>
+        <property name="date" direction="asc"/>
+    </datastore-index>
+
+</datastore-indexes>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
+  <application>yawmlayla</application>
+  <version>06</version>
+  <sessions-enabled>true</sessions-enabled>
+  <property name="fb_app_id" value="201177699906669" />
+		<property name="fb_api_key" value="b50c9b408feeadeda7fdb7cbc19a9d8f" />
+		<property name="fb_secret" value=46b48f7f912108ba2dbdc8bb523ffc50 />
+		<property name="fb_callback_url" value="http://yawmlayla.appspot.com/loginfacebook" />
+  <!-- Configure serving/caching of GWT files --> 
+  <static-files>
+    <include path="**" />
+
+    <!-- The following line requires App Engine 1.3.2 SDK -->
+    <include path="**.nocache.*" expiration="0s" />
+
+    <include path="**.cache.*" expiration="365d" />
+    <exclude path="**.gwt.rpc" />
+  </static-files>
+
+  <!-- Configure java.util.logging -->
+  <system-properties>
+    <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
+  </system-properties>
+
+</appengine-web-app>

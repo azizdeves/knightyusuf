@@ -1,0 +1,35 @@
+[Z, true, true, true, true, [Z/1413617015, 1413617015
+com.aljamaa.client.TaskService, false, false, false, false, _, 3930365189
+com.aljamaa.entity.Momin, true, true, false, false, com.aljamaa.entity.Momin/631296236, 631296236
+@ClientFields,com.aljamaa.entity.Momin,id,name,email,friendsCalendar
+com.aljamaa.entity.Statistic, true, true, false, false, com.aljamaa.entity.Statistic/275399415, 275399415
+@ClientFields,com.aljamaa.entity.Statistic,key,name,momin,count,moy,year,week,valSum,serializedData,update,date,evals,groups
+[Lcom.aljamaa.entity.Statistic;, true, true, false, false, [Lcom.aljamaa.entity.Statistic;/1484733901, 1484733901
+com.aljamaa.entity.Task, true, true, true, true, com.aljamaa.entity.Task/1904920687, 1904920687
+@ClientFields,com.aljamaa.entity.Task,id,name,mominId,min,eval,priority,seedId,group,duration,date,alarm
+com.aljamaa.entity.TaskSeed, true, true, true, true, com.aljamaa.entity.TaskSeed/3899858736, 3899858736
+@ClientFields,com.aljamaa.entity.TaskSeed,id,name,mominId,min,type,every,priority,param,start,end,last,update,group,alarm,duration
+[Lcom.aljamaa.entity.Task;, true, true, true, true, [Lcom.aljamaa.entity.Task;/3718166825, 3718166825
+com.aljamaa.shared.TaskException, true, true, false, false, com.aljamaa.shared.TaskException/3251192981, 3251192981
+com.google.gwt.i18n.client.impl.DateRecord, true, true, true, true, com.google.gwt.i18n.client.impl.DateRecord/112389920, 112389920
+com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException, true, true, true, true, com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException/3936916533, 3936916533
+java.lang.Exception, true, false, true, false, java.lang.Exception/1920171873, 1920171873
+java.lang.IllegalArgumentException, true, true, false, false, java.lang.IllegalArgumentException/1755012560, 1755012560
+java.lang.Long, true, true, true, true, java.lang.Long/4227064769, 4227064769
+java.lang.Number, true, false, true, false, java.lang.Number/300033342, 300033342
+java.lang.NumberFormatException, true, true, false, false, java.lang.NumberFormatException/3305228476, 3305228476
+java.lang.RuntimeException, true, false, true, false, java.lang.RuntimeException/515124647, 515124647
+java.lang.String, true, true, true, true, java.lang.String/2004016611, 2004016611
+[Ljava.lang.String;, true, true, true, true, [Ljava.lang.String;/2600011424, 2600011424
+java.lang.Throwable, true, false, true, false, java.lang.Throwable/2953622131, 2953622131
+java.sql.Date, true, true, true, true, java.sql.Date/3996530531, 3996530531
+java.sql.Time, true, true, true, true, java.sql.Time/831929183, 831929183
+java.sql.Timestamp, true, true, true, true, java.sql.Timestamp/1769758459, 1769758459
+java.util.ArrayList, true, true, true, true, java.util.ArrayList/3821976829, 3821976829
+java.util.Arrays$ArrayList, true, true, true, true, java.util.Arrays$ArrayList/1243019747, 1243019747
+java.util.Collections$EmptyList, true, true, true, true, java.util.Collections$EmptyList/3012082351, 3012082351
+java.util.Collections$SingletonList, true, true, true, true, java.util.Collections$SingletonList/833432284, 833432284
+java.util.Date, true, true, true, true, java.util.Date/1659716317, 1659716317
+java.util.LinkedList, true, true, true, true, java.util.LinkedList/1060625595, 1060625595
+java.util.Stack, true, true, true, true, java.util.Stack/1031431137, 1031431137
+java.util.Vector, true, true, true, true, java.util.Vector/3125574444, 3125574444

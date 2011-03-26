@@ -1,0 +1,2 @@
+serviceClass: com.aljamaa.client.TaskService
+path: 4E31B6E4FCBAE351BF83FCFE9219DE93.gwt.rpc
