@@ -10,6 +10,9 @@ import java.util.Random;
 
 import java.util.logging.Logger;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 
@@ -28,8 +31,7 @@ import com.google.appengine.api.mail.MailService;
 import com.google.appengine.api.mail.MailService.Message;
 import com.google.appengine.api.mail.MailServiceFactory;
 import com.google.appengine.api.users.User;
-import com.google.appengine.api.users.UserService;
-import com.google.appengine.api.users.UserServiceFactory;
+
 
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -43,35 +45,47 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
 
 	private static final Logger log = Logger.getLogger(TaskServiceImpl.class.getName());
 	
-	
-	public Task createTask(Task task) throws IllegalArgumentException {
-
+	public void checkCross(String mmn)throws TaskException{
+		Cookie[] cks = getThreadLocalRequest().getCookies();
+		log.info("mmn = "+mmn+"   <<<<<<<<<<<<<<< ");
+		for(Cookie ck : cks){
+			if(ck.getName().equals("mid")){
+				log.info("cookie = "+ck.getValue());
+				if(!ck.getValue().equals(mmn))
+					throw new TaskException("cross");				
+			}
+		}
+		
+	}
+	public Task createTask(Task task) throws IllegalArgumentException, TaskException {
 		TaskDao tdao= new TaskDao();
-		UserService usrSrvc = UserServiceFactory.getUserService();
-		task.setMominId(usrSrvc.getCurrentUser().getUserId());
+		Momin mmn = getCurrentMomin();
+		checkCross(mmn.getId());
+		task.setMominId(mmn.getId());
 		tdao.saveTask(task);
 		return task ;
 	}
 
 	@Override
 	public List<Task> getWeekTasks(Date startWeek, String user, String group) throws TaskException  {
-		UserService usrSrvc = UserServiceFactory.getUserService();
-		User u=usrSrvc.getCurrentUser();
-		if(u==null)
+		Momin mmn = getCurrentMomin();
+		checkCross(mmn.getId());
+		if(mmn==null)
 			throw new TaskException("out");
  		TaskDao tdao= new TaskDao();
  		if(user==null)
- 			user=u.getUserId(); 		
+ 			user=mmn.getId(); 		
  		return tdao.getWeekTasks(user,group, startWeek);
 		
 	}
 
 	@Override
 	public Task[] save(Task[] tasks) throws IllegalArgumentException, TaskException {
-		UserService usrSrvc = UserServiceFactory.getUserService();
-		User u=usrSrvc.getCurrentUser();
+		Momin mmn = getCurrentMomin();
+		checkCross(mmn.getId());
+
 		TaskDao tdao= new TaskDao();
-		tdao.saveTask(tasks,u.getUserId());
+		tdao.saveTask(tasks,mmn.getId());
 		
 //		Queue que = QueueFactory.getDefaultQueue();
 //		que.add(TaskOptions.Builder.url("/task/tskseed?s="));
@@ -82,9 +96,9 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public  List <Task> createSeed(TaskSeed seed) throws IllegalArgumentException, TaskException {
 		TaskDao dao = new TaskDao();
-		UserService usrSrvc = UserServiceFactory.getUserService();
-		User u=usrSrvc.getCurrentUser();
-		seed.setMominId(u.getUserId());		
+		Momin mmn = getCurrentMomin();
+		checkCross(mmn.getId());
+		seed.setMominId(mmn.getId());		
 		dao.saveSeed(seed);
 		
 		List <Task> list = TaskGenerator.generate(seed);
@@ -97,9 +111,9 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
 	
 	public String updateSeed(TaskSeed seed) throws TaskException{
 		TaskDao dao = new TaskDao();
-		UserService usrSrvc = UserServiceFactory.getUserService();
-		User u=usrSrvc.getCurrentUser();
-		seed.setMominId(u.getUserId());
+		Momin mmn = getCurrentMomin();
+		checkCross(mmn.getId());
+		seed.setMominId(mmn.getId());
 		
 		dao.saveSeed(seed);
 		List <Task> list = TaskGenerator.generate(seed);
@@ -119,6 +133,7 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
 //		if(dest==null){
 			//Envoyer invitation
 			Momin src = getCurrentMomin();
+			checkCross(src.getId());
 //			RandomStringUtils r = new RandomStringUtils();
 //			String randomString  = r.randomAscii(15)+new Date().getTime();
 			String randomString  = src.getId()+new Date().getTime();
@@ -155,12 +170,10 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
 	public Long deleteTask(Long idTsk) throws TaskException {
 
 		TaskDao dao = new TaskDao();
-		UserService usrSrvc = UserServiceFactory.getUserService();
-		User u=usrSrvc.getCurrentUser();
-		if(u == null )
-			throw new TaskException("out");
+		Momin mmn = getCurrentMomin();
+		checkCross(mmn.getId());
 		Task tsk = dao.getTaskById(idTsk);
-		if( tsk.getMominId().equals(u.getUserId()))
+		if( tsk.getMominId().equals(mmn.getId()))
 			dao.deleteTask(tsk);
 		else
 			throw new TaskException("droit")	;
@@ -170,13 +183,10 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public TaskSeed getSeed(long id) throws TaskException {
 		TaskDao dao = new TaskDao();
-		UserService usrSrvc = UserServiceFactory.getUserService();
-		User u=usrSrvc.getCurrentUser();
-		if(u == null )
-//			throw new Exception("out")
-			;
+		Momin mmn = getCurrentMomin();
+		checkCross(mmn.getId());
 		TaskSeed seed = dao.getSeed(id);
-		if( seed.getMominId().equals(u.getUserId())){
+		if( seed.getMominId().equals(mmn.getId())){
 			seed.getParam();
 			return seed;
 		}
@@ -207,6 +217,8 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public List<Statistic> getStatistics(Date start, Date end, List<String> names) throws TaskException  {
 
+		Momin mmn = getCurrentMomin();
+		checkCross(mmn.getId());
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(end);
 		int endWeek = cal.get(Calendar.WEEK_OF_YEAR);
@@ -221,10 +233,8 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
 			nbrWeek = cal.getMaximum(Calendar.WEEK_OF_YEAR)-startWeek+endWeek+1;
 		}
 		
-		UserService usrSrvc = UserServiceFactory.getUserService();
-		User u=usrSrvc.getCurrentUser();
 		TaskDao dao = new TaskDao();
-		return dao.getStatisitc(names.get(0), u.getUserId(), start, nbrWeek);
+		return dao.getStatisitc(names.get(0), mmn.getId(), start, nbrWeek);
 	}
 //	@Override
 //	public List<Task> friendCalend(Date start, String momin, String group) throws Exception {
@@ -238,7 +248,12 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public Momin getCurrentMomin() throws TaskException {
-		return TaskDao.getCurrentMomin();
+		HttpSession session = getThreadLocalRequest().getSession();
+		Momin mmn = (Momin) session.getAttribute("mmn");
+		if(mmn == null)
+			throw new TaskException("out");
+		return mmn;
+//		return TaskDao.getCurrentMomin();
 	}
 
 }

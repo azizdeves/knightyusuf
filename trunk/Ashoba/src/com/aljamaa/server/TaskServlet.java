@@ -17,9 +17,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.aljamaa.dao.TaskDao;
 import com.aljamaa.entity.Momin;
+import com.aljamaa.shared.TaskException;
 
 public class TaskServlet extends HttpServlet {
 
@@ -28,24 +30,32 @@ public class TaskServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 	throws ServletException, IOException {
+//		if(req.getParameter("mtn")!=null)
+//		{
+//			TaskDao dao= new TaskDao();
+//			dao.getWeekTasks(momin, group, startWeek)
+//		}
 		String key = req.getParameter("k");	
 		if(key == null ) return ;
 		TaskDao dao = new TaskDao();
 		Momin dest = dao.getMomin("&$"+key);
 		if(dest == null ) return ;
-		Momin momin;
+		Momin mmn;
 		try {
-			momin = dao.getCurrentMomin();
+			mmn = (Momin) req.getSession().getAttribute("mmn");
+			if(mmn == null)
+				throw new TaskException("out");
+			
 		} catch (Exception e) {		
 			req.getRequestURL();
 			req.getRequestURI();
 			String s = URLEncoder.encode(req.getRequestURL()+"?"+req.getQueryString());
 			resp.sendRedirect("https://yawmlayla.appspot.com/login.jsp?go="+s);
 			e.printStackTrace();	return;	}
-		momin.setFriendsCalendar(new ArrayList<String>(momin.getFriendsCalendar()));
-		momin.getFriendsCalendar().add(dest.getFriendsCalendar().get(0));
+		mmn.setFriendsCalendar(new ArrayList<String>(mmn.getFriendsCalendar()));
+		mmn.getFriendsCalendar().add(dest.getFriendsCalendar().get(0));
 		
-		dao.save(momin);
+		dao.save(mmn);
 		dao.delete(dest);
 		//req.getLocalAddr()
 		resp.sendRedirect("https://yawmlayla.appspot.com");
@@ -59,6 +69,7 @@ public class TaskServlet extends HttpServlet {
 		
 
 	}
+
 
 
 }

@@ -39,9 +39,11 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.EventPreview;
+import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.Grid;
@@ -78,23 +80,18 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 	public WeekCalendar() {
 		mainGrid = new Grid(3, 2);
 		initWidget(mainGrid);
-
+		Cookies.removeCookie("mid");
 		taskService.getCurrentMomin(new AsyncCallback<Momin>() {
 			public void onSuccess(Momin m) {
 				momin = m;
+				bar.momin = m;
+				Cookies.setCookie("mid", m.getId());
 				init();
 				initGroup();
 				initData();
 			}
 			public void onFailure(Throwable caught) {
-				try {
-					bar.message(taskMessages.error(), 2, 20);
-					throw caught;
-				} catch (TaskException e) {
-					if("out".equals(e.getMessage())){
-						bar.login();
-					}
-				}catch(Throwable e){}
+				handleException(caught);
 			}
 		});
 
@@ -179,7 +176,6 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 		nextWeekBtn.setText(">>");
 		horizontalPanel_1.add(nextWeekBtn);
 
-
 		addTaskBtn = new Button(taskMessages.addTask());
 		addTaskBtn.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
@@ -207,14 +203,7 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 					}
 					@Override
 					public void onFailure(Throwable caught) {
-						try {
-							bar.message(taskMessages.error(), 2, 20);
-							throw caught;
-						} catch (TaskException e) {
-							if("out".equals(e.getMessage())){
-								bar.login();
-							}
-						}catch(Throwable e){}
+						handleException(caught);
 					}
 				});
 			}
@@ -313,20 +302,12 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 			@Override
 			public void onSuccess(List<Task> tsks) {		
 				tasks = (ArrayList<Task>) tsks;
-
 				initView(false);				
 				bar.clear();
 			}			
 			@Override
 			public void onFailure(Throwable caught) {
-				try {
-					bar.message(taskMessages.error(), 2 , 20);
-					throw caught;
-				} catch (TaskException e) {
-					if("out".equals(e.getMessage())){
-						bar.login();
-					}
-				}catch(Throwable e){}
+				handleException(caught);
 			}
 		});	
 	}
@@ -370,7 +351,6 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 //			else i++;
 		}
 	}
-
 
 	public void shwNwTskDlg() {
 		getNwTskUi().init();
@@ -446,14 +426,7 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 				bar.message(taskMessages.shared(),1, 5 );
 			}
 			public void onFailure(Throwable caught) {	
-				try{
-					throw caught;
-				}catch(TaskException e){
-					if("out".equals(e.getMessage())){
-						bar.login();
-					}
-				} catch (Throwable e) {				}
-				bar.message(taskMessages.error(),2,20);
+				handleException(caught);
 			}
 		});
 	}
@@ -495,6 +468,26 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 		if(TaskCell.dragging)
 			DOM.eventPreventDefault(Event.as(event.getNativeEvent()));
 
+	}
+	public void handleException(Throwable t){
+		bar.message(taskMessages.error(), 2, 20);
+		try{
+			throw t;
+		}catch(TaskException e){
+			if("out".equals(e.getMessage())){
+				if(Location.getParameter("fb")==null)
+					bar.login();
+				else
+					Location.reload();
+			}
+			if("cross".equals(e.getMessage())){
+				if(Location.getParameter("fb")==null)
+					bar.login();
+				else
+					Location.reload();
+			}
+		}
+		 catch (Throwable e) {				}
 	}
 }
 

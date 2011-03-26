@@ -25,6 +25,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.google.appengine.api.urlfetch.FetchOptions;
+import com.google.appengine.api.urlfetch.URLFetchService;
+import com.google.appengine.api.urlfetch.URLFetchServiceFactory;
+
 public class UrlFetcher {
 
   private static String getString(InputStream is, String charEncoding) {
@@ -56,6 +60,8 @@ public class UrlFetcher {
   public static String get(String thisUrl) throws MalformedURLException,
       IOException {
     URL url = new URL(thisUrl);
+//    URLFetchService s = URLFetchServiceFactory.getURLFetchService();
+//    s.fetch(url);
     HttpURLConnection con = (HttpURLConnection) url.openConnection();
     return getString(con.getInputStream(), "utf-8");
   }
