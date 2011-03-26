@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+  
+  <!-- Servlets -->
+  <servlet>
+    <servlet-name>taskServlet</servlet-name>
+    <servlet-class>com.aljamaa.server.TaskServiceImpl</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>taskServlet</servlet-name>
+    <url-pattern>/task/task</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>tskseed</servlet-name>
+    <url-pattern>/task/tskseed</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>tskseed</servlet-name>
+    <servlet-class>com.aljamaa.server.TaskSeedServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>tsk</servlet-name>
+    <url-pattern>/task/share</url-pattern>
+  </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>tsk</servlet-name>
+    <servlet-class>com.aljamaa.server.TaskServlet</servlet-class>
+  </servlet>
+  
+    <!-- ===================== Login Facebook Servlet ===================== -->
+
+  <servlet>
+    <servlet-name>loginfacebook</servlet-name>
+    <servlet-class>com.aljamaa.server.LoginFacebookServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>loginfacebook</servlet-name>
+    <url-pattern>/loginfacebook</url-pattern>
+  </servlet-mapping>
+  
+  
+  <!-- Default page to serve -->
+  <welcome-file-list>
+    <welcome-file>Task.html</welcome-file>
+  </welcome-file-list>
+  
+
+</web-app>
