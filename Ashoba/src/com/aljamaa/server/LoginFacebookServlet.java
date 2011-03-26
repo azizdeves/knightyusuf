@@ -1,27 +1,11 @@
-/** 
- * Copyright 2010 Daniel Guermeur and Amy Unruh
- *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
- *
- *   See http://connectrapp.appspot.com/ for a demo, and links to more information 
- *   about this app and the book that it accompanies.
- */
 package com.aljamaa.server;
 
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.logging.Logger;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -29,25 +13,56 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.aljamaa.entity.Momin;
+import com.aljamaa.shared.TaskException;
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 
 
-public class LoginFacebookServlet// extends LoginSuperServlet
+public class LoginFacebookServlet extends HttpServlet
 {
   private static final long serialVersionUID = -1187933703374946249L;
   private static Logger log = Logger.getLogger(LoginFacebookServlet.class.getName());
 
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+  
+  @Override
+protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+		throws ServletException, IOException {
+	// TODO Auto-generated method stub
+	doGet(req, resp);
+}
+
+
+public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	  String go = request.getParameter("go");
+	  if(go == null )
+		  go="https://yawmlayla.appspot.com/Task.jsp?";
+	  if(request.getParameter("openid")!=null){
+		  UserService us = UserServiceFactory.getUserService();
+		  User u = us.getCurrentUser();
+		  log.info("openid login="+u.getEmail() );
+		  Momin mmn = new Momin();
+		  mmn.setId('o'+u.getUserId());
+		  try {
+			new LoginHelper().loginStarts(request.getSession(), mmn);
+		} catch (TaskException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		response.sendRedirect(go);
+		return;
+	  }
     String callbackURL = null, clientSecret = null, appId = null;
 
-    appId = AuthenticationProvider.getProp("fb_app_id");
-    clientSecret = AuthenticationProvider.getProp("fb_secret");
+    appId = "201177699906669";
+    clientSecret = "46b48f7f912108ba2dbdc8bb523ffc50";
 
     if(appId == null || clientSecret == null){
       response.setContentType("text/html");
 //      response.getWriter().print(AppLib.INFONOTFOUND);
       return;
     }
-    callbackURL = AuthenticationProvider.getProp("fb_callback_url");
+    callbackURL = "https://yawmlayla.appspot.com/login?fb";
     String code = request.getParameter("code");
 
     if (code != null && !code.isEmpty()) {
@@ -82,20 +97,26 @@ public class LoginFacebookServlet// extends LoginSuperServlet
       resp = UrlFetcher.get(url);
       log.info("Response: " + resp);
       Momin connectr = extractUserInfo(resp);
-      connectr = new LoginHelper().loginStarts(request.getSession(), connectr);
+      try {
+		connectr = new LoginHelper().loginStarts(request.getSession(), connectr);
+	} catch (TaskException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
       log.info("User id is logged in:" + connectr.getId().toString());
 
       /*
        * All done. Let's go home.
        */
-      response.sendRedirect(LoginHelper.getApplitionURL(request));
+      response.sendRedirect(go+"&code="+code+"&fb");
 
     } else { 
       // Redirect to Facebook login page
       log.info("Starting FB authentication appid: " + appId + " - callback: " + callbackURL);
       String fbLoginPage = "https://graph.facebook.com/oauth/authorize" 
         + "?client_id=" + appId 
-        + "&redirect_uri=" + callbackURL;
+        + "&redirect_uri=" + callbackURL
+      + "&go=" + go;
 
       response.sendRedirect(fbLoginPage);
     }
@@ -111,7 +132,7 @@ public class LoginFacebookServlet// extends LoginSuperServlet
       j = new JSONObject(resp);
       String first = j.getString("first_name");
       String last = j.getString("last_name");
-      String id = j.getString("id");
+      String id ='f'+ j.getString("id");
       log.info("User info from JSON: " + first + " " + last + " id = " + id);
       u = new Momin(id, AuthenticationProvider.FACEBOOK);
       u.setName(first + " " + last);

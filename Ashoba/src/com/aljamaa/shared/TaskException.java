@@ -1,6 +1,8 @@
 package com.aljamaa.shared;
 
-public class TaskException extends Exception {
+import java.io.Serializable;
+
+public class TaskException extends Exception implements Serializable {
 
 	public TaskException(String msg)
 	{

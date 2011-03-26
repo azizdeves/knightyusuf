@@ -63,7 +63,7 @@ window.location = location.href.replace("locale=<%=locale%>","locale="+localSlct
 	<option value = "fr" <%="fr".equals(locale)?"selected":"" %>>Francais</option>
 	<option value = "ar" <%="ar".equals(locale)?"selected":"" %>>العربية</option>
 	</select>
-	<a  href="https://yawmlayla.appspot.com/_ah/openid_logout?continue=http://yawmlayla.appspot.com/login.jsp">
+	<a  href="https://yawmlayla.appspot.com/login.jsp?out">
 	LogOut</a>
 </div>
     <!-- OPTIONAL: include this if you want history support -->

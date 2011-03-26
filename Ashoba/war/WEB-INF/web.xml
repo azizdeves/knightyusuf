@@ -38,19 +38,19 @@
     <!-- ===================== Login Facebook Servlet ===================== -->
 
   <servlet>
-    <servlet-name>loginfacebook</servlet-name>
+    <servlet-name>login</servlet-name>
     <servlet-class>com.aljamaa.server.LoginFacebookServlet</servlet-class>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>loginfacebook</servlet-name>
-    <url-pattern>/loginfacebook</url-pattern>
+    <servlet-name>login</servlet-name>
+    <url-pattern>/login</url-pattern>
   </servlet-mapping>
   
   
   <!-- Default page to serve -->
   <welcome-file-list>
-    <welcome-file>Task.html</welcome-file>
+    <welcome-file>Task.jsp</welcome-file>
   </welcome-file-list>
   
 

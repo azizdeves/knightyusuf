@@ -16,6 +16,7 @@ import java.util.TreeSet;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.servlet.http.HttpSession;
 
 import org.datanucleus.store.appengine.EntityUtils;
 
@@ -337,30 +338,40 @@ public class TaskDao {
 	}
 	public static 	 Momin getCurrentMomin() throws TaskException
 	{
+//		  HttpSession session = getThreadLocalRequest().getSession();
+		return null;
+
+	}
+//	public List<Momin> get(){	
+	//
+//			Query query = em.createQuery("select from "+Momin.class.getName()+" t where t.friendsCalendar > :momin ");	   
+//			query.setParameter("momin","yoyo2");
+//			ArrayList<Momin> list =new  ArrayList((List<Task>)query.getResultList());		    
+//			return list;
+//		}
+	//	
+
+	public static Momin findOrCreateUser(Momin user) throws TaskException {
+
 		TaskDao dao = new TaskDao();
-		//naitsfot 105208827974973865566
-		//test    18580476422013912411
-		//test1  11701531798136846518
-		UserService usrSrvc = UserServiceFactory.getUserService();
-		User u=usrSrvc.getCurrentUser();
-		Momin m ;
-		
-		if(u==null)
-		{
-			throw new TaskException("out");
-		}
-		String mominId  = u.getUserId();		
-		m=dao.getMomin(u.getUserId());
-		
+
+
+
+		Momin m=dao.getMomin(user.getId());
+
 		// utilisateur n'existe pas dans la base
 		if(m==null){
-			m= new Momin();
-			m.setEmail(u.getEmail());
-			m.setId(u.getUserId());
-			m.setName(u.getNickname());
-			dao.save(m);
+			if(user.getId().charAt(0)!='f'){
+				UserService usrSrvc = UserServiceFactory.getUserService();
+				User u=usrSrvc.getCurrentUser();
+				user.setEmail(u.getEmail());
+				//				user.setId(u.getUserId());
+				user.setName(u.getNickname());
+			}
+			dao.save(user);
+			m=user;
 			MailService mailService = MailServiceFactory.getMailService();
-			Message message = new Message("naitsoft@gmail.com","sharpen.soul@gmail.com", "Un nouveau utilisateur ",u.getEmail()+" a accéder à l'application pour la première fois");
+			Message message = new Message("naitsoft@gmail.com","sharpen.soul@gmail.com", "Un nouveau utilisateur ",user.getEmail()+" "+user.getName()+" a accéder à l'application pour la première fois");
 			try {
 				mailService.send(message);
 			} catch (IOException e) {
@@ -371,12 +382,4 @@ public class TaskDao {
 //		m.setFriendsCalendar(Arrays.asList("105208827974973865566&#0&#naitsoft","110949677754069966012&#0&#sharpensoul","18580476422013912411&#0&#test","11701531798136846518&#0&#test1"));
 		return m; 
 	}
-//	public List<Momin> get(){	
-	//
-//			Query query = em.createQuery("select from "+Momin.class.getName()+" t where t.friendsCalendar > :momin ");	   
-//			query.setParameter("momin","yoyo2");
-//			ArrayList<Momin> list =new  ArrayList((List<Task>)query.getResultList());		    
-//			return list;
-//		}
-	//	
 }
