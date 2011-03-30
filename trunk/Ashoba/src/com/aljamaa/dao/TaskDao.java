@@ -355,8 +355,6 @@ public class TaskDao {
 
 		TaskDao dao = new TaskDao();
 
-
-
 		Momin m=dao.getMomin(user.getId());
 
 		// utilisateur n'existe pas dans la base

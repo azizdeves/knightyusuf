@@ -58,7 +58,7 @@ public class NewTaskUI extends Composite {
 	Button btnCreatetask ;
 	ListBox groupCB;
 	Button deleteBtn;
-	 TaskMessages taskMessages;
+	TaskMessages taskMessages;
 
 
 	public NewTaskUI(final DialogBox dlg) {

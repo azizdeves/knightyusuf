@@ -51,7 +51,8 @@ public class TaskServlet extends HttpServlet {
 			req.getRequestURI();
 			String s = URLEncoder.encode(req.getRequestURL()+"?"+req.getQueryString());
 			resp.sendRedirect("https://yawmlayla.appspot.com/login.jsp?go="+s);
-			e.printStackTrace();	return;	}
+			e.printStackTrace();	return;
+			}
 		mmn.setFriendsCalendar(new ArrayList<String>(mmn.getFriendsCalendar()));
 		mmn.getFriendsCalendar().add(dest.getFriendsCalendar().get(0));
 		
