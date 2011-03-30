@@ -115,22 +115,22 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 		mainVerticalPanel.setWidth("947px");
 
 		HorizontalPanel verticalPanel = new HorizontalPanel();
-		mainGrid.setWidget(0, 0, verticalPanel);
+//		mainGrid.setWidget(0, 0, verticalPanel);
 
-		weekPicker = new DatePicker();
-		weekPicker.addValueChangeHandler(new ValueChangeHandler<Date>() {			
-			public void onValueChange(ValueChangeEvent<Date> event) {
-				setStartWeek(weekPicker.getValue());
-				initData();
-			}
-		});
-		verticalPanel.add(weekPicker);
+//		weekPicker = new DatePicker();
+//		weekPicker.addValueChangeHandler(new ValueChangeHandler<Date>() {			
+//			public void onValueChange(ValueChangeEvent<Date> event) {
+//				setStartWeek(weekPicker.getValue());
+//				initData();
+//			}
+//		});
+//		verticalPanel.add(weekPicker);
 
 		lblNewLabel = new Label(taskMessages.group());
-		verticalPanel.add(lblNewLabel);
+//		verticalPanel.add(lblNewLabel);
 
 		groupListLb = new ListBox();
-		verticalPanel.add(groupListLb);
+//		verticalPanel.add(groupListLb);
 		groupListLb.setWidth("142px");
 		groupListLb.addItem("my", momin.getId()+"&#");
 		//		{
@@ -143,9 +143,9 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 				initData();
 			}
 		});
-		groupListLb.setVisibleItemCount(5);
+//		groupListLb.setVisibleItemCount(5);
 		//		mainVerticalPanel.add(grid);
-		mainGrid.setWidget(1, 0, mainVerticalPanel);
+		mainGrid.setWidget(0, 0, mainVerticalPanel);
 
 
 		mainGrid.setSize("626px", "413px");
@@ -163,7 +163,6 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 			}
 		});
 		prevWeekBtn.setText("<<");
-		horizontalPanel_1.add(prevWeekBtn);
 
 		Button nextWeekBtn = new Button("NextWeek");
 		nextWeekBtn.addClickHandler(new ClickHandler() {
@@ -174,8 +173,25 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 			}
 		});
 		nextWeekBtn.setText(">>");
-		horizontalPanel_1.add(nextWeekBtn);
 
+		Button prevMonthBtn = new Button("<< <");
+		prevMonthBtn.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				CalendarUtil.addDaysToDate(startWeek,-28);
+				CalendarUtil.addDaysToDate(endWeek, -28);		
+				initData();
+			}
+		});
+
+		Button nextMonthBtn = new Button("> >>");
+		nextMonthBtn.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				CalendarUtil.addDaysToDate(startWeek, 28);		
+				CalendarUtil.addDaysToDate(endWeek, 28);		
+				initData();
+			}
+		});
+		
 		addTaskBtn = new Button(taskMessages.addTask());
 		addTaskBtn.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
@@ -183,7 +199,10 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 				shwNwTskDlg();
 			}
 		});
+		horizontalPanel_1.add(prevWeekBtn);
+		horizontalPanel_1.add(nextWeekBtn);
 		horizontalPanel_1.add(addTaskBtn);
+
 
 		saveBtn = new Button(taskMessages.save());
 		saveBtn.addClickHandler(new ClickHandler() {
@@ -217,9 +236,14 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 		});
 		horizontalPanel_1.add(shareButton);
 		horizontalPanel_1.add(saveBtn);
+		
+		horizontalPanel_1.add(lblNewLabel);
+		horizontalPanel_1.add(groupListLb);
+		horizontalPanel_1.add(prevMonthBtn);
+		horizontalPanel_1.add(nextMonthBtn);
 
-		stateLabel = new Label();
-		horizontalPanel_1.add(stateLabel);
+//		stateLabel = new Label();
+//		horizontalPanel_1.add(stateLabel);
 
 		horizontalPanel = new HorizontalPanel(){
 			@Override
@@ -484,7 +508,7 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 				if(Location.getParameter("fb")==null)
 					bar.login();
 				else
-					Location.reload();
+					Location.replace("https://yawmlayla.appspot.com/login?code="+Location.getParameter("code"));
 			}
 		}
 		 catch (Throwable e) {				}

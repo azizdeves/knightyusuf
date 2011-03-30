@@ -46,16 +46,18 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
 	private static final Logger log = Logger.getLogger(TaskServiceImpl.class.getName());
 	
 	public void checkCross(String mmn)throws TaskException{
-		Cookie[] cks = getThreadLocalRequest().getCookies();
-		log.info("mmn = "+mmn+"   <<<<<<<<<<<<<<< ");
-		for(Cookie ck : cks){
-			if(ck.getName().equals("mid")){
-				log.info("cookie = "+ck.getValue());
-				if(!ck.getValue().equals(mmn))
+//		Cookie[] cks = getThreadLocalRequest().getCookies();
+//		log.info("mmn = "+mmn+"   <<<<<<<<<<<<<<< ");
+//		for(Cookie ck : cks){
+//			if(ck.getName().equals("mid")){
+//				log.info("cookie = "+ck.getValue());
+//				if(!ck.getValue().equals(mmn))
+//					throw new TaskException("cross");				
+//			}
+//		}
+		if(getThreadLocalRequest().getHeader("referer").contains("code=") && mmn.charAt(0)=='o')
 					throw new TaskException("cross");				
-			}
-		}
-		
+			
 	}
 	public Task createTask(Task task) throws IllegalArgumentException, TaskException {
 		TaskDao tdao= new TaskDao();
@@ -75,7 +77,7 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
  		TaskDao tdao= new TaskDao();
  		if(user==null)
  			user=mmn.getId(); 		
- 		return tdao.getWeekTasks(user,group, startWeek);
+ 		return tdao.getWeekTasks(user,group, startWeek); 
 		
 	}
 
