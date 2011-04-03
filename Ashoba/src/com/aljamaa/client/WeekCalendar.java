@@ -27,6 +27,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
+import com.google.gwt.user.datepicker.client.DateBox;
 import com.google.gwt.user.datepicker.client.DatePicker;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.core.client.GWT;
@@ -69,7 +70,7 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 	static Momin momin;
 	ListBox groupListLb;
 	Grid mainGrid;
-	DatePicker weekPicker ;
+	DateBox weekPicker ;
 	boolean readOnly = false;
 	final MainBar bar = MainBar.get();
 	private Button addTaskBtn;
@@ -117,13 +118,15 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 		HorizontalPanel verticalPanel = new HorizontalPanel();
 //		mainGrid.setWidget(0, 0, verticalPanel);
 
-//		weekPicker = new DatePicker();
-//		weekPicker.addValueChangeHandler(new ValueChangeHandler<Date>() {			
-//			public void onValueChange(ValueChangeEvent<Date> event) {
-//				setStartWeek(weekPicker.getValue());
-//				initData();
-//			}
-//		});
+		weekPicker = new DateBox();
+		weekPicker.setStyleName("weekPicker");
+		weekPicker.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getShortDateFormat()));
+		weekPicker.addValueChangeHandler(new ValueChangeHandler<Date>() {			
+			public void onValueChange(ValueChangeEvent<Date> event) {
+				setStartWeek(weekPicker.getValue());
+				initData();
+			}
+		});
 //		verticalPanel.add(weekPicker);
 
 		lblNewLabel = new Label(taskMessages.group());
@@ -174,23 +177,23 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 		});
 		nextWeekBtn.setText(">>");
 
-		Button prevMonthBtn = new Button("<< <");
-		prevMonthBtn.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				CalendarUtil.addDaysToDate(startWeek,-28);
-				CalendarUtil.addDaysToDate(endWeek, -28);		
-				initData();
-			}
-		});
-
-		Button nextMonthBtn = new Button("> >>");
-		nextMonthBtn.addClickHandler(new ClickHandler() {
-			public void onClick(ClickEvent event) {
-				CalendarUtil.addDaysToDate(startWeek, 28);		
-				CalendarUtil.addDaysToDate(endWeek, 28);		
-				initData();
-			}
-		});
+//		Button prevMonthBtn = new Button("<< <");
+//		prevMonthBtn.addClickHandler(new ClickHandler() {
+//			public void onClick(ClickEvent event) {
+//				CalendarUtil.addDaysToDate(startWeek,-28);
+//				CalendarUtil.addDaysToDate(endWeek, -28);		
+//				initData();
+//			}
+//		});
+//
+//		Button nextMonthBtn = new Button("> >>");
+//		nextMonthBtn.addClickHandler(new ClickHandler() {
+//			public void onClick(ClickEvent event) {
+//				CalendarUtil.addDaysToDate(startWeek, 28);		
+//				CalendarUtil.addDaysToDate(endWeek, 28);		
+//				initData();
+//			}
+//		});
 		
 		addTaskBtn = new Button(taskMessages.addTask());
 		addTaskBtn.addClickHandler(new ClickHandler() {
@@ -200,6 +203,7 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 			}
 		});
 		horizontalPanel_1.add(prevWeekBtn);
+		horizontalPanel_1.add(weekPicker);
 		horizontalPanel_1.add(nextWeekBtn);
 		horizontalPanel_1.add(addTaskBtn);
 
@@ -239,8 +243,8 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 		
 		horizontalPanel_1.add(lblNewLabel);
 		horizontalPanel_1.add(groupListLb);
-		horizontalPanel_1.add(prevMonthBtn);
-		horizontalPanel_1.add(nextMonthBtn);
+//		horizontalPanel_1.add(prevMonthBtn);
+//		horizontalPanel_1.add(nextMonthBtn);
 
 //		stateLabel = new Label();
 //		horizontalPanel_1.add(stateLabel);
@@ -303,11 +307,13 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 
 		endWeek =CalendarUtil.copyDate(startWeek);
 		CalendarUtil.addDaysToDate(endWeek, 7);
+
 		//		return null;
 	}
 
 	public void initData()
 	{		
+		weekPicker.setValue(startWeek);
 		bar.message(taskMessages.loading(), 0);
 		String[]  param=groupListLb.getValue(groupListLb.getSelectedIndex()).split("&#");
 		boolean isGroupOwned = momin.getId().equals(param[0]);
@@ -349,7 +355,7 @@ public class WeekCalendar extends Composite implements NativePreviewHandler {
 			//			}
 		} 
 		ArrayList<TaskCell> taskCellsDay;
-		DateTimeFormat format =  DateTimeFormat.getFormat("EEE dd  MMMM");
+		DateTimeFormat format =  DateTimeFormat.getFormat("EEE dd  MMM");
 		Date d = CalendarUtil.copyDate(startWeek);
 		
 		int i =0, j=7;
