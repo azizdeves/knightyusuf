@@ -1,5 +1,6 @@
 package com.aljamaa.client;
 
+import com.aljamaa.client.quran.HifthUI;
 import com.aljamaa.shared.FieldVerifier;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -44,8 +45,10 @@ public class Task implements EntryPoint {
 		RootPanel.get("mainBar").add(mainBar);
 //		TaskRepeat task=new TaskRepeat();
 		//		NewTaskUI newTask = new NewTaskUI(); 
-		WeekCalendar week = new WeekCalendar();
-		RootPanel.get("main").add(week);
+//		WeekCalendar week = new WeekCalendar();
+//		RootPanel.get("main").add(week);
+		HifthUI hifth = new HifthUI();
+		RootPanel.get("main").add(hifth);
 		
 		
 
