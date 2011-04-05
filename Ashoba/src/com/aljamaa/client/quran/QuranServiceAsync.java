@@ -14,5 +14,5 @@ public interface QuranServiceAsync {
 	void getPageMasks(int page,
 			AsyncCallback<List<Mask>> callback);
 
-	void saveMask(Mask msk, AsyncCallback<Void> callback);
+	void saveMask(Mask msk, AsyncCallback<String> callback);
 }

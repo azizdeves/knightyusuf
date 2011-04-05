@@ -18,11 +18,15 @@ public class QuranDao {
 	public List<Mask> getPageMasks(String momin, int page)
 	{
 		Query query;
-		List<Mask> list;
 		query = em.createQuery("select from "+Mask.class.getName()+" t where t.mominId = :momin AND  page =:page order by date asc");	   
 		query.setParameter("page",page);			
 		query.setParameter("momin",momin);
-	    list =new  ArrayList((List<Mask>)query.getResultList());
+		List<Mask> list= new ArrayList<Mask>();
+		for(Mask msk : (List<Mask>)query.getResultList()){
+			msk.decode();
+			list.add(msk);
+		}
+//	    list =new  ArrayList();
 	    return list;
 	}
 	

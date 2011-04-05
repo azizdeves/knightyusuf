@@ -3,6 +3,7 @@ package com.aljamaa.client.quran;
 import java.util.List;
 
 import com.aljamaa.entity.quran.Mask;
+import com.aljamaa.shared.TaskException;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -11,7 +12,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
  */
 @RemoteServiceRelativePath("quran")
 public interface QuranService extends RemoteService {
-	public List<Mask> getPageMasks(int page);
-	public void saveMask(Mask msk);
+	public List<Mask> getPageMasks(int page) throws TaskException;
+	public String saveMask(Mask msk) throws TaskException;
 	
 }
