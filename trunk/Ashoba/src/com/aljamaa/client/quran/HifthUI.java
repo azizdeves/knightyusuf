@@ -1,6 +1,13 @@
 package com.aljamaa.client.quran;
 
+import java.util.List;
+
+import com.aljamaa.client.TaskService;
+import com.aljamaa.client.TaskServiceAsync;
+import com.aljamaa.entity.quran.Mask;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -13,11 +20,14 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.user.client.ui.ListBox;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class HifthUI extends Composite {
 	QuranCanvas canvas;
 	IntegerBox integerBox;
 	int currentPage;
+	private final QuranServiceAsync quranService = GWT.create(QuranService.class);
+	private ListBox masksListBox;
 	public HifthUI() {
 		
 		Grid grid = new Grid(2, 2);
@@ -57,13 +67,65 @@ public class HifthUI extends Composite {
 		canvas = new QuranCanvas();
 		grid.setWidget(1, 0, canvas);
 		
-		ListBox masksListBox = new ListBox();
-		grid.setWidget(1, 1, masksListBox);
+		VerticalPanel verticalPanel = new VerticalPanel();
+		grid.setWidget(1, 1, verticalPanel);
+		
+		Button btnNewButton_1 = new Button("save");
+		btnNewButton_1.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				save();
+			}
+		});
+		verticalPanel.add(btnNewButton_1);
+		
+		masksListBox = new ListBox();
+		verticalPanel.add(masksListBox);
 		masksListBox.setVisibleItemCount(5);
 		
 		loadImage(integerBox.getValue());
 	}
 	
+	public void save() {
+		Mask msk = canvas.getMask();
+		quranService.saveMask(msk, new AsyncCallback<String>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(String result) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+	}
+	public void initListMask(){
+		quranService.getPageMasks(integerBox.getValue(), new AsyncCallback<List<Mask>>() {
+
+			@Override
+			public void onFailure(Throwable caught) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onSuccess(List<Mask> result) {
+				initListMask(result);
+				
+			}
+		});
+	}
+	
+
+	public  void initListMask(List<Mask> lst) {
+		for(Mask msk : lst){
+			masksListBox.addItem(msk.getDate().toString(), msk.getId().toString());
+		}
+	}
+
 	protected void setCurrentPage(int i) {
 		if(i==-1)
 			integerBox.setValue(integerBox.getValue()+1);

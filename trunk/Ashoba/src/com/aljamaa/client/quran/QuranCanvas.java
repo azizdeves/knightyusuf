@@ -60,6 +60,15 @@ public class QuranCanvas extends Composite {
 		for(BoxMask bm : mask.getBoxMasks())
 			draw(bm);
 	}
+
+	public static Mask getMask() {
+		return mask;
+	}
+
+//	public static void setMask(Mask mask) {
+//		QuranCanvas.mask = mask;
+//	}
+	
 }
 
 class Canvas extends GWTCanvas {
@@ -148,5 +157,6 @@ class Canvas extends GWTCanvas {
 		currentBox.setStatus(BMaskStatus.drawing);
 		QuranCanvas.mask.addBoxMask(currentBox);
 	}
+	
 }
 
