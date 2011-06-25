@@ -27,7 +27,6 @@ public class QuranView extends View {
 	
 	public QuranView(Context context) {
 		super(context);
-
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(50);
@@ -37,28 +36,15 @@ public class QuranView extends View {
         		"\u06d6 \u0644\u0651\u064e\u0627 \u064a\u064e\u0636\u0650\u0644\u0651\u0650 \u064f";
 
         text = DariGlyphUtils.reshapeText(text);
-
         Rect rec = new  Rect();
         mPaint.getTextBounds("\u0644", 0, 1, rec);
         currentLine = stepLine = (int) (rec.height()*1.75);
-        
-//        setOnClickListener(new OnClickListener() {
-			
-//			@Override
-//			public void onClick(View v) {
-//				// TODO Auto-generated method stub
-//				v.get
-//				
-//			}
-//		});
 	}
 	
     @Override 
     protected void onDraw(Canvas canvas) {
 
     	canvas.translate(canvas.getWidth(), 0);
-    	canvas.save();
-
         widths = new float[text.length()];
         xpos = new int[text.length()];
         mPaint.getTextWidths(text, widths);
@@ -80,7 +66,6 @@ public class QuranView extends View {
         		wrd.rect.right = curseur;
         		wrd.rect.left = curseur -= widths[i];
         	}
-        	//canvas.drawText(text.charAt(i)+"", curseur, 50, mPaint);
         	wrd.line = currentLine;
         	wrd.rect.left = curseur;
         	wrd.idxLtxt = i;
@@ -90,12 +75,9 @@ public class QuranView extends View {
         		isNewWrd = true;
         		wrds.add(wrd);
         		wrd = new Word();
-        		
-        	
         	}
         	else{
         		isNewWrd = false;
-        	
         	}
         }
         drawWords(canvas);
@@ -103,18 +85,9 @@ public class QuranView extends View {
         plog.setTextSize(15);
         plog.setColor(Color.WHITE);
         canvas.drawText(log, -this.getWidth(),10, plog);
-       
-    	
     }
     
-    public ArrayList<Word> getWords(String txt){
-        float[] widths = new float[txt.length()];
-        mPaint.getTextWidths(txt, widths);
-        wrds = new ArrayList<Word>();
-        String[] token = txt.split(" ");
-        return wrds;
-    }
-    
+
     private void drawWords(Canvas cnvs)
     {
     	int i;
@@ -131,7 +104,13 @@ public class QuranView extends View {
     	return (int) ((yPos-stepLine*0.3) / stepLine );
     }
     
-    private Word getWord(MotionEvent evt){
+    private Word getWord(int x, int y){
+    	int line = getLine(y);
+    	for(Word w : wrds){
+    		if(getLine(w.line) == line && w.rect.right > x)
+    			if(w.rect.left < x)
+    				return w;
+    	}
     	return null;
     }
     
@@ -139,9 +118,10 @@ public class QuranView extends View {
 	public boolean onTouchEvent(MotionEvent event) {
     	if(event.getAction()!= 0)
     		return false;
+    	Word w = getWord((int)event.getX()-getWidth(), (int)event.getY());
+    	if(w != null)
+    		log = text.substring(w.idxRtxt, w.idxLtxt);
     	this.invalidate();
-		float i = event.getX()-getWidth();
-		log = event.getX()+" : "+event.getY()+" : "+getLine((int)event.getY());
 		return true;
 	}
 
@@ -150,13 +130,6 @@ public class QuranView extends View {
     	return currentLine+=stepLine;
     	
     }
-    
-    
-    
-//    protected String reverse(String s){
-//    	
-//    	return s.get;
-//    }
 
 }
 
