@@ -33,6 +33,61 @@ public class DariGlyphUtils {
                 arabicShats.add(1617);
                 arabicShats.add(1618);
         }
+        public static int getRootChar(int c){
+
+        	if(c==65152||c==65163||c==65164||c==651522)	return 1569;
+        	if(c==65153||c==65153||c==65154||c==65154)	return 1570;
+        	if(c==65155||c==65155||c==65156||c==65156)	return 1571;
+        	if(c==65157||c==65158||c==65158)return 1572;
+        	if(c==65159||c==65160||c==65160)	return 1573;
+        	if(c==65161||c==65163||c==65164||c==65162)return 1574;
+        	if(c==65165||c==65165||c==65166||c==65166)return 1575;
+        	if(c==65167||c==65169||c==65170||c==65168)	return 1576;
+        	if(c==65171||c==65171||c==65172||c==65172)		return 1577;
+        	if(c==65173||c==65175||c==65176||c==65174)return 1578;
+        	if(c==65177||c==65179||c==65180||c==65178)return 1579;
+        	if(c==65181||c==65183||c==65184||c==65182)	return 1580;
+        	if(c==65185||c==65187||c==65188||c==65186)	return 1581;
+        	if(c==65189||c==65191||c==65192||c==65190)return 1582;
+        	if(c==65193||c==65193||c==65194||c==65194)return 1583; 
+        	if(c==65195||c==65195||c==65196||c==65196)return 1584; 
+        	if(c==65197||c==65197||c==65198||c==65198)	return 1585;
+        	if(c==65199||c==65199||c==65200||c==65200)	return 1586; 
+        	if(c==65201||c==65203||c==65204||c==65202)return 1587;
+        	if(c==65205||c==65207||c==65208||c==65206)	return 1588;
+        	if(c==65209||c==65211||c==65212||c==65210)return 1589;
+        	if(c==65213||c==65215||c==65216||c==65214)	return 1590;
+        	if(c==65217||c==65219||c==65218||c==65220)	return 1591;
+        	if(c==65221||c==65223||c==65222||c==65222)	return 1592;
+        	if(c==65225||c==65227||c==65228||c==65226)return 1593;
+        	if(c==65229||c==65231||c==65232||c==65230)return 1594;
+        	if(c==65233||c==65235||c==65236||c==65234)	return 1601;
+        	if(c==65237||c==65239||c==65240||c==65238)return 1602;
+        	if(c==65241||c==65243||c==65244||c==65242)	return 1603;
+        	if(c==65245||c==65247||c==65248||c==65246)	return 1604;
+        	if(c==65249||c==65251||c==65252||c==65250)return 1605;
+        	if(c==65253||c==65255||c==65256||c==65254)return 1606;
+        	if(c==65257||c==65259||c==65260||c==65258)return 1607;
+        	if(c==65261||c==65261||c==65262||c==65262)return 1608;
+        	if(c==65265||c==65267||c==65268||c==65266)return 1609;
+        	if(c==65265||c==65267||c==65268||c==65266)	return 1610;
+        	if(c==64342||c==64344||c==64345||c==64343)return 1662;
+        	if(c==64378||c==64380||c==64381||c==64379)return 1670;
+        	if(c==64394||c==64395||c==64395||c==64395)	return 1688;
+        	if(c==64398||c==64400||c==64401||c==64399)return 1705;  
+        	if(c==64402||c==64404||c==64405||c==64403)return 1711;
+        	if(c==65263||c==65267||c==65268||c==65264)    return 1740;
+        	return c;
+        }
+        public static String getRootWord(String w){
+        	char[] cs = w.toCharArray();
+        	StringBuffer sb = new StringBuffer();
+        	for(char c : cs)
+        	{
+        		sb.append((char)getRootChar(c));
+        	}
+        	return sb.toString();
+        }
         private static final Map<Integer, Glyph> dariGlyphs = new Hashtable<Integer, DariGlyphUtils.Glyph>();  
         static{
                 dariGlyphs.put(1569, new Glyph(1569, 65152, 65163, 65164, 65152, 2 ));
