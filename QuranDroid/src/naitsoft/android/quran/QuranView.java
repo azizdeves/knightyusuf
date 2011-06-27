@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.speech.tts.TextToSpeech;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -24,9 +25,11 @@ public class QuranView extends View {
 	private int[] xpos;
 	int stepLine ;
 	String log="";
+	private TextToSpeech tts;
 	
 	public QuranView(Context context) {
 		super(context);
+		//tts = ((QuranDroidActivity)context).mTts;
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(50);
@@ -35,7 +38,7 @@ public class QuranView extends View {
         text ="\u0631\u064e\u0628\u0651\u0650\u064a \u0641\u0650\u064a \u0643\u0650\u062a\u064e\u0627\u0628\u064d " +
         		"\u06d6 \u0644\u0651\u064e\u0627 \u064a\u064e\u0636\u0650\u0644\u0651\u0650 \u064f";
 
-        text = DariGlyphUtils.reshapeText(text);
+        //text = DariGlyphUtils.reshapeText(text);
         Rect rec = new  Rect();
         mPaint.getTextBounds("\u0644", 0, 1, rec);
         currentLine = stepLine = (int) (rec.height()*1.75);
@@ -119,8 +122,10 @@ public class QuranView extends View {
     	if(event.getAction()!= 0)
     		return false;
     	Word w = getWord((int)event.getX()-getWidth(), (int)event.getY());
-    	if(w != null)
+    	if(w != null){
+    		tts.speak("\u0631\u064e\u0628\u0651\u0650\u064a",TextToSpeech.QUEUE_FLUSH, null);
     		log = text.substring(w.idxRtxt, w.idxLtxt);
+    	}
     	this.invalidate();
 		return true;
 	}
@@ -130,6 +135,14 @@ public class QuranView extends View {
     	return currentLine+=stepLine;
     	
     }
+
+	public TextToSpeech getTts() {
+		return tts;
+	}
+
+	public void setTts(TextToSpeech tts) {
+		this.tts = tts;
+	}
 
 }
 
