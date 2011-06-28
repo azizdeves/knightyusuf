@@ -1,6 +1,7 @@
 package naitsoft.android.quran;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import naitsoft.android.quran.DariGlyphUtils.Glyph;
 
@@ -28,6 +29,7 @@ public class QuranView extends View {
 	int stepLine ;
 	String log="";
 	private TextToSpeech tts;
+	private HashMap<Integer, String> roots;
 	
 	public QuranView(Context context) {
 		super(context);
@@ -41,6 +43,7 @@ public class QuranView extends View {
         		"\u06d6 \u0644\u0651\u064e\u0627 \u064a\u064e\u0636\u0650\u0644\u0651\u0650 \u064f";
 
         text = DariGlyphUtils.reshapeText(text);
+        roots = DariGlyphUtils.getRoots();
         Rect rec = new  Rect();
         mPaint.getTextBounds("\u0644", 0, 1, rec);
         currentLine = stepLine = (int) (rec.height()*1.75);
@@ -125,8 +128,8 @@ public class QuranView extends View {
     		return false;
     	Word w = getWord((int)event.getX()-getWidth(), (int)event.getY());
     	if(w != null){
-    		log = text.substring(w.idxRtxt, w.idxLtxt);
-    		tts.speak(DariGlyphUtils.getRootWord(log),TextToSpeech.QUEUE_FLUSH, null);
+    		log = roots.get(text.substring(w.idxRtxt, w.idxLtxt).hashCode());//DariGlyphUtils.getRootWord(text.substring(w.idxRtxt, w.idxLtxt));
+    		tts.speak(log,TextToSpeech.QUEUE_FLUSH, null);
     	}
     	this.invalidate();
 		return true;

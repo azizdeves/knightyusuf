@@ -1,6 +1,7 @@
 package naitsoft.android.quran;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import java.util.Map;
  */
 public class DariGlyphUtils {
 
+	 static HashMap<Integer, String> roots= new HashMap<Integer, String>();
         private static final List<Integer> noChar = new ArrayList<Integer>();
         static{
                 noChar.add(8204);
@@ -69,8 +71,8 @@ public class DariGlyphUtils {
         	if(c==65253||c==65255||c==65256||c==65254)return 1606;
         	if(c==65257||c==65259||c==65260||c==65258)return 1607;
         	if(c==65261||c==65261||c==65262||c==65262)return 1608;
-        	if(c==65265||c==65267||c==65268||c==65266)return 1609;
         	if(c==65265||c==65267||c==65268||c==65266)	return 1610;
+        	if(c==65265||c==65267||c==65268||c==65266)return 1609;
         	if(c==64342||c==64344||c==64345||c==64343)return 1662;
         	if(c==64378||c==64380||c==64381||c==64379)return 1670;
         	if(c==64394||c==64395||c==64395||c==64395)	return 1688;
@@ -160,9 +162,12 @@ public class DariGlyphUtils {
 
                 StringBuffer reshapedText=new StringBuffer("");
 
+                String glyphString;
                 for(int i=0;i<words.length;i++){
 
-                        reshapedText.append(getGlyphString(words[i]));
+                		glyphString = getGlyphString(words[i]);
+                		roots.put(glyphString.hashCode(), words[i]);
+						reshapedText.append(glyphString);
                         reshapedText.append(" ");
                 }
 
@@ -354,5 +359,13 @@ public class DariGlyphUtils {
                         return new Glyph(this.charCode, mainChar, startChar, middleChar, endChar, nrShapes);
                 }
         }
+
+
+		public static HashMap<Integer, String> getRoots() {
+			return roots;
+		}
+		public static void setRoots(HashMap<Integer, String> roots) {
+			DariGlyphUtils.roots = roots;
+		}
 
 }
