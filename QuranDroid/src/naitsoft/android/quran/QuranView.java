@@ -5,11 +5,13 @@ import java.util.HashMap;
 
 import naitsoft.android.quran.DariGlyphUtils.Glyph;
 
+import android.R.style;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.speech.tts.TextToSpeech;
@@ -30,74 +32,95 @@ public class QuranView extends View {
 	String log="";
 	private TextToSpeech tts;
 	private HashMap<Integer, String> roots;
+	private int width;
 	
 	public QuranView(Context context, String aya) {
 		super(context);
 		//tts = ((QuranDroidActivity)context).mTts;
-		Typeface mFace = Typeface.createFromAsset(getContext().getAssets(),"fonts/KFC_naskh.otf");
+		Typeface mFace = Typeface.createFromAsset(getContext().getAssets(),"fonts/Scheherazade.ttf");
         mPaint = new Paint();
-        mPaint.setTypeface(mFace);
+//        mPaint.setTypeface(mFace);
         mPaint.setAntiAlias(true);
-        mPaint.setTextSize(35);
-        mPaint.setTypeface(Typeface.SERIF);
+        mPaint.setTextSize(25);
+        mPaint.setStyle(Style.FILL);
+//        mPaint.setTypeface(Typeface.SERIF);
         mPaint.setColor(Color.WHITE);
 //        text ="\u0631\u064e\u0628\u0651\u0650\u064a \u0641\u0650\u064a \u0643\u0650\u062a\u064e\u0627\u0628\u064d " +
 //        		"\u06d6 \u0644\u0651\u064e\u0627 \u064a\u064e\u0636\u0650\u0644\u0651\u0650 \u064f";
         text = aya;
-        text = DariGlyphUtils.reshapeText(text);
-        roots = DariGlyphUtils.getRoots();
-        Rect rec = new  Rect();
-        mPaint.getTextBounds("\u0644", 0, 1, rec);
-        currentLine = stepLine = (int) (rec.height()*1.75);
+        init();
 	}
 	
     @Override 
     protected void onDraw(Canvas canvas) {
 
+    	width = canvas.getWidth();
     	canvas.translate(canvas.getWidth(), 0);
     	
-        widths = new float[text.length()];
-        xpos = new int[text.length()];
-        mPaint.getTextWidths(text, widths);
-        currentLine = stepLine;
-        curseur=0;
-        int left,right;
-        Word wrd = new Word();
-        canvas.drawLine(0, currentLine, -300, currentLine, mPaint);
-        boolean isNewWrd = true;
-        for(int i = 0; i<text.length(); i++){
-        	if(isNewWrd){
-        		wrd.rect.right = curseur;
-        		wrd.idxRtxt = i;
-        	}
-        	if((curseur -= widths[i])< -canvas.getWidth()){
-        		canvas.drawLine(0, currentLine, -300, currentLine, mPaint);
-        		newLine();
-        		i= wrd.idxRtxt;
-        		wrd.rect.right = curseur;
-        		wrd.rect.left = curseur -= widths[i];
-        	}
-        	wrd.line = currentLine;
-        	wrd.rect.left = curseur;
-        	wrd.idxLtxt = i;
-        	xpos[i]=curseur;
-        	
-        	if(text.charAt(i)==' '){
-        		isNewWrd = true;
-        		wrds.add(wrd);
-        		wrd = new Word();
-        	}
-        	else{
-        		isNewWrd = false;
-        	}
-        }
+      
+        mPaint.setColor(Color.BLACK);
+        canvas.drawRect(new Rect(-canvas.getWidth(), 0, 0, canvas.getHeight()), mPaint);
+        
+       constructWords(); 
+       
+        mPaint.setColor(Color.WHITE);
         drawWords(canvas);
-        Paint plog = new Paint();
-        plog.setTextSize(15);
-        plog.setColor(Color.WHITE);
-        canvas.drawText(log, -this.getWidth(),10, plog);
+//        Paint plog = new Paint();
+//        plog.setTextSize(15);
+//        plog.setColor(Color.WHITE);
+//        canvas.drawText(log, -this.getWidth(),10, plog);
+
+        
     }
     
+    private void constructWords()
+    {
+    	 currentLine = stepLine;
+         curseur=0;
+         int left,right;
+         Word wrd = new Word();
+         //canvas.drawLine(0, currentLine, -300, currentLine, mPaint);
+         boolean isNewWrd = true;
+         for(int i = 0; i<text.length(); i++){
+         	if(isNewWrd){
+         		wrd.rect.right = curseur;
+         		wrd.idxRtxt = i;
+         	}
+         	if((curseur -= widths[i])< -width){
+         		//canvas.drawLine(0, currentLine, -300, currentLine, mPaint);
+         		newLine();
+         		i= wrd.idxRtxt;
+         		wrd.rect.right = curseur;
+         		wrd.rect.left = curseur -= widths[i];
+         	}
+         	wrd.line = currentLine;
+         	wrd.rect.left = curseur;
+         	wrd.idxLtxt = i;
+         	xpos[i]=curseur;
+         	
+         	if(text.charAt(i)==' '){
+         		isNewWrd = true;
+         		wrds.add(wrd);
+         		wrd = new Word();
+         	}
+         	else{
+         		isNewWrd = false;
+         	}
+         }
+    }
+    private void init()
+    {
+        text = DariGlyphUtils.reshapeText(text);
+        roots = DariGlyphUtils.getRoots();
+        Rect rec = new  Rect();
+        mPaint.getTextBounds("\u0644", 0, 1, rec);
+        currentLine = stepLine = (int) (rec.height()*1.95);
+        
+    	widths = new float[text.length()];
+        xpos = new int[text.length()];
+        mPaint.getTextWidths(text, widths);
+        invalidate();
+    }
 
     private void drawWords(Canvas cnvs)
     {
@@ -158,6 +181,7 @@ public class QuranView extends View {
 
 	public void setText(String text) {
 		this.text = text;
+		init();
 	}
 
 }
