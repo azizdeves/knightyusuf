@@ -31,17 +31,19 @@ public class QuranView extends View {
 	private TextToSpeech tts;
 	private HashMap<Integer, String> roots;
 	
-	public QuranView(Context context) {
+	public QuranView(Context context, String aya) {
 		super(context);
 		//tts = ((QuranDroidActivity)context).mTts;
+		Typeface mFace = Typeface.createFromAsset(getContext().getAssets(),"fonts/KFC_naskh.otf");
         mPaint = new Paint();
+        mPaint.setTypeface(mFace);
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(35);
         mPaint.setTypeface(Typeface.SERIF);
         mPaint.setColor(Color.WHITE);
-        text ="\u0631\u064e\u0628\u0651\u0650\u064a \u0641\u0650\u064a \u0643\u0650\u062a\u064e\u0627\u0628\u064d " +
-        		"\u06d6 \u0644\u0651\u064e\u0627 \u064a\u064e\u0636\u0650\u0644\u0651\u0650 \u064f";
-
+//        text ="\u0631\u064e\u0628\u0651\u0650\u064a \u0641\u0650\u064a \u0643\u0650\u062a\u064e\u0627\u0628\u064d " +
+//        		"\u06d6 \u0644\u0651\u064e\u0627 \u064a\u064e\u0636\u0650\u0644\u0651\u0650 \u064f";
+        text = aya;
         text = DariGlyphUtils.reshapeText(text);
         roots = DariGlyphUtils.getRoots();
         Rect rec = new  Rect();
@@ -53,6 +55,7 @@ public class QuranView extends View {
     protected void onDraw(Canvas canvas) {
 
     	canvas.translate(canvas.getWidth(), 0);
+    	
         widths = new float[text.length()];
         xpos = new int[text.length()];
         mPaint.getTextWidths(text, widths);
@@ -147,6 +150,14 @@ public class QuranView extends View {
 
 	public void setTts(TextToSpeech tts) {
 		this.tts = tts;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
 	}
 
 }
