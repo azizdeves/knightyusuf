@@ -20,6 +20,8 @@ import android.view.View;
 
 public class QuranView extends View {
 
+	private OnTouchListener onTouchListener;
+	private OnClickListener onClickListener;
 	Paint paint;
 	private Paint mPaint;
 	String text;
@@ -33,6 +35,7 @@ public class QuranView extends View {
 	private TextToSpeech tts;
 	private HashMap<Integer, String> roots;
 	private int width;
+	boolean isDraging;
 	
 	public QuranView(Context context, String aya) {
 		super(context);
@@ -53,7 +56,7 @@ public class QuranView extends View {
 	
     @Override 
     protected void onDraw(Canvas canvas) {
-
+ 
     	width = canvas.getWidth();
     	canvas.translate(canvas.getWidth(), 0);
     	
@@ -148,18 +151,26 @@ public class QuranView extends View {
     	return null;
     }
     
-    @Override
-	public boolean onTouchEvent(MotionEvent event) {
-    	if(event.getAction()!= 0)
-    		return false;
-    	Word w = getWord((int)event.getX()-getWidth(), (int)event.getY());
-    	if(w != null){
-    		log = roots.get(text.substring(w.idxRtxt, w.idxLtxt).hashCode());//DariGlyphUtils.getRootWord(text.substring(w.idxRtxt, w.idxLtxt));
-    		tts.speak(log,TextToSpeech.QUEUE_FLUSH, null);
-    	}
-    	this.invalidate();
-		return true;
-	}
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//    	if(event.getAction()== 2)
+//    		isDraging = true;
+//    	if( event.getAction() == 1){
+//    		if(isDraging ){
+//
+//    		}else{
+//    			Word w = getWord((int)event.getX()-getWidth(), (int)event.getY());
+//    			if(w != null){
+//    				log = roots.get(text.substring(w.idxRtxt, w.idxLtxt).hashCode());//DariGlyphUtils.getRootWord(text.substring(w.idxRtxt, w.idxLtxt));
+//    				tts.speak(log,TextToSpeech.QUEUE_FLUSH, null);
+//    			}
+//    			this.invalidate();
+//    		}
+//    		isDraging = false;
+//    	}
+//    	return true;
+//
+//	}
 
 	private int newLine(){
     	curseur = 0;
@@ -168,7 +179,7 @@ public class QuranView extends View {
     }
 
 	public TextToSpeech getTts() {
-		return tts;
+		return tts; 
 	}
 
 	public void setTts(TextToSpeech tts) {
@@ -182,6 +193,22 @@ public class QuranView extends View {
 	public void setText(String text) {
 		this.text = text;
 		init();
+	}
+
+	public OnTouchListener getOnTouchListener() {
+		return onTouchListener;
+	}
+
+	public void setOnTouchListener(OnTouchListener onTouchListener) {
+		this.onTouchListener = onTouchListener;
+	}
+
+	public OnClickListener getOnClickListener() {
+		return onClickListener;
+	}
+
+	public void setOnClickListener(OnClickListener onClickListener) {
+		this.onClickListener = onClickListener;
 	}
 
 }
@@ -205,5 +232,10 @@ class Word{
 		return line +=70;
 	}
 	
-	
+//	interface EventListener{
+//		public void onClick(){
+//			
+//		}
+//		public void onTouch()
+//	}
 }

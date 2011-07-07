@@ -8,6 +8,7 @@ import android.database.SQLException;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
+import android.view.View;
 
 public class QuranDroidActivity extends Activity implements OnInitListener {
 	private static final int MY_DATA_CHECK_CODE = 0;
@@ -16,16 +17,28 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	public TextToSpeech mTts;
 	private QuranView qv;
 	private DataBaseHelper myDbHelper;
+	int aya ;
+	int sura;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		initDB();
-		String aya = myDbHelper.getAya(2, 22);
+		String aya = myDbHelper.getAya(2, 33);
 		Intent checkIntent = new Intent();
 		checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
 		startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
 
 		qv = new QuranView(this,aya);
+		
+		qv.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				((QuranView)v).setText(myDbHelper.getAya(2, 33));
+				
+			}
+		});
 
 		setContentView(qv);
 	}
