@@ -17,26 +17,32 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	public TextToSpeech mTts;
 	private QuranView qv;
 	private DataBaseHelper myDbHelper;
-	int aya ;
-	int sura;
+	private String ayaTxt;
+	static int aya ;
+	static int sura;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		initDB();
-		String aya = myDbHelper.getAya(2, 33);
-		Intent checkIntent = new Intent();
-		checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-		startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
+		sura = 3;
+		aya = 15;
+		ayaTxt = myDbHelper.getAya(3, 19);
+		//Intent checkIntent = new Intent();
+		//checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+		//startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
 
-		qv = new QuranView(this,aya);
+		qv = new QuranView(this,ayaTxt);
 		
-		qv.setOnClickListener(new View.OnClickListener() {
-			
+		qv.setEventListener(new QuranEventListener() {
 			@Override
-			public void onClick(View v) {
-				((QuranView)v).setText(myDbHelper.getAya(2, 33));
-				
+			public void onTouch(QuranEvent event) {
+				ayaTxt = myDbHelper.getAya(sura, ++aya);
+				qv.setText(ayaTxt);
+			}
+			@Override
+			public void onClick(QuranEvent event) {
+				//mTts.speak(qv.getRoot(event.getWord()),TextToSpeech.QUEUE_FLUSH, null);
 			}
 		});
 

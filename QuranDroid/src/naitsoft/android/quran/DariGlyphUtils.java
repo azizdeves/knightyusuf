@@ -138,6 +138,7 @@ public class DariGlyphUtils {
         }
         
         public static String reshapeText(String input){
+        		roots.clear();
                         if (input != null) {
                                 StringBuffer result = new StringBuffer();
                                 String[] sentences = input.split("\n");

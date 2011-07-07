@@ -20,8 +20,7 @@ import android.view.View;
 
 public class QuranView extends View {
 
-	private OnTouchListener onTouchListener;
-	private OnClickListener onClickListener;
+	private QuranEventListener  eventListener;
 	Paint paint;
 	private Paint mPaint;
 	String text;
@@ -151,26 +150,33 @@ public class QuranView extends View {
     	return null;
     }
     
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//    	if(event.getAction()== 2)
-//    		isDraging = true;
-//    	if( event.getAction() == 1){
-//    		if(isDraging ){
-//
-//    		}else{
-//    			Word w = getWord((int)event.getX()-getWidth(), (int)event.getY());
-//    			if(w != null){
-//    				log = roots.get(text.substring(w.idxRtxt, w.idxLtxt).hashCode());//DariGlyphUtils.getRootWord(text.substring(w.idxRtxt, w.idxLtxt));
-//    				tts.speak(log,TextToSpeech.QUEUE_FLUSH, null);
-//    			}
-//    			this.invalidate();
-//    		}
-//    		isDraging = false;
-//    	}
-//    	return true;
-//
-//	}
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+    	if(event.getAction()== MotionEvent.ACTION_MOVE)
+    		isDraging = true;
+    	if( event.getAction() == MotionEvent.ACTION_UP){
+    		if(isDraging ){
+    			eventListener.onTouch(new QuranEvent(event, null));
+
+    		}else{
+    			Word w = getWord((int)event.getX()-getWidth(), (int)event.getY());
+    			eventListener.onClick(new QuranEvent(event, w));
+    			if(w != null){
+    				log = roots.get(text.substring(w.idxRtxt, w.idxLtxt).hashCode());//DariGlyphUtils.getRootWord(text.substring(w.idxRtxt, w.idxLtxt));
+    				//tts.speak(log,TextToSpeech.QUEUE_FLUSH, null);
+    			}
+    			this.invalidate();
+    		}
+    		isDraging = false;
+    	}
+    	return true;
+
+	}
+    
+    public String getRoot(Word w){
+    	return roots.get(text.substring(w.idxRtxt, w.idxLtxt).hashCode());
+    	
+    }
 
 	private int newLine(){
     	curseur = 0;
@@ -195,21 +201,15 @@ public class QuranView extends View {
 		init();
 	}
 
-	public OnTouchListener getOnTouchListener() {
-		return onTouchListener;
+	public QuranEventListener getEventListener() {
+		return eventListener;
 	}
 
-	public void setOnTouchListener(OnTouchListener onTouchListener) {
-		this.onTouchListener = onTouchListener;
+	public void setEventListener(QuranEventListener eventListener) {
+		this.eventListener = eventListener;
 	}
 
-	public OnClickListener getOnClickListener() {
-		return onClickListener;
-	}
 
-	public void setOnClickListener(OnClickListener onClickListener) {
-		this.onClickListener = onClickListener;
-	}
 
 }
 
@@ -218,6 +218,7 @@ class Word{
 	public String root;
 	public int line;
 	public int idxRtxt,idxLtxt;
+	public String txt;
 	
 	public Word(){
 		rect = new Rect();
@@ -231,11 +232,37 @@ class Word{
 	{
 		return line +=70;
 	}
+}
+
+interface QuranEventListener{
+	public void onClick(QuranEvent event);
+	public void onTouch(QuranEvent event);
+}
+
+class QuranEvent{
+
+	private MotionEvent event;
+	private Word word;
+
+	public QuranEvent(MotionEvent event, Word word){
+		this.event = event;
+		this.word = word;
+	}
+
+	public MotionEvent getEvent() {
+		return event;
+	}
+
+	public void setEvent(MotionEvent event) {
+		this.event = event;
+	}
+
+	public Word getWord() {
+		return word;
+	}
+
+	public void setWord(Word word) {
+		this.word = word;
+	}
 	
-//	interface EventListener{
-//		public void onClick(){
-//			
-//		}
-//		public void onTouch()
-//	}
 }
