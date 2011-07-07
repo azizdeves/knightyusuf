@@ -26,8 +26,8 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		super.onCreate(savedInstanceState);
 		initDB();
 		sura = 3;
-		aya = 15;
-		ayaTxt = myDbHelper.getAya(3, 19);
+		aya = 16;
+		ayaTxt = myDbHelper.getAya(sura, aya);
 		//Intent checkIntent = new Intent();
 		//checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
 		//startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
@@ -37,7 +37,12 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		qv.setEventListener(new QuranEventListener() {
 			@Override
 			public void onTouch(QuranEvent event) {
-				ayaTxt = myDbHelper.getAya(sura, ++aya);
+				if(event.getDirct() == QuranEvent.SLIDE_RIGHT)
+					getNextAya();
+				else
+					getPrevAya();
+				
+				ayaTxt = myDbHelper.getAya(sura, aya);
 				qv.setText(ayaTxt);
 			}
 			@Override
@@ -100,5 +105,11 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		//		String myText2 = "I hope so, because it's time to wake up.";
 		//		mTts.speak(myText1, TextToSpeech.QUEUE_FLUSH, null);
 		//		mTts.speak(myText2, TextToSpeech.QUEUE_ADD, null);		
+	}
+	public int getNextAya(){
+		return aya;
+	}
+	public int getPrevAya(){
+		return --aya;
 	}
 }

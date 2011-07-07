@@ -21,6 +21,7 @@ import android.view.View;
 public class QuranView extends View {
 
 	private QuranEventListener  eventListener;
+	private int xStartDrag;
 	Paint paint;
 	private Paint mPaint;
 	String text;
@@ -51,6 +52,7 @@ public class QuranView extends View {
 //        		"\u06d6 \u0644\u0651\u064e\u0627 \u064a\u064e\u0636\u0650\u0644\u0651\u0650 \u064f";
         text = aya;
         init();
+//        init();
 	}
 	
     @Override 
@@ -61,7 +63,7 @@ public class QuranView extends View {
     	
       
         mPaint.setColor(Color.BLACK);
-        canvas.drawRect(new Rect(-canvas.getWidth(), 0, 0, canvas.getHeight()), mPaint);
+        canvas.drawRect(new Rect(-1000, 0, 0, 1000), mPaint);
         
        constructWords(); 
        
@@ -102,6 +104,7 @@ public class QuranView extends View {
          	
          	if(text.charAt(i)==' '){
          		isNewWrd = true;
+         		wrd.txt = text.substring(wrd.idxRtxt, wrd.idxLtxt);
          		wrds.add(wrd);
          		wrd = new Word();
          	}
@@ -152,11 +155,16 @@ public class QuranView extends View {
     
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-    	if(event.getAction()== MotionEvent.ACTION_MOVE)
+    	if(event.getAction()== MotionEvent.ACTION_MOVE){
     		isDraging = true;
+    	}
+    	if(event.getAction()== MotionEvent.ACTION_DOWN){
+    		xStartDrag = (int) event.getX();
+    	}
     	if( event.getAction() == MotionEvent.ACTION_UP){
     		if(isDraging ){
-    			eventListener.onTouch(new QuranEvent(event, null));
+    			int direct = xStartDrag < event.getX() ? QuranEvent.SLIDE_RIGHT : QuranEvent.SLIDE_LEFT;
+    			eventListener.onTouch(new QuranEvent(event, direct));
 
     		}else{
     			Word w = getWord((int)event.getX()-getWidth(), (int)event.getY());
@@ -241,12 +249,23 @@ interface QuranEventListener{
 
 class QuranEvent{
 
+	final static public int SLIDE_RIGHT = 1;
+	final static public int SLIDE_LEFT = 0;
+	
 	private MotionEvent event;
 	private Word word;
+	private int dirct;
 
+	public QuranEvent(MotionEvent event){
+		this.event = event;
+	}
 	public QuranEvent(MotionEvent event, Word word){
 		this.event = event;
 		this.word = word;
+	}
+	public QuranEvent(MotionEvent event,  int slideDirect){
+		this.event = event;
+		dirct = slideDirect;
 	}
 
 	public MotionEvent getEvent() {
@@ -263,6 +282,14 @@ class QuranEvent{
 
 	public void setWord(Word word) {
 		this.word = word;
+	}
+
+	public int getDirct() {
+		return dirct;
+	}
+
+	public void setDirct(int dirct) {
+		this.dirct = dirct;
 	}
 	
 }
