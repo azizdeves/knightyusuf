@@ -15,6 +15,7 @@ import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.speech.tts.TextToSpeech;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -37,12 +38,12 @@ public class QuranView extends View {
 	private int width;
 	boolean isDraging;
 	
-	public QuranView(Context context, String aya) {
-		super(context);
+	public QuranView(Context context,AttributeSet attr) {
+		super(context,attr);
 		//tts = ((QuranDroidActivity)context).mTts;
 		Typeface mFace = Typeface.createFromAsset(getContext().getAssets(),"fonts/Scheherazade.ttf");
         mPaint = new Paint();
-//        mPaint.setTypeface(mFace);
+        mPaint.setTypeface(mFace);
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(25);
         mPaint.setStyle(Style.FILL);
@@ -50,8 +51,8 @@ public class QuranView extends View {
         mPaint.setColor(Color.WHITE);
 //        text ="\u0631\u064e\u0628\u0651\u0650\u064a \u0641\u0650\u064a \u0643\u0650\u062a\u064e\u0627\u0628\u064d " +
 //        		"\u06d6 \u0644\u0651\u064e\u0627 \u064a\u064e\u0636\u0650\u0644\u0651\u0650 \u064f";
-        text = aya;
-        init();
+//        text = aya;
+//        init();
 //        init();
 	}
 	
@@ -62,12 +63,13 @@ public class QuranView extends View {
     	canvas.translate(canvas.getWidth(), 0);
     	
       
-        mPaint.setColor(Color.BLACK);
+        mPaint.setColor(Color.WHITE);
         canvas.drawRect(new Rect(-1000, 0, 0, 1000), mPaint);
-        
+        if(text == null)
+        	return;
        constructWords(); 
        
-        mPaint.setColor(Color.WHITE);
+        mPaint.setColor(Color.BLUE);
         drawWords(canvas);
 //        Paint plog = new Paint();
 //        plog.setTextSize(15);
@@ -79,6 +81,7 @@ public class QuranView extends View {
     
     private void constructWords()
     {
+    	wrds.clear();
     	 currentLine = stepLine;
          curseur=0;
          int left,right;
@@ -112,6 +115,9 @@ public class QuranView extends View {
          		isNewWrd = false;
          	}
          }
+//         getHeight()
+//         getMeasuredHeight()
+         setMinimumHeight(100);
     }
     private void init()
     {
@@ -153,33 +159,35 @@ public class QuranView extends View {
     	return null;
     }
     
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-    	if(event.getAction()== MotionEvent.ACTION_MOVE){
-    		isDraging = true;
-    	}
-    	if(event.getAction()== MotionEvent.ACTION_DOWN){
-    		xStartDrag = (int) event.getX();
-    	}
-    	if( event.getAction() == MotionEvent.ACTION_UP){
-    		if(isDraging ){
-    			int direct = xStartDrag < event.getX() ? QuranEvent.SLIDE_RIGHT : QuranEvent.SLIDE_LEFT;
-    			eventListener.onTouch(new QuranEvent(event, direct));
-
-    		}else{
-    			Word w = getWord((int)event.getX()-getWidth(), (int)event.getY());
-    			eventListener.onClick(new QuranEvent(event, w));
-    			if(w != null){
-    				log = roots.get(text.substring(w.idxRtxt, w.idxLtxt).hashCode());//DariGlyphUtils.getRootWord(text.substring(w.idxRtxt, w.idxLtxt));
-    				//tts.speak(log,TextToSpeech.QUEUE_FLUSH, null);
-    			}
-    			this.invalidate();
-    		}
-    		isDraging = false;
-    	}
-    	return true;
-
-	}
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//    	if(event.getAction()== MotionEvent.ACTION_MOVE){
+//    		isDraging = true;
+//    	}
+//    	if(event.getAction()== MotionEvent.ACTION_DOWN){
+//    		xStartDrag = (int) event.getX();
+//    	}
+//    	if( event.getAction() == MotionEvent.ACTION_UP){
+//    		if(isDraging ){
+//    			if(Math.abs(xStartDrag - event.getX()) < this.getWidth()/2)
+//    					return false;
+//    			int direct = xStartDrag < event.getX() ? QuranEvent.SLIDE_RIGHT : QuranEvent.SLIDE_LEFT;
+//    			eventListener.onTouch(new QuranEvent(event, direct));
+//
+//    		}else{
+//    			Word w = getWord((int)event.getX()-getWidth(), (int)event.getY());
+//    			eventListener.onClick(new QuranEvent(event, w));
+//    			if(w != null){
+//    				log = roots.get(text.substring(w.idxRtxt, w.idxLtxt).hashCode());//DariGlyphUtils.getRootWord(text.substring(w.idxRtxt, w.idxLtxt));
+//    				//tts.speak(log,TextToSpeech.QUEUE_FLUSH, null);
+//    			}
+//    			this.invalidate();
+//    		}
+//    		isDraging = false;
+//    	}
+//    	return false;
+//
+//	}
     
     public String getRoot(Word w){
     	return roots.get(text.substring(w.idxRtxt, w.idxLtxt).hashCode());

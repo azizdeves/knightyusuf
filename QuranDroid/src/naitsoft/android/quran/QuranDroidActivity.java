@@ -8,6 +8,7 @@ import android.database.SQLException;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
+import android.view.LayoutInflater;
 import android.view.View;
 
 public class QuranDroidActivity extends Activity implements OnInitListener {
@@ -24,6 +25,8 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.main);
+		qv = (QuranView) findViewById(R.id.quranTxt);
 		initDB();
 		sura = 3;
 		aya = 16;
@@ -32,7 +35,7 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		//checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
 		//startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
 
-		qv = new QuranView(this,ayaTxt);
+		qv.setText(ayaTxt);
 		
 		qv.setEventListener(new QuranEventListener() {
 			@Override
@@ -50,8 +53,9 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 				//mTts.speak(qv.getRoot(event.getWord()),TextToSpeech.QUEUE_FLUSH, null);
 			}
 		});
-
-		setContentView(qv);
+//		LayoutInflater li;
+//		li = (LayoutInflater)getLayoutInflater();
+//		li.inflate(R.layout.main, get, true);
 	}
 
 	protected void onActivityResult(
@@ -74,25 +78,15 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	{
 		myDbHelper = new DataBaseHelper(this);
 		//        myDbHelper = new DataBaseHelper(this);
-
 		try {
-
 			myDbHelper.createDataBase();
-
 		} catch (IOException ioe) {
-
 			throw new Error("Unable to create database");
-
 		}
-
 		try {
-
 			myDbHelper.openDataBase();
-
 		}catch(SQLException sqle){
-
 			throw sqle;
-
 		}
 
 	}
@@ -107,9 +101,53 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		//		mTts.speak(myText2, TextToSpeech.QUEUE_ADD, null);		
 	}
 	public int getNextAya(){
-		return aya;
+			return ++aya;
 	}
 	public int getPrevAya(){
 		return --aya;
 	}
+	
+}
+
+class Surah{
+	int sura;
+	int aya;
+	String ayaTxt;
+	int nbrAya;
+	
+	public int getNextAya(){
+		if(aya<nbrAya)
+			return ++aya;
+		//getNextSura();
+		return 0;
+	}
+	public int getPrevAya(){
+		return --aya;
+	}
+	
+	public int getSura() {
+		return sura;
+	}
+	public void setSura(int sura) {
+		this.sura = sura;
+	}
+	public int getAya() {
+		return aya;
+	}
+	public void setAya(int aya) {
+		this.aya = aya;
+	}
+	public String getAyaTxt() {
+		return ayaTxt;
+	}
+	public void setAyaTxt(String ayaTxt) {
+		this.ayaTxt = ayaTxt;
+	}
+	public int getNbrAya() {
+		return nbrAya;
+	}
+	public void setNbrAya(int nbrAya) {
+		this.nbrAya = nbrAya;
+	}
+	
 }

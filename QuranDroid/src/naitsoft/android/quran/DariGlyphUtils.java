@@ -175,10 +175,6 @@ public class DariGlyphUtils {
                 return reshapedText.toString();
         }
         
-        
-        
-        
-        
         private static String getGlyphString(String input) {
                 char[] inputChars = input.toCharArray();
                 List<Glyph> outputGlyphs = new ArrayList<DariGlyphUtils.Glyph>();
