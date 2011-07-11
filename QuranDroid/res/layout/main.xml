@@ -11,11 +11,10 @@
 			android:layout_height="wrap_content" android:layout_width="wrap_content"
 			android:layout_weight="1"></Button>
 	</LinearLayout>
-	<ScrollView android:layout_width="fill_parent" android:layout_height="fill_parent"		>
+	<ScrollView android:layout_height="fill_parent" android:layout_width="match_parent">
 		<naitsoft.android.quran.QuranView
-
 			android:id="@+id/quranTxt" android:layout_width="fill_parent"
-			android:padding="10dip" android:scrollbars="vertical"
+			android:padding="10dip" 
 			android:fadingEdge="vertical" android:layout_height="fill_parent" />
 	</ScrollView>
 </LinearLayout>

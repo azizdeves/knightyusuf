@@ -115,6 +115,7 @@ public class QuranView extends View {
          		isNewWrd = false;
          	}
          }
+         requestLayout();
 //         getHeight()
 //         getMeasuredHeight()
 //         setMinimumHeight(10000);
@@ -142,6 +143,7 @@ public class QuranView extends View {
     			cnvs.drawText(text.charAt(i)+"", xpos[i], w.line, mPaint);
     		}
     	}
+    	
     }
     
     private int getLine(int yPos){
