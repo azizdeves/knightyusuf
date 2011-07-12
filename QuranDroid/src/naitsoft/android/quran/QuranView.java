@@ -171,16 +171,18 @@ public class QuranView extends View {
     	}
     	if( event.getAction() == MotionEvent.ACTION_UP){
     		if(isDraging ){
-    			if(Math.abs(xStartDrag - event.getX()) < width/3)
-    					return false;
+    			if(Math.abs(xStartDrag - event.getX()) < width/3){
+    				isDraging = false;
+    				return false;
+    			}
     			int direct = xStartDrag < event.getX() ? QuranEvent.SLIDE_RIGHT : QuranEvent.SLIDE_LEFT;
     			eventListener.onTouch(new QuranEvent(event, direct));
 
     		}else{
-    			Word w = getWord((int)event.getX()-getWidth(), (int)event.getY());
+    			Word w = getWord((int)event.getX()-width, (int)event.getY());
     			eventListener.onClick(new QuranEvent(event, w));
     			if(w != null){
-    				log = roots.get(text.substring(w.idxRtxt, w.idxLtxt).hashCode());//DariGlyphUtils.getRootWord(text.substring(w.idxRtxt, w.idxLtxt));
+    				log = roots.get(text.substring(w.idxRtxt, w.idxLtxt).hashCode());
     				//tts.speak(log,TextToSpeech.QUEUE_FLUSH, null);
     			}
     			this.invalidate();
@@ -193,8 +195,8 @@ public class QuranView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 //    	int width = MeasureSpec.getSize(widthMeasureSpec);
-    	int wMode = MeasureSpec.getMode(widthMeasureSpec);
-    	int hMode = MeasureSpec.getMode(heightMeasureSpec);
+//    	int wMode = MeasureSpec.getMode(widthMeasureSpec);
+//    	int hMode = MeasureSpec.getMode(heightMeasureSpec);
     	
     	int height = MeasureSpec.getSize(heightMeasureSpec);
     	int viewHeight = currentLine + stepLine;

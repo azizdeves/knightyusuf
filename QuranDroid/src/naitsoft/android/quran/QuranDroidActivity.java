@@ -3,13 +3,17 @@ package naitsoft.android.quran;
 import java.io.IOException;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.SQLException;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 
 public class QuranDroidActivity extends Activity implements OnInitListener {
 	private static final int MY_DATA_CHECK_CODE = 0;
@@ -19,6 +23,8 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	private QuranView qv;
 	private DataBaseHelper myDbHelper;
 	private String ayaTxt;
+	private Button playBtn;
+	private MediaPlayer player;
 	static int aya ;
 	static int sura;
 	
@@ -26,6 +32,8 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		playBtn = (Button) findViewById(R.id.playBtn);
+		playBtn.setEnabled(false);
 		qv = (QuranView) findViewById(R.id.quranTxt);
 		initDB();
 		sura = 3;
@@ -53,6 +61,15 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 				//mTts.speak(qv.getRoot(event.getWord()),TextToSpeech.QUEUE_FLUSH, null);
 			}
 		});
+		
+		playBtn.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				playAya(sura, aya);
+				
+			}
+		});
 //		LayoutInflater li;
 //		li = (LayoutInflater)getLayoutInflater();
 //		li.inflate(R.layout.main, get, true);
@@ -73,7 +90,19 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 			}
 		}
 	}
+	
+	private void playAya(int sura , int aya){
+		//http://tanzil.net/res/audio/abdulbasit-mjwd/020069.mp3
+		
+		Context ctx = getApplicationContext();
+		playBtn.setEnabled(false);
+		player = MediaPlayer.create(ctx, Uri.parse("http://tanzil.net/res/audio/abdulbasit-mjwd/" 
+				+addZero(sura)+addZero(aya)+	".mp3"));
+		playBtn.setEnabled(true);
+		player.start();
+	}
 
+	
 	public void initDB()
 	{
 		myDbHelper = new DataBaseHelper(this);
@@ -99,6 +128,13 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		//		String myText2 = "I hope so, because it's time to wake up.";
 		//		mTts.speak(myText1, TextToSpeech.QUEUE_FLUSH, null);
 		//		mTts.speak(myText2, TextToSpeech.QUEUE_ADD, null);		
+	}
+	
+	private String addZero(int nb)
+	{
+		String s = "00"+nb;
+		return s.substring(s.length()-3);
+		
 	}
 	public int getNextAya(){
 			return ++aya;
