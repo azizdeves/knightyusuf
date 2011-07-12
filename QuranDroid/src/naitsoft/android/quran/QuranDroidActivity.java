@@ -33,7 +33,6 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		playBtn = (Button) findViewById(R.id.playBtn);
-		playBtn.setEnabled(false);
 		qv = (QuranView) findViewById(R.id.quranTxt);
 		initDB();
 		sura = 3;

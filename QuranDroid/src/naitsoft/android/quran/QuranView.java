@@ -63,13 +63,13 @@ public class QuranView extends View {
     	canvas.translate(canvas.getWidth(), 0);
     	
       
-        mPaint.setColor(Color.WHITE);
+        mPaint.setColor(Color.BLACK);
         canvas.drawRect(new Rect(-1000, 0, 0, 1000), mPaint);
         if(text == null)
         	return;
        constructWords(); 
        
-        mPaint.setColor(Color.BLUE);
+        mPaint.setColor(Color.WHITE);
         drawWords(canvas);
 //        Paint plog = new Paint();
 //        plog.setTextSize(15);
