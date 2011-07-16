@@ -33,19 +33,26 @@ public class QuranView extends View {
 	private int[] xpos;
 	int stepLine ;
 	String log="";
-	private TextToSpeech tts;
+//	private TextToSpeech tts;
 	private HashMap<Integer, String> roots;
 	private int width;
 	boolean isDraging;
+	private Paint harakaPaint;
 	
 	public QuranView(Context context,AttributeSet attr) {
 		super(context,attr);
 		//tts = ((QuranDroidActivity)context).mTts;
 		//Typeface mFace = Typeface.createFromAsset(getContext().getAssets(),"fonts/Scheherazade.ttf");
+        harakaPaint = new Paint();
+        harakaPaint.setAntiAlias(true);
+        harakaPaint.setTextSize(80);
+        harakaPaint.setStyle(Style.FILL);
+        harakaPaint.setColor(Color.GREEN);
+        harakaPaint.setAlpha(160);
+        
         mPaint = new Paint();
-        //mPaint.setTypeface(mFace);
         mPaint.setAntiAlias(true);
-        mPaint.setTextSize(25);
+        mPaint.setTextSize(80);
         mPaint.setStyle(Style.FILL);
 //        mPaint.setTypeface(Typeface.SERIF);
         mPaint.setColor(Color.WHITE);
@@ -89,16 +96,17 @@ public class QuranView extends View {
          //canvas.drawLine(0, currentLine, -300, currentLine, mPaint);
          boolean isNewWrd = true;
          for(int i = 0; i<text.length(); i++){
+        	 float charWidth = getCharWidth(i);
          	if(isNewWrd){
          		wrd.rect.right = curseur;
          		wrd.idxRtxt = i;
          	}
-         	if((curseur -= widths[i])< -width){
+         	if((curseur -= charWidth)< -width){
          		//canvas.drawLine(0, currentLine, -300, currentLine, mPaint);
          		newLine();
          		i= wrd.idxRtxt;
          		wrd.rect.right = curseur;
-         		wrd.rect.left = curseur -= widths[i];
+         		wrd.rect.left = curseur -= charWidth;
          	}
          	wrd.line = currentLine;
          	wrd.rect.left = curseur;
@@ -126,7 +134,7 @@ public class QuranView extends View {
         roots = DariGlyphUtils.getRoots();
         Rect rec = new  Rect();
         mPaint.getTextBounds("\u0644", 0, 1, rec);
-        currentLine = stepLine = (int) (rec.height()*1.95);
+        currentLine = stepLine = (int) (rec.height()*3);
         
     	widths = new float[text.length()];
         xpos = new int[text.length()];
@@ -137,10 +145,18 @@ public class QuranView extends View {
     private void drawWords(Canvas cnvs)
     {
     	int i;
+    	boolean stepUp = false;
     	for(Word w : wrds){
     		for(i=w.idxRtxt;i<=w.idxLtxt;i++){
-    			
-    			cnvs.drawText(text.charAt(i)+"", xpos[i], w.line, mPaint);
+    			if(DariGlyphUtils.isHaraka(text.charAt(i))){
+    				cnvs.drawText(text.charAt(i)+"", xpos[i], stepUp?w.line-15:w.line, harakaPaint);
+    				stepUp = true;
+    			}
+    			else{
+    				
+    				stepUp = false;
+    				cnvs.drawText(text.charAt(i)+"", xpos[i], w.line, mPaint);
+    			}
     		}
     	}
     	
@@ -206,6 +222,11 @@ public class QuranView extends View {
     		setMeasuredDimension(widthMeasureSpec, height);
     }
     
+    private float getCharWidth(int indxTxt){
+    	if(DariGlyphUtils.isHaraka(text.charAt(indxTxt)))
+    		return 0f;
+    	return widths[indxTxt];
+    }
     public String getRoot(Word w){
     	return roots.get(text.substring(w.idxRtxt, w.idxLtxt).hashCode());
     }
@@ -217,13 +238,13 @@ public class QuranView extends View {
     	
     }
 
-	public TextToSpeech getTts() {
-		return tts; 
-	}
-
-	public void setTts(TextToSpeech tts) {
-		this.tts = tts;
-	}
+//	public TextToSpeech getTts() {
+//		return tts; 
+//	}
+//
+//	public void setTts(TextToSpeech tts) {
+//		this.tts = tts;
+//	}
 
 	public String getText() {
 		return text;

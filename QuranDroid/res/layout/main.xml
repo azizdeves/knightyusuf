@@ -7,11 +7,11 @@
 		<Button android:text="|>" android:id="@+id/playBtn"
 			android:layout_height="wrap_content" android:layout_width="wrap_content"
 			android:layout_gravity="fill" android:layout_weight="1"></Button>
-		<Button android:text="Button" android:id="@+id/button2"
-			android:layout_height="wrap_content" android:layout_width="wrap_content"
-			android:layout_weight="1"></Button>
+		<Button android:text="next" android:id="@+id/next" android:layout_height="match_parent" android:layout_width="wrap_content" android:layout_weight="1"></Button>
+		<Button android:text="prev" android:id="@+id/prev"
+			android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_weight="1"></Button>
 	</LinearLayout>
-	<ScrollView android:layout_height="fill_parent" android:layout_width="match_parent">
+	<ScrollView android:id="@+id/scroll" android:layout_height="fill_parent" android:layout_width="match_parent">
 		<naitsoft.android.quran.QuranView
 			android:id="@+id/quranTxt" android:layout_width="fill_parent"
 			android:padding="10dip" 

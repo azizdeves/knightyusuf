@@ -35,6 +35,10 @@ public class DariGlyphUtils {
                 arabicShats.add(1617);
                 arabicShats.add(1618);
         }
+        
+        public static boolean isHaraka(int c){
+        	return arabicShats.contains(c);
+        }
         public static int getRootChar(int c){
 
         	if(c==65152||c==65163||c==65164||c==651522)	return 1569;
@@ -187,11 +191,22 @@ public class DariGlyphUtils {
                         }
                 }
                 reshapeChars(0, outputGlyphs);
-                char[] outputChars = new char[outputGlyphs.size()];
+//                char[] outputChars = new char[outputGlyphs.size()];
+                StringBuffer output = new StringBuffer();
+                
+                Glyph g ;
                 for (int i = 0 ; i < outputGlyphs.size() ; i++) {
-                        outputChars[i] = (char) outputGlyphs.get(i).selectedGlyph;
+//                        outputChars[i] = (char) outputGlyphs.get(i).selectedGlyph;
+                	g = outputGlyphs.get(i);
+                	if(!isHaraka(g.selectedGlyph) 
+                			&& g.selectedGlyph != g.startChar 
+                				&& g.selectedGlyph != g.mainChar
+                				&& g.selectedGlyph != g.charCode)
+                		output.append("ـ");
+                        output.append((char) g.selectedGlyph);
                 }
-                return new String(outputChars);
+//                return new String(outputChars);
+                return output.toString();
         }
         
         
@@ -280,6 +295,8 @@ public class DariGlyphUtils {
                 int nrShapes;
                 
                 int selectedGlyph;
+                
+                int selectePos;
                 
                 boolean isDari = false;
 

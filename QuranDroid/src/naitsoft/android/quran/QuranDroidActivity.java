@@ -14,6 +14,7 @@ import android.speech.tts.TextToSpeech.OnInitListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ScrollView;
 
 public class QuranDroidActivity extends Activity implements OnInitListener {
 	private static final int MY_DATA_CHECK_CODE = 0;
@@ -24,7 +25,10 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	private DataBaseHelper myDbHelper;
 	private String ayaTxt;
 	private Button playBtn;
+	private Button nextBtn;
+	private Button prevBtn;
 	private MediaPlayer player;
+	private ScrollView scrollAya;
 	static int aya ;
 	static int sura;
 	
@@ -32,15 +36,18 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		scrollAya = (ScrollView) findViewById(R.id.scroll);
 		playBtn = (Button) findViewById(R.id.playBtn);
+		nextBtn = (Button) findViewById(R.id.next);
+		prevBtn = (Button) findViewById(R.id.prev);
 		qv = (QuranView) findViewById(R.id.quranTxt);
-		initDB();
+		initDB(); 
 		sura = 3;
-		aya = 16;
+		aya = 18;
 		ayaTxt = myDbHelper.getAya(sura, aya);
-		//Intent checkIntent = new Intent();
-		//checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-		//startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
+		Intent checkIntent = new Intent();
+		checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+		startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
 
 		qv.setText(ayaTxt);
 		
@@ -57,18 +64,33 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 			}
 			@Override
 			public void onClick(QuranEvent event) {
-				//mTts.speak(qv.getRoot(event.getWord()),TextToSpeech.QUEUE_FLUSH, null);
+				mTts.speak(qv.getRoot(event.getWord()),TextToSpeech.QUEUE_FLUSH, null);
 			}
 		});
 		
 		playBtn.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
 			public void onClick(View v) {
 				playAya(sura, aya);
 				
 			}
 		});
+		
+		nextBtn.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				getNextAya();
+				ayaTxt = myDbHelper.getAya(sura, aya);
+				qv.setText(ayaTxt);
+			}
+		});
+		prevBtn.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				getPrevAya();
+				ayaTxt = myDbHelper.getAya(sura, aya);
+				qv.setText(ayaTxt);
+			}
+		});
+		
+		
 //		LayoutInflater li;
 //		li = (LayoutInflater)getLayoutInflater();
 //		li.inflate(R.layout.main, get, true);
@@ -120,8 +142,8 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	}
 
 	@Override
-	public void onInit(int status) {
-		qv.setTts(mTts);
+	public void onInit(int status) { 
+//		qv.setTts(mTts);
 		//		String myText1 = "\u0631\u064e\u0628\u0651\u0650\u064a \u0641\u0650\u064a \u0643\u0650\u062a\u064e\u0627\u0628\u064d " +
 		//		"\u06d6 \u0644\u0651\u064e\u0627 \u064a\u064e\u0636\u0650\u0644\u0651\u0650 \u064f";
 		//		String myText2 = "I hope so, because it's time to wake up.";
@@ -136,9 +158,11 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		
 	}
 	public int getNextAya(){
+		scrollAya.scrollTo(0, 0);
 			return ++aya;
 	}
 	public int getPrevAya(){
+		scrollAya.scrollTo(0, 0);
 		return --aya;
 	}
 	
