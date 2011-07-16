@@ -29,6 +29,8 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	private Button prevBtn;
 	private MediaPlayer player;
 	private ScrollView scrollAya;
+	private Button bigBtn;
+	private Button smallBtn;
 	static int aya ;
 	static int sura;
 	
@@ -40,10 +42,15 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		playBtn = (Button) findViewById(R.id.playBtn);
 		nextBtn = (Button) findViewById(R.id.next);
 		prevBtn = (Button) findViewById(R.id.prev);
+		bigBtn = (Button) findViewById(R.id.big);
+		smallBtn = (Button) findViewById(R.id.small);
 		qv = (QuranView) findViewById(R.id.quranTxt);
 		initDB(); 
-		sura = 3;
-		aya = 18;
+		
+		prevBtn.setText(">>>");
+		nextBtn.setText("<<<");
+		
+		initFromBundle(savedInstanceState);
 		ayaTxt = myDbHelper.getAya(sura, aya);
 		Intent checkIntent = new Intent();
 		checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
@@ -68,6 +75,20 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 			}
 		});
 		
+		bigBtn.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				qv.setTxtSize(qv.getTxtSize()+2);
+				qv.init();
+				
+			}
+		});
+		smallBtn.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				qv.setTxtSize(qv.getTxtSize()-2);
+				qv.init();
+				
+			}
+		});
 		playBtn.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				playAya(sura, aya);
@@ -89,12 +110,48 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 				qv.setText(ayaTxt);
 			}
 		});
-		
-		
 //		LayoutInflater li;
 //		li = (LayoutInflater)getLayoutInflater();
 //		li.inflate(R.layout.main, get, true);
 	}
+
+	protected void onDestroy() {
+		super.onDestroy();
+	}
+
+	protected void onPause() {
+		super.onPause();
+	}
+
+	protected void onRestart() {
+		super.onRestart();
+	}
+
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		initFromBundle(savedInstanceState);
+		
+	}
+
+	protected void onResume() {
+		super.onResume();
+	}
+
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putInt("aya", aya);
+		outState.putInt("sura", sura);
+		
+	}
+
+	protected void onStart() {
+		super.onStart();
+	}
+
+	protected void onStop() {
+		super.onStop();
+	}
+
 
 	protected void onActivityResult(
 			int requestCode, int resultCode, Intent data) {
@@ -119,10 +176,20 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		playBtn.setEnabled(false);
 		player = MediaPlayer.create(ctx, Uri.parse("http://tanzil.net/res/audio/abdulbasit-mjwd/" 
 				+addZero(sura)+addZero(aya)+	".mp3"));
+		scrollAya.scrollTo(0, 0);
 		playBtn.setEnabled(true);
 		player.start();
 	}
 
+	private void initFromBundle(Bundle bundle){
+		if(bundle==null){
+			aya =2;
+			sura =2;
+			return;
+		}
+		aya = bundle.getInt("aya");
+		sura = bundle.getInt("sura");
+	}
 	
 	public void initDB()
 	{

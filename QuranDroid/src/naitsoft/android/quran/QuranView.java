@@ -7,6 +7,7 @@ import naitsoft.android.quran.DariGlyphUtils.Glyph;
 
 import android.R.style;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -16,6 +17,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.speech.tts.TextToSpeech;
 import android.util.AttributeSet;
+import android.util.Config;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -38,6 +40,9 @@ public class QuranView extends View {
 	private int width;
 	boolean isDraging;
 	private Paint harakaPaint;
+	int frame;
+	boolean dirty = true;
+	private Bitmap map;
 	
 	public QuranView(Context context,AttributeSet attr) {
 		super(context,attr);
@@ -65,6 +70,8 @@ public class QuranView extends View {
 	
     @Override 
     protected void onDraw(Canvas canvas) {
+//    	if(!dirty)
+//    		return;
  
     	width = canvas.getWidth();
     	canvas.translate(canvas.getWidth(), 0);
@@ -77,13 +84,14 @@ public class QuranView extends View {
        constructWords(); 
        
         mPaint.setColor(Color.WHITE);
+        canvas.drawText(""+frame++, -100, 60, mPaint);
         drawWords(canvas);
 //        Paint plog = new Paint();
 //        plog.setTextSize(15);
 //        plog.setColor(Color.WHITE);
 //        canvas.drawText(log, -this.getWidth(),10, plog);
 
-        
+        dirty = false;
     }
     
     private void constructWords()
@@ -123,13 +131,13 @@ public class QuranView extends View {
          		isNewWrd = false;
          	}
          }
-         requestLayout();
-//         getHeight()
-//         getMeasuredHeight()
-//         setMinimumHeight(10000);
+         if(dirty)
+        	 requestLayout();
     }
-    private void init()
+    
+    public void init()
     {
+    	dirty = true;
         text = DariGlyphUtils.reshapeText(text);
         roots = DariGlyphUtils.getRoots();
         Rect rec = new  Rect();
@@ -144,21 +152,38 @@ public class QuranView extends View {
 
     private void drawWords(Canvas cnvs)
     {
-    	int i;
-    	boolean stepUp = false;
-    	for(Word w : wrds){
-    		for(i=w.idxRtxt;i<=w.idxLtxt;i++){
-    			if(DariGlyphUtils.isHaraka(text.charAt(i))){
-    				cnvs.drawText(text.charAt(i)+"", xpos[i], stepUp?w.line-15:w.line, harakaPaint);
-    				stepUp = true;
-    			}
-    			else{
-    				
-    				stepUp = false;
-    				cnvs.drawText(text.charAt(i)+"", xpos[i], w.line, mPaint);
+    	if(dirty){
+    		map =Bitmap.createBitmap(cnvs.getWidth(), cnvs.getHeight(),  Bitmap.Config.ARGB_4444);
+    		
+    		Canvas canvas = new Canvas(map);
+
+    		canvas.translate(canvas.getWidth(), 0);
+
+
+    		mPaint.setColor(Color.BLACK);
+    		canvas.drawRect(new Rect(-1000, 0, 0, 1000), mPaint);
+
+
+    		mPaint.setColor(Color.WHITE);
+    		canvas.drawText(""+frame++, -100, 60, mPaint);
+
+    		int i;
+    		boolean stepUp = false;
+    		for(Word w : wrds){
+    			for(i=w.idxRtxt;i<=w.idxLtxt;i++){
+    				if(DariGlyphUtils.isHaraka(text.charAt(i))){
+    					canvas.drawText(text.charAt(i)+"", xpos[i], stepUp?w.line-15:w.line, harakaPaint);
+    					stepUp = true;
+    				}
+    				else{
+
+    					stepUp = false;
+    					canvas.drawText(text.charAt(i)+"", xpos[i], w.line, mPaint);
+    				}
     			}
     		}
     	}
+    	cnvs.drawBitmap(map, -cnvs.getWidth(), 0, mPaint);
     	
     }
     
@@ -210,16 +235,16 @@ public class QuranView extends View {
     
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//    	int width = MeasureSpec.getSize(widthMeasureSpec);
+    	int width = MeasureSpec.getSize(widthMeasureSpec);
 //    	int wMode = MeasureSpec.getMode(widthMeasureSpec);
 //    	int hMode = MeasureSpec.getMode(heightMeasureSpec);
     	
     	int height = MeasureSpec.getSize(heightMeasureSpec);
     	int viewHeight = currentLine + stepLine;
-    	if(viewHeight > height)
-    		setMeasuredDimension(widthMeasureSpec, viewHeight);
-    	else 
-    		setMeasuredDimension(widthMeasureSpec, height);
+//    	if(viewHeight > height)
+    		setMeasuredDimension(width, viewHeight);
+//    	else 
+//    		setMeasuredDimension(widthMeasureSpec, height);
     }
     
     private float getCharWidth(int indxTxt){
@@ -261,6 +286,15 @@ public class QuranView extends View {
 
 	public void setEventListener(QuranEventListener eventListener) {
 		this.eventListener = eventListener;
+	}
+
+	public float getTxtSize() {
+		return mPaint.getTextSize();
+	}
+
+	public void setTxtSize(float txtSize) {
+//		this.txtSize = txtSize;
+		mPaint.setTextSize(txtSize);
 	}
 
 
