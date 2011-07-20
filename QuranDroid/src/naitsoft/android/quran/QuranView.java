@@ -81,10 +81,11 @@ public class QuranView extends View {
         canvas.drawRect(new Rect(-1000, 0, 0, 1000), mPaint);
         if(text == null)
         	return;
-       constructWords(); 
+        
+    	
        
-        mPaint.setColor(Color.WHITE);
-        canvas.drawText(""+frame++, -100, 60, mPaint);
+//        mPaint.setColor(Color.WHITE);
+//        canvas.drawText(""+frame, -100, 60, mPaint);
         drawWords(canvas);
 //        Paint plog = new Paint();
 //        plog.setTextSize(15);
@@ -147,26 +148,25 @@ public class QuranView extends View {
     	widths = new float[text.length()];
         xpos = new int[text.length()];
         mPaint.getTextWidths(text, widths);
-        invalidate();
+        requestLayout();
     }
 
     private void drawWords(Canvas cnvs)
     {
     	if(dirty){
-    		map =Bitmap.createBitmap(cnvs.getWidth(), cnvs.getHeight(),  Bitmap.Config.ARGB_4444);
+    		map = Bitmap.createBitmap(cnvs.getWidth(), getHeight(),  Bitmap.Config.ARGB_4444);
     		
     		Canvas canvas = new Canvas(map);
 
     		canvas.translate(canvas.getWidth(), 0);
 
-
+//requestLayout();
     		mPaint.setColor(Color.BLACK);
     		canvas.drawRect(new Rect(-1000, 0, 0, 1000), mPaint);
 
 
-    		mPaint.setColor(Color.WHITE);
-    		canvas.drawText(""+frame++, -100, 60, mPaint);
 
+    		mPaint.setColor(Color.WHITE);
     		int i;
     		boolean stepUp = false;
     		for(Word w : wrds){
@@ -183,7 +183,10 @@ public class QuranView extends View {
     			}
     		}
     	}
+    	Paint p = new Paint();p.setTextSize(20);p.setStyle(Style.FILL);
+    	p.setColor(Color.WHITE);
     	cnvs.drawBitmap(map, -cnvs.getWidth(), 0, mPaint);
+    	cnvs.drawText("cnvs:"+cnvs.getHeight()+"msr:"+frame, -400, 30, p);
     	
     }
     
@@ -238,11 +241,15 @@ public class QuranView extends View {
     	int width = MeasureSpec.getSize(widthMeasureSpec);
 //    	int wMode = MeasureSpec.getMode(widthMeasureSpec);
 //    	int hMode = MeasureSpec.getMode(heightMeasureSpec);
-    	
+    	if(dirty){
+    		this.width = width;
+    		constructWords(); 
+    	}
     	int height = MeasureSpec.getSize(heightMeasureSpec);
     	int viewHeight = currentLine + stepLine;
 //    	if(viewHeight > height)
     		setMeasuredDimension(width, viewHeight);
+    		frame = viewHeight;
 //    	else 
 //    		setMeasuredDimension(widthMeasureSpec, height);
     }
@@ -252,7 +259,7 @@ public class QuranView extends View {
     		return 0f;
     	return widths[indxTxt];
     }
-    public String getRoot(Word w){
+    public String getRoot(Word w){ 
     	return roots.get(text.substring(w.idxRtxt, w.idxLtxt).hashCode());
     }
 
