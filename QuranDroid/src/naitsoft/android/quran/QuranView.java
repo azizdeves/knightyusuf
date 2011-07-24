@@ -58,6 +58,24 @@ public class QuranView extends View {
         mPaint.setColor(Color.WHITE);
 	}
 	
+    public void init(boolean initText)
+    {
+    	if(initText){
+    		text = DariGlyphUtils.reshapeText(text);
+    		roots = DariGlyphUtils.getRoots();
+    	}
+        dirty = true;
+        Rect rec = new  Rect();
+        mPaint.getTextBounds("\u0644", 0, 1, rec);
+        stepLine = (int) (rec.height()*3);
+        currentLine = (int) (stepLine*0.75);
+    	widths = new float[text.length()];
+        xpos = new int[text.length()];
+        mPaint.getTextWidths(text, widths);
+        requestLayout(); 
+        invalidate();
+    }
+    
     @Override 
     protected void onDraw(Canvas canvas) {
     	width = canvas.getWidth();
@@ -87,6 +105,7 @@ public class QuranView extends View {
          	if((curseur -= charWidth)< -width){
          		newLine();
          		i= wrd.idxRtxt;
+         		charWidth = getCharWidth(i);
          		wrd.rect.right = curseur;
          		wrd.rect.left = curseur -= charWidth;
          	}
@@ -108,27 +127,11 @@ public class QuranView extends View {
          if(toRequestLayout)
         	 requestLayout();
     }
-    
-    public void init()
-    {
-    	dirty = true;
-        text = DariGlyphUtils.reshapeText(text);
-        roots = DariGlyphUtils.getRoots();
-        Rect rec = new  Rect();
-        mPaint.getTextBounds("\u0644", 0, 1, rec);
-        stepLine = (int) (rec.height()*3);
-        currentLine = (int) (stepLine*0.75);
-    	widths = new float[text.length()];
-        xpos = new int[text.length()];
-        mPaint.getTextWidths(text, widths);
-        requestLayout(); 
-        invalidate();
-    }
  
     private void drawWords(Canvas cnvs)
     {
     	if(dirty){
-    		map = Bitmap.createBitmap(cnvs.getWidth(), getHeight(),  Bitmap.Config.ARGB_4444);
+    		map = Bitmap.createBitmap(cnvs.getWidth(), getHeight(), Bitmap.Config.ARGB_4444);
     		Canvas canvas = new Canvas(map);
     		canvas.translate(canvas.getWidth(), 0);
     		mPaint.setColor(Color.BLACK);
@@ -143,15 +146,12 @@ public class QuranView extends View {
     					stepUp = true;
     				}
     				else{
-
     					stepUp = false;
     					canvas.drawText(text.charAt(i)+"", xpos[i], w.line, mPaint);
     				}
     			}
     		}
     	}
-    	Paint p = new Paint();p.setTextSize(20);p.setStyle(Style.FILL);
-    	p.setColor(Color.WHITE);
     	cnvs.drawBitmap(map, -cnvs.getWidth(), 0, mPaint);
     }
     
@@ -220,14 +220,10 @@ public class QuranView extends View {
     	return roots.get(text.substring(w.idxRtxt, w.idxLtxt).hashCode());
     }
 
-
 	private int newLine(){
     	curseur = 0;
     	return currentLine+=stepLine;
-    	
     }
-
-
 
 	public String getText() {
 		return text;
@@ -235,7 +231,7 @@ public class QuranView extends View {
 
 	public void setText(String text) {
 		this.text = text;
-		init();
+		init(true);
 	}
 
 	public QuranEventListener getEventListener() {

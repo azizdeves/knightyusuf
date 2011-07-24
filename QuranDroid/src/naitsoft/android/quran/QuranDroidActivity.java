@@ -17,8 +17,8 @@ import android.widget.Button;
 import android.widget.ScrollView;
 
 public class QuranDroidActivity extends Activity implements OnInitListener {
-	private static final int MY_DATA_CHECK_CODE = 0;
-	/** Called when the activity is first created. */
+	private static final int TTS_CHECK_CODE = 0;
+	public static final int MARK_CODE = 1;
 
 	public TextToSpeech mTts;
 	private QuranView qv;
@@ -31,6 +31,7 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	private ScrollView scrollAya;
 	private Button bigBtn;
 	private Button smallBtn;
+	private Button markBtn;
 	static int aya ;
 	static int sura;
 	
@@ -44,6 +45,8 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		prevBtn = (Button) findViewById(R.id.prev);
 		bigBtn = (Button) findViewById(R.id.big);
 		smallBtn = (Button) findViewById(R.id.small);
+		markBtn = (Button) findViewById(R.id.markBtn);
+		
 		qv = (QuranView) findViewById(R.id.quranTxt);
 		initDB(); 
 		
@@ -52,55 +55,55 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		
 		initFromBundle(savedInstanceState);
 		ayaTxt = myDbHelper.getAya(sura, aya);
-		Intent checkIntent = new Intent();
-		checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-		startActivityForResult(checkIntent, MY_DATA_CHECK_CODE);
-
+		if(mTts == null){
+			Intent checkIntent = new Intent();
+			checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+			startActivityForResult(checkIntent, TTS_CHECK_CODE);
+		}
 		qv.setText(ayaTxt);
 		
 		qv.setEventListener(new QuranEventListener() {
 			@Override
 			public void onTouch(QuranEvent event) {
-				if(event.getDirct() == QuranEvent.SLIDE_RIGHT)
-					getNextAya();
-				else
-					getPrevAya();
-				
-				ayaTxt = myDbHelper.getAya(sura, aya);
-				qv.setText(ayaTxt);
+//				if(event.getDirct() == QuranEvent.SLIDE_RIGHT)
+//					getNextAya();
+//				else
+//					getPrevAya();
+//				
+//				ayaTxt = myDbHelper.getAya(sura, aya);
+//				qv.setText(ayaTxt);
 			}
 			@Override
 			public void onClick(QuranEvent event) {
 				mTts.speak(qv.getRoot(event.getWord()),TextToSpeech.QUEUE_FLUSH, null);
 			}
 		});
-		
 		bigBtn.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				qv.setTxtSize(qv.getTxtSize()+2);
-				qv.init();
+				qv.init(false);
 				
 			}
 		});
 		smallBtn.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				qv.setTxtSize(qv.getTxtSize()-2);
-				qv.init();
-				
+				qv.init(false);
 			}
 		});
 		playBtn.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				playAya(sura, aya);
+				playAya();
 				
 			}
 		});
-		
 		nextBtn.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				getNextAya();
 				ayaTxt = myDbHelper.getAya(sura, aya);
 				qv.setText(ayaTxt);
+				player = null;
+				loadAudioAya(sura, aya);
 			}
 		});
 		prevBtn.setOnClickListener(new View.OnClickListener() {
@@ -108,54 +111,44 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 				getPrevAya();
 				ayaTxt = myDbHelper.getAya(sura, aya);
 				qv.setText(ayaTxt);
+				player = null;
+				loadAudioAya(sura, aya);
 			}
 		});
-//		LayoutInflater li;
-//		li = (LayoutInflater)getLayoutInflater();
-//		li.inflate(R.layout.main, get, true);
+		markBtn.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				callMarkActivity();
+			}
+		});
+		loadAudioAya(sura, aya);
 	}
 
-	protected void onDestroy() {
-		super.onDestroy();
+	public void callMarkActivity()
+	{
+//		myDbHelper.addMark("*", 3, 19);
+//		Intent markIntent = new Intent(this,ListMarksActivity.class);
+//		startActivityForResult(markIntent,1);
 	}
 
-	protected void onPause() {
-		super.onPause();
-	}
-
-	protected void onRestart() {
-		super.onRestart();
-	}
 
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 		initFromBundle(savedInstanceState);
-		
 	}
 
-	protected void onResume() {
-		super.onResume();
-	}
 
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putInt("aya", aya);
 		outState.putInt("sura", sura);
-		
+		outState.putFloat("size", qv.getTxtSize());
 	}
 
-	protected void onStart() {
-		super.onStart();
-	}
-
-	protected void onStop() {
-		super.onStop();
-	}
 
 
 	protected void onActivityResult(
 			int requestCode, int resultCode, Intent data) {
-		if (requestCode == MY_DATA_CHECK_CODE) {
+		if (requestCode == TTS_CHECK_CODE) {
 			if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
 				// success, create the TTS instance
 				mTts = new TextToSpeech(this, this);
@@ -167,28 +160,43 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 				startActivity(installIntent);
 			}
 		}
+		if(requestCode == MARK_CODE){
+			aya = data.getExtras().getInt("aya");
+			sura = data.getExtras().getInt("sura");
+		}
 	}
 	
-	private void playAya(int sura , int aya){
-		//http://tanzil.net/res/audio/abdulbasit-mjwd/020069.mp3
-		
-		Context ctx = getApplicationContext();
-		playBtn.setEnabled(false);
-		player = MediaPlayer.create(ctx, Uri.parse("http://tanzil.net/res/audio/abdulbasit-mjwd/" 
-				+addZero(sura)+addZero(aya)+	".mp3"));
-		scrollAya.scrollTo(0, 0);
-		playBtn.setEnabled(true);
-		player.start();
+	private void playAya(){
+		if(player!=null){
+			scrollAya.scrollTo(0, 0);
+			player.start();
+		}
+	}
+	
+	private void loadAudioAya(final int sura, final int aya){
+		Thread audioThread = new Thread(){
+			public void run() {
+				Context ctx = getApplicationContext();
+			//	playBtn.setEnabled(false);
+				player = MediaPlayer.create(ctx, Uri.parse("http://tanzil.net/res/audio/abdulbasit-mjwd/" 
+						+addZero(sura)+addZero(aya)+	".mp3"));
+			
+			//	playBtn.setEnabled(true);
+			}
+		};
+		audioThread.start();
+	
 	}
 
 	private void initFromBundle(Bundle bundle){
 		if(bundle==null){
-			aya =2;
+			aya =5;
 			sura =2;
 			return;
 		}
 		aya = bundle.getInt("aya");
 		sura = bundle.getInt("sura");
+		qv.setTxtSize(bundle.getFloat("size"));
 	}
 	
 	public void initDB()

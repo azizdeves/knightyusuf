@@ -4,7 +4,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Date;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -18,10 +20,11 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     private static String DB_PATH = "/data/data/naitsoft.android.quran/databases/";
  
     private static String DB_NAME = "quran.sql3";
-    private static String TABLE_NAME = "quran_text";
+    private static String QURAN_TAB = "quran_text";
+    private static String MARK_TAB = "marks";
     
  
-    private SQLiteDatabase myDataBase; 
+    static private SQLiteDatabase myDataBase; 
  
     private final Context myContext;
  
@@ -148,14 +151,31 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
  
 	}
+	public static boolean isOpen(){
+		return myDataBase.isOpen();
+	}
  
-	public String getAya(int sura , int aya)
+	public static String getAya(int sura , int aya)
 	{
-		Cursor cur = myDataBase.query(TABLE_NAME, new String[]{"text"}, "sura=? and aya=?", new String[]{sura+"",aya+""}, null, null, null);
+		Cursor cur = myDataBase.query(QURAN_TAB, new String[]{"text"}, "sura=? and aya=?", new String[]{sura+"",aya+""}, null, null, null);
 		if(cur.moveToFirst())
 			return cur.getString(0);
 		return "";
 		
+	}
+	
+	public static Cursor getMarks(){
+		Cursor cur = myDataBase.query(MARK_TAB, new String[]{"type","date","sura","aya"}, "type=?", new String[]{"*"}, null, null, null);
+		return cur;
+	}
+	
+	public void addMark(String type,int sura, int aya){
+		ContentValues val = new ContentValues(4);
+		val.put("type", type);
+		val.put("date", (int)(new Date().getTime()));
+		val.put("aya", aya);
+		val.put("sura", sura);
+		myDataBase.insert(MARK_TAB, null, val);
 	}
         // Add your public helper methods to access and get content from the database.
        // You could return cursors by doing "return myDataBase.query(....)" so it'd be easy
