@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -49,7 +50,7 @@ public class ListMarksActivity extends Activity {
 				finish();
 			}
 		});
-		Button addMarkBtn = (Button) findViewById(R.id.markBtn);
+		Button addMarkBtn = (Button) findViewById(R.id.addMarkBtn);
 		addMarkBtn.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				markAdapter.addMark('*', 19, 3);
@@ -83,7 +84,7 @@ public class ListMarksActivity extends Activity {
 
 
 
-class ListMarkAdapter implements ListAdapter
+class ListMarkAdapter extends BaseAdapter implements ListAdapter 
 {
 	private LayoutInflater mInflater;
 	private  DataBaseHelper myDbHelper;
@@ -100,18 +101,19 @@ class ListMarkAdapter implements ListAdapter
 		
 		Cursor cur = myDbHelper.getMarks();
 		marks = new  ArrayList<Mark>(cur.getCount());
-		if(!cur.moveToFirst()){			//TODO cur empty		
-		}
-		Mark mrk ;
-		size = cur.getCount();
-		while(cur.moveToNext()){
-			
-			marks.add(new Mark(cur));
+		if(cur.moveToFirst()){			//TODO cur empty		
+			Mark mrk ;
+			size = cur.getCount();
+			do{
+				
+				marks.add(new Mark(cur));
+			}while(cur.moveToNext());
 		}
 
 	}
 	public void addMark(char type , int aya , int sura){
 		myDbHelper.addMark(type+"", sura, aya);
+		this.notifyDataSetChanged();
 	}
 
 	@Override
@@ -136,13 +138,15 @@ class ListMarkAdapter implements ListAdapter
 
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {
-		if(view == null){
+ 		if(view == null){
 			view = mInflater.inflate(R.layout.list_item, parent,false);
 		}
 		TextView txt = (TextView) view.findViewById(R.id.textView1);
-		txt.setTextSize(marks.get(position).sura);
+		txt.setTextSize(30);
+		txt.setText("sura "+marks.get(position).sura);
 		TextView txt1 = (TextView) view.findViewById(R.id.textView2);
-		txt1.setText(marks.get(position).aya);
+		txt1.setTextSize(30);
+		txt1.setText("aya "+marks.get(position).aya);
 		return view;
 	}
 
@@ -183,7 +187,7 @@ class ListMarkAdapter implements ListAdapter
 
 	public void initDB()
 	{
-		if(myDbHelper.isOpen()){
+		if(myDbHelper!=null && myDbHelper.isOpen()){
 			return;
 		}
 		myDbHelper = new DataBaseHelper(ListMarksActivity.ctx);
@@ -198,6 +202,11 @@ class ListMarkAdapter implements ListAdapter
 			throw sqle;
 		}
 	}
+}
+class MyListView extends ListView{
+	
+	
+	
 }
 class Mark{
 	String type;

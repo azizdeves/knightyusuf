@@ -202,7 +202,7 @@ public class DariGlyphUtils {
                 			&& g.selectedGlyph != g.startChar 
                 				&& g.selectedGlyph != g.mainChar
                 				&& g.selectedGlyph != g.charCode)
-                		output.append("ـ");
+                		output.append('\u0640');
                         output.append((char) g.selectedGlyph);
                 }
 //                return new String(outputChars);

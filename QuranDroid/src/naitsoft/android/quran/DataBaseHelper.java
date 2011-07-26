@@ -16,7 +16,16 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DataBaseHelper extends SQLiteOpenHelper{
 	 
-    //The Android's default system path of your application database.
+	
+    public static SQLiteDatabase getMyDataBase() {
+		return myDataBase;
+	}
+
+	public static void setMyDataBase(SQLiteDatabase myDataBase) {
+		DataBaseHelper.myDataBase = myDataBase;
+	}
+
+	//The Android's default system path of your application database.
     private static String DB_PATH = "/data/data/naitsoft.android.quran/databases/";
  
     private static String DB_NAME = "quran.sql3";
@@ -128,7 +137,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
  
     	//Open the database
         String myPath = DB_PATH + DB_NAME;
-    	myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READONLY);
+    	myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
  
     }
  
@@ -165,7 +174,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	}
 	
 	public static Cursor getMarks(){
-		Cursor cur = myDataBase.query(MARK_TAB, new String[]{"type","date","sura","aya"}, "type=?", new String[]{"*"}, null, null, null);
+		Cursor cur = myDataBase.query(MARK_TAB, new String[]{"type","date","sura","aya"},null, null, null, null, null);
 		return cur;
 	}
 	
@@ -175,7 +184,10 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		val.put("date", (int)(new Date().getTime()));
 		val.put("aya", aya);
 		val.put("sura", sura);
+		myDataBase.beginTransaction();
 		myDataBase.insert(MARK_TAB, null, val);
+		myDataBase.endTransaction();
+		
 	}
         // Add your public helper methods to access and get content from the database.
        // You could return cursors by doing "return myDataBase.query(....)" so it'd be easy

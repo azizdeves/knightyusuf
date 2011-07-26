@@ -120,14 +120,14 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 				callMarkActivity();
 			}
 		});
-		loadAudioAya(sura, aya);
+		//loadAudioAya(sura, aya);
 	}
 
 	public void callMarkActivity()
 	{
-//		myDbHelper.addMark("*", 3, 19);
-//		Intent markIntent = new Intent(this,ListMarksActivity.class);
-//		startActivityForResult(markIntent,1);
+		myDbHelper.addMark("*", 3, 19);
+		Intent markIntent = new Intent(this,ListMarksActivity.class);
+		startActivityForResult(markIntent,MARK_CODE);
 	}
 
 
