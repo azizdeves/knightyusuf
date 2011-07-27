@@ -59,14 +59,16 @@ public class ListMarksActivity extends Activity {
 		ImageButton addMarkBtn = (ImageButton) findViewById(R.id.imgMarkBtn);
 		addMarkBtn.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				markAdapter.addMark('*', 19, 3);
+				markAdapter.addMark('*', currSura, currAya);
 				listMarkView.setAdapter(markAdapter);
 			}
 		});
-		if(savedInstanceState!=null){
-			currAya = savedInstanceState.getInt("aya");
-			currSura = savedInstanceState.getInt("sura");
+		Bundle bund = getIntent().getExtras();
+		if(bund != null){
+			currAya = bund.getInt("aya");
+			currSura = bund.getInt("sura");
 		}
+	
 	}
 	
 	@Override
@@ -117,15 +119,16 @@ class ListMarkAdapter extends BaseAdapter implements ListAdapter
 		marks = new  ArrayList<Mark>(cur.getCount());
 		if(cur.moveToFirst()){			//TODO cur empty		
 			Mark mrk ;
-			size = cur.getCount();
 			do{
 				marks.add(new Mark(cur));
 			}while(cur.moveToNext());
+			size = cur.getCount();
 		}
 	}
-	public void addMark(char type , int aya , int sura){
-		myDbHelper.addMark(type+"", sura, aya);
-		marks.add(new Mark("+", 10, 19, 20));
+	public void addMark(char type , int sura , int aya){
+		myDbHelper.addMark(String.valueOf(type), sura, aya);
+		loadMarks();
+//		marks.add(new Mark("+", 10, 3, 20));
 		size = marks.size();
 		//this.notifyDataSetChanged();
 	}
@@ -242,7 +245,7 @@ class Mark{
 		this.aya = aya;
 	}
 	public Mark(Cursor cur) {
-		this(cur.getString(0),cur.getInt(1),cur.getInt(2),cur.getInt(2));
+		this(cur.getString(0),cur.getInt(1),cur.getInt(2),cur.getInt(3));
 	}
 	
 	

@@ -13,7 +13,7 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ScrollView;
 
 public class QuranDroidActivity extends Activity implements OnInitListener {
@@ -24,14 +24,15 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	private QuranView qv;
 	private DataBaseHelper myDbHelper;
 	private String ayaTxt;
-	private Button playBtn;
-	private Button nextBtn;
-	private Button prevBtn;
+	private ImageButton playBtn;
+	private ImageButton nextBtn;
+	private ImageButton prevBtn;
 	private MediaPlayer player;
 	private ScrollView scrollAya;
-	private Button bigBtn;
-	private Button smallBtn;
-	private Button markBtn;
+	private ImageButton bigBtn;
+	private ImageButton smallBtn;
+	private ImageButton markBtn;
+	private Thread audioThread;
 	static int aya ;
 	static int sura;
 	
@@ -40,38 +41,38 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		scrollAya = (ScrollView) findViewById(R.id.scroll);
-		playBtn = (Button) findViewById(R.id.playBtn);
-		nextBtn = (Button) findViewById(R.id.next);
-		prevBtn = (Button) findViewById(R.id.prev);
-		bigBtn = (Button) findViewById(R.id.big);
-		smallBtn = (Button) findViewById(R.id.small);
-		markBtn = (Button) findViewById(R.id.markBtn);
+		playBtn = (ImageButton) findViewById(R.id.playBtn);
+		nextBtn = (ImageButton) findViewById(R.id.next);
+		prevBtn = (ImageButton) findViewById(R.id.prev);
+		bigBtn = (ImageButton) findViewById(R.id.big);
+		smallBtn = (ImageButton) findViewById(R.id.small);
+		markBtn = (ImageButton) findViewById(R.id.markBtn);
 		
 		qv = (QuranView) findViewById(R.id.quranTxt);
 		initDB(); 
 		
-		prevBtn.setText(">>>");
-		nextBtn.setText("<<<");
+//		prevBtn.setText(">>>");
+//		nextBtn.setText("<<<");
 		
 		initFromBundle(savedInstanceState);
-		ayaTxt = myDbHelper.getAya(sura, aya);
 		if(mTts == null){
-//			Intent checkIntent = new Intent();
-//			checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-//			startActivityForResult(checkIntent, TTS_CHECK_CODE);
+			Intent checkIntent = new Intent();
+			checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+			startActivityForResult(checkIntent, TTS_CHECK_CODE);
 		}
-		qv.setText(ayaTxt);
+		audioThread = new Thread();
+		loadShowAya();
 		
 		qv.setEventListener(new QuranEventListener() {
 			@Override
 			public void onTouch(QuranEvent event) {
-//				if(event.getDirct() == QuranEvent.SLIDE_RIGHT)
-//					getNextAya();
-//				else
-//					getPrevAya();
-//				
-//				ayaTxt = myDbHelper.getAya(sura, aya);
-//				qv.setText(ayaTxt);
+				if(event.getDirct() == QuranEvent.SLIDE_RIGHT)
+					getNextAya();
+				else
+					getPrevAya();
+				
+				ayaTxt = myDbHelper.getAya(sura, aya);
+				qv.setText(ayaTxt);
 			}
 			@Override
 			public void onClick(QuranEvent event) {
@@ -100,19 +101,15 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		nextBtn.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				getNextAya();
-				ayaTxt = myDbHelper.getAya(sura, aya);
-				qv.setText(ayaTxt);
+				loadShowAya();
 				player = null;
-				loadAudioAya(sura, aya);
 			}
 		});
 		prevBtn.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				getPrevAya();
-				ayaTxt = myDbHelper.getAya(sura, aya);
-				qv.setText(ayaTxt);
+				loadShowAya();
 				player = null;
-				loadAudioAya(sura, aya);
 			}
 		});
 		markBtn.setOnClickListener(new View.OnClickListener() {
@@ -120,13 +117,13 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 				callMarkActivity();
 			}
 		});
-		//loadAudioAya(sura, aya);
 	}
 
 	public void callMarkActivity()
 	{
-		myDbHelper.addMark("*", 3, 19);
 		Intent markIntent = new Intent(this,ListMarksActivity.class);
+		markIntent.putExtra("aya", aya);
+		markIntent.putExtra("sura", sura);
 		startActivityForResult(markIntent,MARK_CODE);
 	}
 
@@ -163,6 +160,7 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		if(requestCode == MARK_CODE){
 			aya = data.getExtras().getInt("aya");
 			sura = data.getExtras().getInt("sura");
+			loadShowAya();
 		}
 	}
 	
@@ -174,7 +172,9 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	}
 	
 	private void loadAudioAya(final int sura, final int aya){
-		Thread audioThread = new Thread(){
+		player = null;
+		audioThread=null;
+		audioThread = new Thread(){
 			public void run() {
 				Context ctx = getApplicationContext();
 			//	playBtn.setEnabled(false);
@@ -214,6 +214,11 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 			throw sqle;
 		}
 
+	}
+	private void loadShowAya(){
+		ayaTxt = myDbHelper.getAya(sura, aya);
+		qv.setText(ayaTxt);
+		loadAudioAya(sura, aya);
 	}
 
 	@Override

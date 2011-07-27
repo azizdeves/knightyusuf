@@ -184,9 +184,9 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		val.put("date", (int)(new Date().getTime()));
 		val.put("aya", aya);
 		val.put("sura", sura);
-		myDataBase.beginTransaction();
+//		myDataBase.beginTransaction();
 		myDataBase.insert(MARK_TAB, null, val);
-		myDataBase.endTransaction();
+//		myDataBase.endTransaction();
 		
 	}
         // Add your public helper methods to access and get content from the database.

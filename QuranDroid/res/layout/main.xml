@@ -4,13 +4,13 @@
 	android:orientation="vertical">
 	<LinearLayout android:layout_height="wrap_content"
 		android:layout_width="match_parent" android:id="@+id/linearLayout1">
-		<Button android:layout_weight="1" android:text="|&gt;" android:id="@+id/playBtn" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="fill"></Button>
-		<Button android:text="+" android:id="@+id/big" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
-		<Button android:text="-" android:id="@+id/small" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
-		<Button android:text="next" android:id="@+id/next" android:layout_height="match_parent" android:layout_width="wrap_content" android:layout_weight="1"></Button>
-		<Button android:text="prev" android:id="@+id/prev"
-			android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_weight="1"></Button>
-		<Button android:layout_weight="1" android:text="X" android:id="@+id/markBtn"  android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="fill"></Button>
+		<ImageButton android:text="|&gt;" android:id="@+id/playBtn" android:src="@android:drawable/ic_media_play" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="fill" android:layout_weight="1"></ImageButton>
+		<ImageButton android:text="+" android:id="@+id/big"  android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1"></ImageButton>
+		<ImageButton android:text="-" android:id="@+id/small"  android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_weight="1"></ImageButton>
+		<ImageButton android:text="next" android:id="@+id/next" android:src="@android:drawable/ic_media_previous" android:layout_height="match_parent" android:layout_width="wrap_content" android:layout_weight="1"></ImageButton>
+		<ImageButton android:text="prev" android:id="@+id/prev" android:src="@android:drawable/ic_media_next"
+			android:layout_height="wrap_content" android:layout_width="wrap_content" android:layout_weight="1"></ImageButton>
+		<ImageButton android:text="X" android:id="@+id/markBtn"  android:src="@android:drawable/btn_star" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="fill" android:layout_weight="1"></ImageButton>
 	</LinearLayout>
 	<ScrollView android:id="@+id/scroll" android:layout_height="fill_parent" android:layout_width="match_parent">
 		<naitsoft.android.quran.QuranView
