@@ -90,6 +90,7 @@ public class QuranView extends View {
     
     private void constructWords(boolean toRequestLayout)
     {
+    	try{
     	wrds.clear();
     	currentLine = (int) (stepLine*0.75);
          curseur=0;
@@ -126,6 +127,9 @@ public class QuranView extends View {
          }
          if(toRequestLayout)
         	 requestLayout();
+    	}catch(Exception e){
+    		System.out.print(e.getMessage());
+    	}
     }
  
     private void drawWords(Canvas cnvs)

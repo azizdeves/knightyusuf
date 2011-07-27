@@ -18,6 +18,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -26,7 +28,10 @@ public class ListMarksActivity extends Activity {
 
 	private LayoutInflater mInflater;
 	private ListMarkAdapter markAdapter;
+	private ListView listMarkView;
 	static Context ctx;
+	int currAya;
+	int currSura;
 
 	public ListMarksActivity(){
 		ctx = this;
@@ -38,31 +43,36 @@ public class ListMarksActivity extends Activity {
 		mInflater = (LayoutInflater) this.getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
 		markAdapter = new ListMarkAdapter(this);
 		setContentView(R.layout.layout_mark);
-		ListView listMarkView = (ListView) findViewById(R.id.listMarkView);
+		listMarkView = (ListView) findViewById(R.id.listMarkView);
 		listMarkView.setAdapter(markAdapter);
 		listMarkView.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
+			public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
 				Intent intent = new Intent();
-				intent.putExtra("sura", 1);
-				intent.putExtra("aya", 2);
+				Mark mrk =  markAdapter.getMark(pos);
+				intent.putExtra("sura",mrk.sura);
+				intent.putExtra("aya", mrk.aya);
 				setResult(QuranDroidActivity.MARK_CODE, intent);
 				finish();
 			}
 		});
-		Button addMarkBtn = (Button) findViewById(R.id.addMarkBtn);
+//		Button addMarkBtn = (Button) findViewById(R.id.addMarkBtn);
+		ImageButton addMarkBtn = (ImageButton) findViewById(R.id.imgMarkBtn);
 		addMarkBtn.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				markAdapter.addMark('*', 19, 3);
+				listMarkView.setAdapter(markAdapter);
 			}
 		});
+		if(savedInstanceState!=null){
+			currAya = savedInstanceState.getInt("aya");
+			currSura = savedInstanceState.getInt("sura");
+		}
 	}
 	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 	}
-
 
 	public LayoutInflater getmInflater() {
 		return mInflater;
@@ -97,23 +107,27 @@ class ListMarkAdapter extends BaseAdapter implements ListAdapter
 			loadMarks();
 	}
 	
-	private void loadMarks(){
+	public Mark getMark(int pos) {
 		
+		return marks.get(pos);
+	}
+
+	private void loadMarks(){
 		Cursor cur = myDbHelper.getMarks();
 		marks = new  ArrayList<Mark>(cur.getCount());
 		if(cur.moveToFirst()){			//TODO cur empty		
 			Mark mrk ;
 			size = cur.getCount();
 			do{
-				
 				marks.add(new Mark(cur));
 			}while(cur.moveToNext());
 		}
-
 	}
 	public void addMark(char type , int aya , int sura){
 		myDbHelper.addMark(type+"", sura, aya);
-		this.notifyDataSetChanged();
+		marks.add(new Mark("+", 10, 19, 20));
+		size = marks.size();
+		//this.notifyDataSetChanged();
 	}
 
 	@Override
@@ -141,6 +155,14 @@ class ListMarkAdapter extends BaseAdapter implements ListAdapter
  		if(view == null){
 			view = mInflater.inflate(R.layout.list_item, parent,false);
 		}
+ 		Mark mrk = marks.get(position);
+ 		ImageView typeImage = (ImageView) view.findViewById(R.id.imageType);
+ 		if(!"*".equals(mrk.type)){
+// 			typeImage.setImageResource(android.R.drawable.star_on);
+ 			typeImage.setVisibility(View.INVISIBLE);
+ 		}else{
+ 			typeImage.setVisibility(View.VISIBLE);
+ 		}
 		TextView txt = (TextView) view.findViewById(R.id.textView1);
 		txt.setTextSize(30);
 		txt.setText("sura "+marks.get(position).sura);
@@ -203,11 +225,11 @@ class ListMarkAdapter extends BaseAdapter implements ListAdapter
 		}
 	}
 }
-class MyListView extends ListView{
-	
-	
-	
-}
+//class MyListView extends ListView{
+//	
+//	
+//	
+//}
 class Mark{
 	String type;
 	int date;

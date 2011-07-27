@@ -56,9 +56,9 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		initFromBundle(savedInstanceState);
 		ayaTxt = myDbHelper.getAya(sura, aya);
 		if(mTts == null){
-			Intent checkIntent = new Intent();
-			checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-			startActivityForResult(checkIntent, TTS_CHECK_CODE);
+//			Intent checkIntent = new Intent();
+//			checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+//			startActivityForResult(checkIntent, TTS_CHECK_CODE);
 		}
 		qv.setText(ayaTxt);
 		
