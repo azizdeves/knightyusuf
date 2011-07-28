@@ -46,7 +46,7 @@ public class SirajActivity extends Activity {
 	}
 	
 	private void loadShowChapter(){
-		contentChapter = myDbHelper.getChapter(livre, chapitre);
+		contentChapter = myDbHelper.getChapter(livre, chapitre).substring(0, 100);
 		cursorEnd = qv.setText(contentChapter,cursorBegin);
 	}
 }

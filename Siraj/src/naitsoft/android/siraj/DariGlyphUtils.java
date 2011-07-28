@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public class DariGlyphUtils {
 
-	 static HashMap<Integer, String> roots= new HashMap<Integer, String>();
+	 //static HashMap<Integer, String> roots= new HashMap<Integer, String>();
         private static final List<Integer> noChar = new ArrayList<Integer>();
         static{
                 noChar.add(8204);
@@ -142,7 +142,7 @@ public class DariGlyphUtils {
         }
         
         public static String reshapeText(String input){
-        		roots.clear();
+        		//roots.clear();
                         if (input != null) {
                                 StringBuffer result = new StringBuffer();
                                 String[] sentences = input.split("\n");
@@ -171,7 +171,7 @@ public class DariGlyphUtils {
                 for(int i=0;i<words.length;i++){
 
                 		glyphString = getGlyphString(words[i]);
-                		roots.put(glyphString.hashCode(), words[i]);
+                		//roots.put(glyphString.hashCode(), words[i]);
 						reshapedText.append(glyphString);
                         reshapedText.append(" ");
                 }
@@ -198,11 +198,11 @@ public class DariGlyphUtils {
                 for (int i = 0 ; i < outputGlyphs.size() ; i++) {
 //                        outputChars[i] = (char) outputGlyphs.get(i).selectedGlyph;
                 	g = outputGlyphs.get(i);
-                	if(!isHaraka(g.selectedGlyph) 
-                			&& g.selectedGlyph != g.startChar 
-                				&& g.selectedGlyph != g.mainChar
-                				&& g.selectedGlyph != g.charCode)
-                		output.append('\u0640');
+//                	if(!isHaraka(g.selectedGlyph) 
+//                			&& g.selectedGlyph != g.startChar 
+//                				&& g.selectedGlyph != g.mainChar
+//                				&& g.selectedGlyph != g.charCode)
+//                		output.append('\u0640');
                         output.append((char) g.selectedGlyph);
                 }
 //                return new String(outputChars);
@@ -375,11 +375,11 @@ public class DariGlyphUtils {
         }
 
 
-		public static HashMap<Integer, String> getRoots() {
-			return roots;
-		}
-		public static void setRoots(HashMap<Integer, String> roots) {
-			DariGlyphUtils.roots = roots;
-		}
+//		public static HashMap<Integer, String> getRoots() {
+//			return roots;
+//		}
+//		public static void setRoots(HashMap<Integer, String> roots) {
+//			DariGlyphUtils.roots = roots;
+//		}
 
 }

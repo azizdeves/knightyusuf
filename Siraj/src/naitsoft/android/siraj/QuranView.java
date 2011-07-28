@@ -211,8 +211,9 @@ public class QuranView extends View {
     		constructWords(false); 
     	}
     	int height = MeasureSpec.getSize(heightMeasureSpec);
+    	if(height==0)height= 362;
     	int viewHeight = currentLine + stepLine;
-    	setMeasuredDimension(width, viewHeight);
+    	setMeasuredDimension(width, height);
     }
     
     private float getCharWidth(int indxTxt){
