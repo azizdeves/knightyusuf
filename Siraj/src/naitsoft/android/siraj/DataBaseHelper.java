@@ -57,14 +57,14 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 
     private void copyDatabaseSplited() throws IOException
     {
-        File Path = myContext.getDir("Data", 0);
-        File dBFile = new File(DB_PATH,DB_NAME);
+       // File Path = myContext.getDir("Data", 0);
+        //File dBFile = new File(DB_PATH,DB_NAME);
         AssetManager am = myContext.getAssets();
     	String outFileName = DB_PATH + DB_NAME;
     	 
     	//Open the empty db as the output stream
     	OutputStream myOutput = new FileOutputStream(outFileName);
-        dBFile.createNewFile();
+        //dBFile.createNewFile();
         byte []b = new byte[1024];
         int i, r;
 //        String []Files = am.list("");
@@ -74,7 +74,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 //               String fn = String.format("%d.sqlite", i);
 //            if(Arrays.binarySearch(Files, fn) < 0)
 //                   break;
-            InputStream is = am.open("siraj"+i+".sql"); 
+            InputStream is = am.open("siraj"+i+".sqlite"); 
             while((r = is.read(b)) != -1)
             	myOutput.write(b, 0, r);
             is.close();

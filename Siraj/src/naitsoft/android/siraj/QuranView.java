@@ -61,7 +61,7 @@ public class QuranView extends View {
     {
     	if(initText){
     		text = DariGlyphUtils.reshapeText(text);
-    		roots = DariGlyphUtils.getRoots();
+    		//roots = DariGlyphUtils.getRoots();
     	}
         dirty = true;
         Rect rec = new  Rect();
