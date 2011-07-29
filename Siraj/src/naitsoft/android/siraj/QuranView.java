@@ -45,14 +45,14 @@ public class QuranView extends View {
 		//Typeface mFace = Typeface.createFromAsset(getContext().getAssets(),"fonts/Scheherazade.ttf");
         harakaPaint = new Paint();
         harakaPaint.setAntiAlias(true);
-        harakaPaint.setTextSize(80);
+        harakaPaint.setTextSize(25);
         harakaPaint.setStyle(Style.FILL);
         harakaPaint.setColor(Color.GREEN);
         harakaPaint.setAlpha(160);
         
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setTextSize(80);
+        mPaint.setTextSize(25);
         mPaint.setStyle(Style.FILL);
         mPaint.setColor(Color.WHITE);
 	}
@@ -66,7 +66,7 @@ public class QuranView extends View {
         dirty = true;
         Rect rec = new  Rect();
         mPaint.getTextBounds("\u0644", 0, 1, rec);
-        stepLine = (int) (rec.height()*3);
+        stepLine = (int) (rec.height()*2);
         currentLine = (int) (stepLine*0.75);
     	widths = new float[text.length()];
         xpos = new int[text.length()];
@@ -84,6 +84,10 @@ public class QuranView extends View {
         canvas.drawRect(new Rect(-1000, 0, 0, 1000), mPaint);
         if(text == null)
         	return;
+        if(dirty){
+        	//this.width = width;
+        	constructWords(false); 
+        }
         drawWords(canvas);
         dirty = false;
     }
@@ -106,6 +110,10 @@ public class QuranView extends View {
          	if((curseur -= charWidth)< -width){
          		newLine();
          		i= wrd.idxRtxt;
+         		if(currentLine > this.getHeight()){
+         			
+         			break;
+         		}
          		charWidth = getCharWidth(i);
          		wrd.rect.right = curseur;
          		wrd.rect.left = curseur -= charWidth;
@@ -206,10 +214,7 @@ public class QuranView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     	int width = MeasureSpec.getSize(widthMeasureSpec);
-    	if(dirty){
-    		this.width = width;
-    		constructWords(false); 
-    	}
+
     	int height = MeasureSpec.getSize(heightMeasureSpec);
     	if(height==0)height= 362;
     	int viewHeight = currentLine + stepLine;

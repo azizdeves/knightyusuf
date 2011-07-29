@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    >
-		<naitsoft.android.siraj.QuranView
-			android:id="@+id/quranTxt" android:layout_width="fill_parent"
-			android:padding="10dip" 
-			android:fadingEdge="vertical" android:layout_height="fill_parent" />
+	android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical">
+    <LinearLayout android:id="@+id/linearLayout1" android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
+        <ImageButton android:src="@android:drawable/star_big_on" android:id="@+id/imgMarkBtn" android:layout_height="wrap_content" android:layout_width="wrap_content"></ImageButton>
+        
+    </LinearLayout>
+    <ListView android:layout_height="wrap_content" android:layout_weight="1" android:id="@+id/listMarkView" android:layout_width="match_parent"></ListView>
+
 </LinearLayout>
