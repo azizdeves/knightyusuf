@@ -7,7 +7,9 @@ import java.util.ArrayList;
 
 import android.database.DataSetObserver;
 import android.database.SQLException;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Style;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,20 +26,26 @@ public class ArabicListAdapter implements ListAdapter {
 	ArrayList<TextLine> lines = new ArrayList<TextLine>();
 	private LayoutInflater mInflater;
 	private DataBaseHelper myDbHelper;
+	boolean isLineInit=false;
+	
 	
 	public ArabicListAdapter(SirajActivity activ){
 		mInflater = activ.getLayoutInflater(); 
 		activity = activ;
+		paint=activ.paint;
+		initDB();
 		loadChapter();
-		constructLine();
+		
 	}
 	private void constructLine(){
+//		width = 800;
 		int cursor;
 		int startCur = 0;
 		int endCur = 0;
 		int lastSpace = -1;
 		boolean isNewLine=false;
 		int lineWidth=0;
+		float[] w = new float[1];
 		for(int i = 0; i<text.length(); i++){
 			if(text.charAt(i)==' ')
 				lastSpace = i;
@@ -49,27 +57,40 @@ public class ArabicListAdapter implements ListAdapter {
 				isNewLine = false;
 
 			}
-			if((lineWidth -= ArabicTextView.getCharWidth(paint, text, i))< -width){
-				lines.add(new TextLine(text.substring(startCur, endCur)));
+			if((lineWidth += ArabicTextView.getCharWidth(paint, text, i,w))> width){
+				
+				lines.add(new TextLine(text.substring(startCur, lastSpace)));
 				i = lastSpace;
 				isNewLine = true;
 			}
 
 		}
+		isLineInit = true;
 	}
 
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {
+//		if(!isLineInit){
+//			width = view.getWidth();
+//			constructLine();
+//		}
+		ViewHolder holder;
  		if(view == null){
 			view = mInflater.inflate(R.layout.layout_mark, parent,false);
+			holder = new ViewHolder();
+			holder.arabText = (ArabicTextView) view.findViewById(R.id.textView);
+			view.setTag(holder);
 		}
-		ArabicTextView txt = (ArabicTextView) view.findViewById(R.id.textView);
-		txt.setTxtSize(10f);
-		txt.setLine(lines.get(position));
+ 		else{
+ 			holder = (ViewHolder) view.getTag();
+ 		}
+//		txt.setTxtSize(10f);
+		holder.arabText.setLine(lines.get(position));
 		return view;
 	}
 	private void loadChapter(){
-		text = myDbHelper.getChapter(1, 2).substring(0, 300);
+		text = myDbHelper.getChapter(1, 5);
+		text = DariGlyphUtils.reshapeText(text);
 	}
 	public void initDB()
 	{
@@ -171,6 +192,7 @@ public class ArabicListAdapter implements ListAdapter {
 	}
 	public void setWidth(int width) {
 		this.width = width;
+		constructLine();
 	}
 
 }

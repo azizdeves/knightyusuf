@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -30,41 +31,64 @@ public class ArabicTextView extends View {
 	private int width;
 	boolean dirty = true;
 	private Bitmap map;
-	
+	static int frame;
+	private Rect clsRect = new Rect();
+    float[] w = new float[1];
 	public ArabicTextView(Context context,AttributeSet attr) {
 		super(context,attr);
 		//Typeface mFace = Typeface.createFromAsset(getContext().getAssets(),"fonts/Scheherazade.ttf");
         
-        mPaint = new Paint();
-        mPaint.setAntiAlias(true);
-        mPaint.setTextSize(25);
-        mPaint.setStyle(Style.FILL);
-        mPaint.setColor(Color.WHITE);
+        mPaint = SirajActivity.paint;
 	}
 	
     public int init(boolean initText)
     {
     	text  = line.getText();
         dirty = true;
-        Rect rec = new  Rect();
-        mPaint.getTextBounds("\u0644", 0, 1, rec);
-        stepLine = (int) (rec.height()*2);
+        mPaint.getTextBounds("\u0644", 0, 1, clsRect);
+        stepLine = (int) (clsRect.height()*2);
 
         invalidate();
         return 0;
     }
     
-    @Override 
+    @Override  
     protected void onDraw(Canvas canvas) {
+//    	SirajActivity.text.setText(frame++);
     	width = canvas.getWidth();
     	canvas.translate(canvas.getWidth(), 0);
-        mPaint.setColor(Color.BLACK);
-        canvas.drawRect(new Rect(-1000, 0, 0, 1000), mPaint);
+    	mPaint.setColor(Color.GRAY);
+    	clsRect.set(-width, 0, 0, canvas.getHeight());
+        canvas.drawRect(clsRect, mPaint);
         if(text == null)
         	return;
-        if(dirty){
-        	canvas.drawText(text, 0, 30, mPaint);
+        mPaint.setColor(Color.WHITE); 
+//        int prevCharWitdh=0;
+        int cur=0;
+        if(true){ 
+        	w = new float[text.length()];
+        	mPaint.getTextWidths(text, w);
+//        	canvas.translate(canvas.getWidth(), 0);
+        
+        	float y = stepLine/1.5f;
+        	canvas.drawText(text, 0, y, mPaint);
+//        	for(int i =0, length=text.length(); i<length;i++){
+//        		canvas.drawText(text, i, i+1, cur,  y, mPaint);
+//        		if(!DariGlyphUtils.isHaraka(text.charAt(i)))
+//        			cur-=w[i];
+////        		prevCharWitdh = (int) ArabicTextView.getCharWidth(mPaint, text, i,w);
+//        	}
+//        	********************
+//        	map = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_4444);
+//    		Canvas cnvs = new Canvas(map);
+//    		cnvs.translate(canvas.getWidth(), 0);
+//        	for(int i =0; i<text.length();i++){
+//        		
+//        		cnvs.drawText(text,i,i+1, cur-=prevCharWitdh,  stepLine/1.5f, mPaint);
+//        		prevCharWitdh = (int) ArabicTextView.getCharWidth(mPaint, text, i,w);
+//        	}**************************
         }
+//        canvas.drawBitmap(map, -canvas.getWidth(), 0, mPaint);**************
         dirty = false;
     }
     
@@ -124,6 +148,7 @@ public class ArabicTextView extends View {
 
 	public void setLine(TextLine line) {
 		this.line = line;
+		init(true);
 	}
 
 	private void drawWords(Canvas cnvs)
@@ -155,8 +180,8 @@ public class ArabicTextView extends View {
     
 
     
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
 //    	if(event.getAction()== MotionEvent.ACTION_MOVE){
 //    		isDraging = true;
 //    	}
@@ -181,8 +206,8 @@ public class ArabicTextView extends View {
 //    		}
 //    		isDraging = false;
 //    	}
-    	return true;
-	}
+//    	return true;
+//	}
     
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -190,12 +215,12 @@ public class ArabicTextView extends View {
     	setMeasuredDimension(width, stepLine);
     }
     
-    static public float getCharWidth(Paint paint, String text, int indxTxt){
+    static public float getCharWidth(Paint paint, String text, int indxTxt,float[] w ){
     	if(DariGlyphUtils.isHaraka(text.charAt(indxTxt)))
     		return 0f;
-		float[] w = new float[1];
+		
 		paint.getTextWidths(text, indxTxt, indxTxt+1, w);
-		return w[1]; 
+		return w[0]; 
     }
 
 	public String getText() {
@@ -295,5 +320,9 @@ class ArabicTextEvent{
 	public void setDirct(int dirct) {
 		this.dirct = dirct;
 	}
+	
+}
+class ViewHolder{
+	public ArabicTextView arabText;
 	
 }

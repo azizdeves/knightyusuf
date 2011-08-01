@@ -36,8 +36,11 @@ public class DariGlyphUtils {
                 arabicShats.add(1618);
         }
         
-        public static boolean isHaraka(int c){
-        	return arabicShats.contains(c);
+        public static boolean isHaraka(char c){
+        	if(c<1619 && c>1610)
+        		return true;
+        	return false; 
+//        	return arabicShats.contains(c);
         }
         public static int getRootChar(int c){
 
