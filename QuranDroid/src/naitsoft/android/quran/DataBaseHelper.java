@@ -169,6 +169,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		Cursor cur = myDataBase.query(QURAN_TAB, new String[]{"text"}, "sura=? and aya=?", new String[]{sura+"",aya+""}, null, null, null);
 		if(cur.moveToFirst())
 			return cur.getString(0);
+
 		return "";
 		
 	}

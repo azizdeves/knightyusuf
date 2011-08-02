@@ -14,6 +14,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.speech.tts.TextToSpeech;
 import android.util.AttributeSet;
@@ -40,6 +41,7 @@ public class QuranView extends View {
 	private Paint harakaPaint;
 	boolean dirty = true;
 	private Bitmap map;
+	private Rect clsRect = new Rect(-1000, 0, 0, 1000);
 	
 	public QuranView(Context context,AttributeSet attr) {
 		super(context,attr);
@@ -78,10 +80,10 @@ public class QuranView extends View {
     
     @Override 
     protected void onDraw(Canvas canvas) {
-    	width = canvas.getWidth();
-    	canvas.translate(canvas.getWidth(), 0);
+//    	width = canvas.getWidth();
+    	canvas.translate(width, 0);
         mPaint.setColor(Color.BLACK);
-        canvas.drawRect(new Rect(-1000, 0, 0, 1000), mPaint);
+        canvas.drawRect(clsRect , mPaint);
         if(text == null)
         	return;
         drawWords(canvas);
@@ -137,7 +139,7 @@ public class QuranView extends View {
     	if(dirty){
     		map = Bitmap.createBitmap(cnvs.getWidth(), getHeight(), Bitmap.Config.ARGB_4444);
     		Canvas canvas = new Canvas(map);
-    		canvas.translate(canvas.getWidth(), 0);
+    		canvas.translate(width, 0);
     		mPaint.setColor(Color.BLACK);
     		canvas.drawRect(new Rect(-1000, 0, 0, 1000), mPaint);
     		mPaint.setColor(Color.WHITE);
@@ -146,17 +148,17 @@ public class QuranView extends View {
     		for(Word w : wrds){
     			for(i=w.idxRtxt;i<=w.idxLtxt;i++){
     				if(DariGlyphUtils.isHaraka(text.charAt(i))){
-    					canvas.drawText(text.charAt(i)+"", xpos[i], stepUp?w.line-15:w.line, harakaPaint);
+    					canvas.drawText(text,i,i+1, xpos[i], stepUp?w.line-15:w.line, harakaPaint);
     					stepUp = true;
     				}
     				else{
     					stepUp = false;
-    					canvas.drawText(text.charAt(i)+"", xpos[i], w.line, mPaint);
+    					canvas.drawText(text,i,i+1, xpos[i], w.line, mPaint);
     				}
     			}
     		}
     	}
-    	cnvs.drawBitmap(map, -cnvs.getWidth(), 0, mPaint);
+    	cnvs.drawBitmap(map, -width, 0, mPaint);
     }
     
     private int getLine(int yPos){

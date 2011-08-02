@@ -158,6 +158,7 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 			}
 		}
 		if(requestCode == MARK_CODE){
+			if(data==null)return;
 			aya = data.getExtras().getInt("aya");
 			sura = data.getExtras().getInt("sura");
 			loadShowAya();
@@ -190,7 +191,7 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 
 	private void initFromBundle(Bundle bundle){
 		if(bundle==null){
-			aya =5;
+			aya =1;
 			sura =2;
 			return;
 		}
@@ -216,9 +217,29 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 
 	}
 	private void loadShowAya(){
-		ayaTxt = myDbHelper.getAya(sura, aya);
+		ayaTxt = getAya();
 		qv.setText(ayaTxt);
 		loadAudioAya(sura, aya);
+	}
+	
+	private String getAya(){
+		String txt =  myDbHelper.getAya(sura, aya);
+		if(!"".equals(txt))
+			return txt;
+		if(aya < 1){ 
+			sura--;		aya = 1;
+			if(sura<1)
+				sura = 114;
+
+		}else{
+			sura++;aya = 1;
+			if(sura>114){
+				sura = 1;
+			}
+
+		}
+
+		return		getAya();
 	}
 
 	@Override

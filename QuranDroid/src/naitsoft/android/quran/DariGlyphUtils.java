@@ -24,6 +24,9 @@ public class DariGlyphUtils {
         static{
                 noChar.add(8204);
         }
+        private static boolean isNoChar(int c){
+        	return c==8204;
+        }
         private static final List<Integer> arabicShats = new ArrayList<Integer>();
         static{
                 arabicShats.add(1611);
@@ -37,7 +40,10 @@ public class DariGlyphUtils {
         }
         
         public static boolean isHaraka(int c){
-        	return arabicShats.contains(c);
+        	if(c<1619 && c>1610)
+        		return true;
+        	return false; 
+//        	return isHaraka(c);
         }
         public static int getRootChar(int c){
 
@@ -211,16 +217,17 @@ public class DariGlyphUtils {
         
         
         private static void reshapeChars(int i, List<Glyph> outputGlyphs){
+        	Glyph glyph = outputGlyphs.get(i);
                 if(outputGlyphs == null || outputGlyphs.size() == 0){
                         return;
                 }else if(i == 0){
-                        if(noChar.contains(outputGlyphs.get(i).charCode)){
+                        if(isNoChar(glyph.charCode)){
                                 outputGlyphs.remove(i);
                                 reshapeChars(i, outputGlyphs);
                                 return;
                         }
-                        if(outputGlyphs.get(i).isDari){
-                                outputGlyphs.get(i).selectedGlyph = outputGlyphs.get(i).mainChar;
+                        if(glyph.isDari){
+                                glyph.selectedGlyph = glyph.mainChar;
                         }
                         reshapeChars(i+1, outputGlyphs);
                         return;
@@ -228,18 +235,18 @@ public class DariGlyphUtils {
                         return;
                 }else {
                         Glyph previousGlyph = outputGlyphs.get(i-1);
-                        for(int j = i-1 ; j >= 0 && arabicShats.contains(previousGlyph.charCode) ; j--){
+                        for(int j = i-1 ; j >= 0 && isHaraka(previousGlyph.charCode) ; j--){
                                 previousGlyph = outputGlyphs.get(j);
                         }
-                        Glyph thisGlyph = outputGlyphs.get(i);
-                        for(int j = i ; j < outputGlyphs.size() && arabicShats.contains(thisGlyph.charCode) ; j++){
+                        Glyph thisGlyph = glyph;
+                        for(int j = i ; j < outputGlyphs.size() && isHaraka(thisGlyph.charCode) ; j++){
                                 thisGlyph = outputGlyphs.get(j);
                         }
                         Glyph nextGlyph = (i+1)< outputGlyphs.size() ? outputGlyphs.get(i+1) : null;
-                        for(int j = i+1 ; nextGlyph != null && j < outputGlyphs.size() && arabicShats.contains(nextGlyph.charCode) ; j++){
+                        for(int j = i+1 ; nextGlyph != null && j < outputGlyphs.size() && isHaraka(nextGlyph.charCode) ; j++){
                                 nextGlyph = outputGlyphs.get(j);
                         }
-                        if(noChar.contains(thisGlyph.charCode)){
+                        if(isNoChar(thisGlyph.charCode)){
                                 outputGlyphs.remove(i);
                                 reshapeChars(i, outputGlyphs);
                                 return;
