@@ -48,14 +48,14 @@ public class QuranView extends View {
 		//Typeface mFace = Typeface.createFromAsset(getContext().getAssets(),"fonts/Scheherazade.ttf");
         harakaPaint = new Paint();
         harakaPaint.setAntiAlias(true);
-        harakaPaint.setTextSize(80);
+        harakaPaint.setTextSize(30);
         harakaPaint.setStyle(Style.FILL);
         harakaPaint.setColor(Color.GREEN);
         harakaPaint.setAlpha(160);
         
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setTextSize(80);
+        mPaint.setTextSize(30);
         mPaint.setStyle(Style.FILL);
         mPaint.setColor(Color.WHITE);
 	}

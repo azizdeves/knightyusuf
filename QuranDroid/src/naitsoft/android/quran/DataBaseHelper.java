@@ -166,21 +166,23 @@ public class DataBaseHelper extends SQLiteOpenHelper{
  
 	public static String getAya(int sura , int aya)
 	{
-		Cursor cur = myDataBase.query(QURAN_TAB, new String[]{"text"}, "sura=? and aya=?", new String[]{sura+"",aya+""}, null, null, null);
+		Cursor cur = myDataBase.query(QURAN_TAB, new String[]{"text"}, "sura=? and aya=?", new String[]{String.valueOf(sura),String.valueOf(aya)}, null, null, null);
 		if(cur.moveToFirst())
 			return cur.getString(0);
-
 		return "";
-		
 	}
 	
 	public static Cursor getMarks(){
-		Cursor cur = myDataBase.query(MARK_TAB, new String[]{"type","date","sura","aya"},null, null, null, null, null);
+		Cursor cur = myDataBase.query(MARK_TAB, new String[]{"type","date","sura","aya","_id"},null, null, null, null, "date desc");
 		return cur;
 	}
 	
+	public static boolean deleteMark(int id ){
+		return 1==myDataBase.delete(MARK_TAB, "_id=?", new String[]{String.valueOf(id)});
+	}
+	
 	public Surah getLastMark(){
-		Cursor cur = myDataBase.query(MARK_TAB, new String[]{"type","sura","aya"},null, null, null, null, "date","1");
+		Cursor cur = myDataBase.query(MARK_TAB, new String[]{"type","sura","aya"},null, null, null, null, "date desc","1");
 		if(cur.moveToFirst())
 			return new Surah(cur);
 		return null;

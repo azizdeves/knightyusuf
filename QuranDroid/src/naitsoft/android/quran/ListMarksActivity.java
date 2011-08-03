@@ -154,7 +154,7 @@ class ListMarkAdapter extends BaseAdapter implements ListAdapter
 	}
 
 	@Override
-	public View getView(int position, View view, ViewGroup parent) {
+	public View getView(final int position, View view, ViewGroup parent) {
  		if(view == null){
 			view = mInflater.inflate(R.layout.list_item, parent,false);
 		}
@@ -166,12 +166,15 @@ class ListMarkAdapter extends BaseAdapter implements ListAdapter
  		}else{
  			typeImage.setVisibility(View.VISIBLE);
  		}
+ 		
 		TextView txt = (TextView) view.findViewById(R.id.textView1);
-		txt.setTextSize(30);
-		txt.setText("sura "+marks.get(position).sura);
 		TextView txt1 = (TextView) view.findViewById(R.id.textView2);
+		ImageButton deleteMarkBtn = (ImageButton) view.findViewById(R.id.deleteMark);
+		txt.setTextSize(30);
+		txt.setText("sura "+mrk.sura);
 		txt1.setTextSize(30);
-		txt1.setText("aya "+marks.get(position).aya);
+		txt1.setText("aya "+mrk.aya);
+		deleteMarkBtn.setOnClickListener(new DeleteMarkClickListener(mrk.id));
 		return view;
 	}
 
@@ -182,7 +185,7 @@ class ListMarkAdapter extends BaseAdapter implements ListAdapter
 
 	@Override
 	public boolean hasStableIds() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -227,25 +230,37 @@ class ListMarkAdapter extends BaseAdapter implements ListAdapter
 			throw sqle;
 		}
 	}
+	
+	
 }
-//class MyListView extends ListView{
-//	
-//	
-//	
-//}
+
+class DeleteMarkClickListener implements View.OnClickListener{
+	int id;
+	public DeleteMarkClickListener(int id){
+		this.id = id;
+	}
+	@Override
+	public void onClick(View v) {
+		DataBaseHelper.deleteMark(id);
+		
+	}
+}
+
 class Mark{
 	String type;
+	int id;
 	int date;
 	int sura;
 	int aya;
-	public Mark(String type, int date, int sura, int aya) {
+	public Mark(String type, int date, int sura, int aya,int id) {
 		this.type = type;
 		this.date = date;
 		this.sura = sura;
 		this.aya = aya;
+		this.id = id;
 	}
 	public Mark(Cursor cur) {
-		this(cur.getString(0),cur.getInt(1),cur.getInt(2),cur.getInt(3));
+		this(cur.getString(0),cur.getInt(1),cur.getInt(2),cur.getInt(3),cur.getInt(4));
 	}
 	
 	

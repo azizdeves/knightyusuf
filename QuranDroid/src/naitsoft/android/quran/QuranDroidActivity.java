@@ -57,9 +57,9 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		
 		initFromBundle(savedInstanceState);
 		if(mTts == null){
-			Intent checkIntent = new Intent();
-			checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-			startActivityForResult(checkIntent, TTS_CHECK_CODE);
+//			Intent checkIntent = new Intent();
+//			checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
+//			startActivityForResult(checkIntent, TTS_CHECK_CODE);
 		}
 		
 		
@@ -155,12 +155,20 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	@Override
 	protected void onStart() {
 		super.onStart();
+		Surah s = myDbHelper.getLastMark();
+		if(s==null){
+			return;
+		}
+		sura = s.getSura();
+		aya = s.getAya();
+		
 		
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
+		myDbHelper.addMark("", sura, aya);
 	}
 
 	protected void onSaveInstanceState(Bundle outState) {
@@ -168,7 +176,7 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		outState.putInt("aya", aya);
 		outState.putInt("sura", sura);
 		outState.putFloat("size", qv.getTxtSize());
-		myDbHelper.addMark("", sura, aya);
+//		myDbHelper.addMark("", sura, aya);
 	}
 
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -262,6 +270,8 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		ayaTxt = getAya();
 		qv.setText(ayaTxt);
 		loadAudioAya(sura, aya);
+		this.getWindow().setTitle("sura: " + sura +"    aya: "+ aya);
+		
 	}
 	
 	private String getAya(){
