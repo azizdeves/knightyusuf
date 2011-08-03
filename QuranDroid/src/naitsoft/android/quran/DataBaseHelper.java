@@ -179,6 +179,13 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		return cur;
 	}
 	
+	public Surah getLastMark(){
+		Cursor cur = myDataBase.query(MARK_TAB, new String[]{"type","sura","aya"},null, null, null, null, "date","1");
+		if(cur.moveToFirst())
+			return new Surah(cur);
+		return null;
+	}
+	
 	public void addMark(String type,int sura, int aya){
 		ContentValues val = new ContentValues(4);
 		val.put("type", type);

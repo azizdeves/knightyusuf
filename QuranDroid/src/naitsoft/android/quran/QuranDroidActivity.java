@@ -5,6 +5,7 @@ import java.io.IOException;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.SQLException;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -33,8 +34,8 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	private ImageButton smallBtn;
 	private ImageButton markBtn;
 	private Thread audioThread;
-	static int aya ;
-	static int sura;
+	static int aya = 1;
+	static int sura = 1;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -60,8 +61,7 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 			checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
 			startActivityForResult(checkIntent, TTS_CHECK_CODE);
 		}
-		audioThread = new Thread();
-		loadShowAya();
+		
 		
 		qv.setEventListener(new QuranEventListener() {
 			@Override
@@ -128,19 +128,62 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	}
 
 
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-		initFromBundle(savedInstanceState);
+
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
 	}
 
+	@Override
+	protected void onPause() {
+		super.onPause();
+	}
+
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		audioThread = new Thread();
+		loadShowAya();
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+	}
 
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putInt("aya", aya);
 		outState.putInt("sura", sura);
 		outState.putFloat("size", qv.getTxtSize());
+		myDbHelper.addMark("", sura, aya);
 	}
 
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		if(initFromBundle(savedInstanceState))
+			return;
+		Surah s = myDbHelper.getLastMark();
+		if(s==null){
+			return;
+		}
+		sura = s.getSura();
+		aya = s.getAya();
+		
+		
+	}
 
 
 	protected void onActivityResult(
@@ -189,15 +232,14 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	
 	}
 
-	private void initFromBundle(Bundle bundle){
+	private boolean initFromBundle(Bundle bundle){
 		if(bundle==null){
-			aya =1;
-			sura =2;
-			return;
+			return false;
 		}
 		aya = bundle.getInt("aya");
 		sura = bundle.getInt("sura");
 		qv.setTxtSize(bundle.getFloat("size"));
+		return true;
 	}
 	
 	public void initDB()
@@ -243,13 +285,7 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	}
 
 	@Override
-	public void onInit(int status) { 
-//		qv.setTts(mTts);
-		//		String myText1 = "\u0631\u064e\u0628\u0651\u0650\u064a \u0641\u0650\u064a \u0643\u0650\u062a\u064e\u0627\u0628\u064d " +
-		//		"\u06d6 \u0644\u0651\u064e\u0627 \u064a\u064e\u0636\u0650\u0644\u0651\u0650 \u064f";
-		//		String myText2 = "I hope so, because it's time to wake up.";
-		//		mTts.speak(myText1, TextToSpeech.QUEUE_FLUSH, null);
-		//		mTts.speak(myText2, TextToSpeech.QUEUE_ADD, null);		
+	public void onInit(int status) { 	
 	}
 	
 	private String addZero(int nb)
@@ -275,6 +311,10 @@ class Surah{
 	String ayaTxt;
 	int nbrAya;
 	
+	public Surah (Cursor cur){
+		sura = cur.getInt(1);
+		aya = cur.getInt(2);
+	}
 	public int getNextAya(){
 		if(aya<nbrAya)
 			return ++aya;

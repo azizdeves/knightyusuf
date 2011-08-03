@@ -217,6 +217,8 @@ public class DariGlyphUtils {
         
         
         private static void reshapeChars(int i, List<Glyph> outputGlyphs){
+        	if(i >= outputGlyphs.size())
+                return;
         	Glyph glyph = outputGlyphs.get(i);
                 if(outputGlyphs == null || outputGlyphs.size() == 0){
                         return;
