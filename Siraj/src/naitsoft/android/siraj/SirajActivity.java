@@ -53,9 +53,7 @@ public class SirajActivity extends Activity {
 		setContentView(R.layout.main);
 		listMarkView = (ListView) findViewById(R.id.listMarkView);
 		linearLayout = (LinearLayout)findViewById(R.id.linearLayout); 
-		//listMarkView.requestLayout();
-		
-		
+		listMarkView.setOnScrollListener(arabicAdapter);
     }
 
     @Override

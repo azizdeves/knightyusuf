@@ -13,11 +13,14 @@ import android.graphics.Paint.Style;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.AbsListView.OnScrollListener;
 
-public class ArabicListAdapter implements ListAdapter {
+public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListener{
 
 	private String text;
 	private Paint paint;
@@ -27,6 +30,7 @@ public class ArabicListAdapter implements ListAdapter {
 	private LayoutInflater mInflater;
 	private DataBaseHelper myDbHelper;
 	boolean isLineInit=false;
+	static public  boolean mBusy;
 	
 	
 	public ArabicListAdapter(SirajActivity activ){
@@ -89,9 +93,38 @@ public class ArabicListAdapter implements ListAdapter {
 		return view;
 	}
 	private void loadChapter(){
-		text = myDbHelper.getChapter(1, 5);
+		text = myDbHelper.getChapter(1, 5).substring(0,300);
 		text = DariGlyphUtils.reshapeText(text);
 	}
+	
+	@Override
+	public void onScroll(AbsListView arg0, int arg1, int arg2, int arg3) {	}
+	@Override
+	public void onScrollStateChanged(AbsListView view, int scrollState) {
+	       switch (scrollState) {
+	        case OnScrollListener.SCROLL_STATE_IDLE:
+	            mBusy = false;
+	            
+	            int first = view.getFirstVisiblePosition();
+	            int count = view.getChildCount();
+	            for (int i=0; i<count&& !mBusy; i++) {
+	            	ViewHolder holder = (ViewHolder)view.getChildAt(i).getTag();
+	            	holder.arabText.invalidate();
+//	                if (t.getTag() != null) {
+//	                    t.invalidate();
+//	                }
+	            }
+	            
+	            break;
+	        case OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
+	            mBusy = true;
+	            break;
+	        case OnScrollListener.SCROLL_STATE_FLING:
+	            mBusy = true;
+	            break;
+	        }
+	}
+	
 	public void initDB()
 	{
 		myDbHelper = new DataBaseHelper(activity);
@@ -194,6 +227,7 @@ public class ArabicListAdapter implements ListAdapter {
 		this.width = width;
 		constructLine();
 	}
+
 
 }
 

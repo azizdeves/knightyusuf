@@ -65,19 +65,23 @@ public class ArabicTextView extends View {
         mPaint.setColor(Color.WHITE); 
 //        int prevCharWitdh=0;
         int cur=0;
-        if(true){ 
         	w = new float[text.length()];
         	mPaint.getTextWidths(text, w);
 //        	canvas.translate(canvas.getWidth(), 0);
         
         	float y = stepLine/1.5f;
-        	canvas.drawText(text, 0, y, mPaint);
-//        	for(int i =0, length=text.length(); i<length;i++){
-//        		canvas.drawText(text, i, i+1, cur,  y, mPaint);
-//        		if(!DariGlyphUtils.isHaraka(text.charAt(i)))
-//        			cur-=w[i];
-////        		prevCharWitdh = (int) ArabicTextView.getCharWidth(mPaint, text, i,w);
-//        	}
+        	
+        	if(ArabicListAdapter.mBusy){
+        		canvas.drawText(text, 0, y, mPaint);
+        		return;
+        	}
+        	
+        	for(int i =0, length=text.length(); i<length;i++){
+        		canvas.drawText(text, i, i+1, cur,  y, mPaint);
+        		if(!DariGlyphUtils.isHaraka(text.charAt(i)))
+        			cur-=w[i];
+//        		prevCharWitdh = (int) ArabicTextView.getCharWidth(mPaint, text, i,w);
+        	}
 //        	********************
 //        	map = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_4444);
 //    		Canvas cnvs = new Canvas(map);
@@ -87,9 +91,8 @@ public class ArabicTextView extends View {
 //        		cnvs.drawText(text,i,i+1, cur-=prevCharWitdh,  stepLine/1.5f, mPaint);
 //        		prevCharWitdh = (int) ArabicTextView.getCharWidth(mPaint, text, i,w);
 //        	}**************************
-        }
+        
 //        canvas.drawBitmap(map, -canvas.getWidth(), 0, mPaint);**************
-        dirty = false;
     }
     
     private void constructWords(boolean toRequestLayout)

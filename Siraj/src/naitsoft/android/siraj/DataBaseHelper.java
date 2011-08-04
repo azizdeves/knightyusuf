@@ -205,9 +205,13 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		if(cur.moveToFirst())
 			return cur.getString(0);
 		return "";
-		
 	}
 	
+	public static Cursor getChaptersOfBook(int livre)
+	{
+		Cursor cur = myDataBase.query(CONTENT_BOOK_TAB, new String[]{"id_chapitre","id_chapitrep","titre_chapitre"},"id_livre=?", new String[]{String.valueOf(livre)}, null, null, null);
+		return cur;
+	}
 	public static Cursor getMarks(){
 		Cursor cur = myDataBase.query(MARK_TAB, new String[]{"type","date","sura","aya"},null, null, null, null, null);
 		return cur;
