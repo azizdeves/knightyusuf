@@ -1,8 +1,13 @@
 package naitsoft.android.siraj;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import naitsoft.android.quran.Mark;
+
+import android.app.Activity;
 import android.app.ListActivity;
+import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,8 +22,11 @@ public class ChaptersListActivity extends ListActivity {
 class ChaptersAdapter implements ListAdapter
 {
 
-	ArrayList<Chapter> chapters;
+	HashMap<Integer,Chapter> chapters;
 	private LayoutInflater mInflater;
+	private SirajActivity activity;
+	private DataBaseHelper dbHelper;
+	private int size;
 
 	
 	public ChaptersAdapter(SirajActivity activ){
@@ -47,6 +55,31 @@ class ChaptersAdapter implements ListAdapter
 		return view;
 	}
 
+	public void loadChapters(int idBook){
+		dbHelper = DataBaseHelper.getInstance(activity);
+		Cursor cur = dbHelper.getChaptersOfBook(idBook);
+		if(cur.moveToFirst()){			//TODO cur empty		
+			do{
+				chapters.add(new Chapter(cur));
+			}while(cur.moveToNext());
+			size = cur.getCount();
+		}
+	}
+	
+	private void initLevels(){
+		char[] levels = new char[chapters.size()];
+//		Chapter c;
+		for(Chapter c : chapters){
+			if(c.idChap==c.idParent)
+			{
+				c.level = 1;
+			}
+			c.level = chapters.get
+		}
+		
+		
+	}
+	
 	@Override
 	public int getViewTypeCount() {
 		return 0;
@@ -102,6 +135,19 @@ class ChaptersAdapter implements ListAdapter
 	
 }
 class Chapter{
+	public int idParent;
 	public String title;
 	public char level;
+	public int idChap;
+	int _id;
+	public Chapter(Cursor cur) {
+		title = cur.getString(2);
+		idChap = cur.getInt(0);
+		idParent = cur.getInt(1);
+		this._id = cur.getInt(3);
+	}
+	public boolean equals(Object o){
+		return ((Chapter)o).idChap == idChap;
+		
+	}
 }
