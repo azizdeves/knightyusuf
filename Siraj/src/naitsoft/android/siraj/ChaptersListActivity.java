@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.app.ListActivity;
 import android.database.DataSetObserver;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListAdapter;
@@ -17,7 +18,18 @@ class ChaptersAdapter implements ListAdapter
 {
 
 	ArrayList<Chapter> chapters;
+	private LayoutInflater mInflater;
 
+	
+	public ChaptersAdapter(SirajActivity activ){
+		mInflater = activ.getLayoutInflater(); 
+		
+		activity = activ;
+		paint=activ.paint;
+		initDB();
+		loadChapter();
+		
+	}
 
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {
@@ -31,8 +43,7 @@ class ChaptersAdapter implements ListAdapter
  		else{
  			holder = (ViewHolder) view.getTag();
  		}
-//		txt.setTxtSize(10f);
-		holder.arabText.setLine(lines.get(position));
+		holder.arabText.setText(chapters.get(position).title);
 		return view;
 	}
 

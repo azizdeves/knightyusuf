@@ -93,7 +93,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		return view;
 	}
 	private void loadChapter(){
-		text = myDbHelper.getChapter(1, 5).substring(0,300);
+		text = myDbHelper.getChapter(1, 5);
 		text = DariGlyphUtils.reshapeText(text);
 	}
 	
@@ -117,7 +117,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 	            
 	            break;
 	        case OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
-	            mBusy = true;
+	            mBusy = false;
 	            break;
 	        case OnScrollListener.SCROLL_STATE_FLING:
 	            mBusy = true;
@@ -127,17 +127,8 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 	
 	public void initDB()
 	{
-		myDbHelper = new DataBaseHelper(activity);
-		try {
-			myDbHelper.createDataBase();
-		} catch (IOException ioe) {
-			throw new Error("Unable to create database");
-		}
-		try {
-			myDbHelper.openDataBase();
-		}catch(SQLException sqle){
-			throw sqle;
-		}
+		myDbHelper = DataBaseHelper.getInstance(activity);
+		
 
 	}
 	

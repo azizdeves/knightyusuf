@@ -43,7 +43,7 @@ public class ArabicTextView extends View {
 	
     public int init(boolean initText)
     {
-    	text  = line.getText();
+    	
         dirty = true;
         mPaint.getTextBounds("\u0644", 0, 1, clsRect);
         stepLine = (int) (clsRect.height()*2);
@@ -151,6 +151,12 @@ public class ArabicTextView extends View {
 
 	public void setLine(TextLine line) {
 		this.line = line;
+		setText(line.getText());
+		
+	}
+	
+	public void setText(String text){
+		this.text = text;
 		init(true);
 	}
 
@@ -285,7 +291,7 @@ class ArabicTextEvent{
 	final static public int SLIDE_LEFT = 0;
 	
 	private MotionEvent event;
-	private Word word;
+	private Word word; 
 	private int dirct;
 
 	public ArabicTextEvent(MotionEvent event){

@@ -35,7 +35,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     private static String CONTENT_BOOK_TAB = "detail_livres";
     private static String MARK_TAB = "marks";
     
- 
+    static public DataBaseHelper myDbHelper;
     static private SQLiteDatabase myDataBase; 
  
     private final Context myContext;
@@ -52,6 +52,23 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     }	
  
 
+    public static DataBaseHelper getInstance(Context ctx){
+    	if(myDbHelper == null){
+    		myDbHelper = new DataBaseHelper(ctx);
+    		
+    		try {
+    			myDbHelper.createDataBase();
+    		} catch (IOException ioe) {
+    			throw new Error("Unable to create database");
+    		}
+    		try {
+    			myDbHelper.openDataBase();
+    		}catch(SQLException sqle){
+    			throw sqle;
+    		}
+    	}
+    	return myDbHelper;
+    }
 
    
 
