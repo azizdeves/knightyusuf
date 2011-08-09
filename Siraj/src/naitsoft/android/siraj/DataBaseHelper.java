@@ -226,7 +226,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	
 	public  Cursor getChaptersOfBook(int livre)
 	{
-		Cursor cur = myDataBase.query(CONTENT_BOOK_TAB, new String[]{"id_chapitre","id_chapitrep","titre_chapitre","_id"},"id_livre=?", new String[]{String.valueOf(livre)}, null, null, null);
+		Cursor cur = myDataBase.query(CONTENT_BOOK_TAB, new String[]{"id_chapitre","id_chapitrep","titre_chapitre"},"id_livre=?", new String[]{String.valueOf(livre)}, null, null, null);
 		return cur;
 	}
 	public static Cursor getMarks(){

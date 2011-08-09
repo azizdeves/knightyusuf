@@ -24,21 +24,20 @@ import android.view.View;
 public class ArabicTextView extends View {
 
 	private ArabicTextEventListener  eventListener;
-	private Paint mPaint;
+	static public Paint mPaint;
 	String text;
 	TextLine line ;
 	int stepLine ;
 	private int width;
 	boolean dirty = true;
 	private Bitmap map;
-	static int frame;
 	private Rect clsRect = new Rect();
     float[] w = new float[1];
 	public ArabicTextView(Context context,AttributeSet attr) {
 		super(context,attr);
 		//Typeface mFace = Typeface.createFromAsset(getContext().getAssets(),"fonts/Scheherazade.ttf");
         
-        mPaint = SirajActivity.paint;
+//        mPaint = BooksListActivity.paint;
 	}
 	
     public int init(boolean initText)
@@ -46,7 +45,7 @@ public class ArabicTextView extends View {
     	
         dirty = true;
         mPaint.getTextBounds("\u0644", 0, 1, clsRect);
-        stepLine = (int) (clsRect.height()*2);
+        stepLine = (int) (clsRect.height()*2.5);
 
         invalidate();
         return 0;
@@ -57,7 +56,7 @@ public class ArabicTextView extends View {
 //    	SirajActivity.text.setText(frame++);
     	width = canvas.getWidth();
     	canvas.translate(canvas.getWidth(), 0);
-    	mPaint.setColor(Color.GRAY);
+    	mPaint.setColor(Color.BLACK);
     	clsRect.set(-width, 0, 0, canvas.getHeight());
         canvas.drawRect(clsRect, mPaint);
         if(text == null)
@@ -77,6 +76,7 @@ public class ArabicTextView extends View {
         	}
         	
         	for(int i =0, length=text.length(); i<length;i++){
+        		if(text.charAt(i)=='\n')continue;
         		canvas.drawText(text, i, i+1, cur,  y, mPaint);
         		if(!DariGlyphUtils.isHaraka(text.charAt(i)))
         			cur-=w[i];

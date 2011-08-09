@@ -38,11 +38,12 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		activity = activ;
 		paint=activ.paint;
 		initDB();
-		loadChapter();
+//		loadChapter(activ.livre,activ.chapitre);
 		
 	}
 	private void constructLine(){
 //		width = 800;
+		lines.clear();
 		int cursor;
 		int startCur = 0;
 		int endCur = 0;
@@ -61,7 +62,16 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 				isNewLine = false;
 
 			}
-			if((lineWidth += ArabicTextView.getCharWidth(paint, text, i,w))> width){
+			if(text.charAt(i)=='\n'){
+				if(startCur!=i)
+				{
+					lines.add(new TextLine(text.substring(startCur, i)));
+					isNewLine = true;
+				}
+				continue;
+				
+			}
+			if((lineWidth += ArabicTextView.getCharWidth(ArabicTextView.mPaint, text, i,w))> width){
 				
 				lines.add(new TextLine(text.substring(startCur, lastSpace)));
 				i = lastSpace;
@@ -92,8 +102,8 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		holder.arabText.setLine(lines.get(position));
 		return view;
 	}
-	private void loadChapter(){
-		text = myDbHelper.getChapter(1, 5);
+	public void loadChapter(int idBook, int idChap){
+		text = myDbHelper.getChapter(idBook, idChap);
 		text = DariGlyphUtils.reshapeText(text);
 	}
 	
@@ -216,6 +226,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 	}
 	public void setWidth(int width) {
 		this.width = width;
+		if(text == null)return;
 		constructLine();
 	}
 
