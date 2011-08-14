@@ -23,7 +23,7 @@ import android.view.View;
 
 public class ArabicTextView extends View {
 
-	private ArabicTextEventListener  eventListener;
+//	private ArabicTextEventListener  eventListener;
 	static public Paint mPaint;
 	String text;
 	TextLine line ;
@@ -33,6 +33,8 @@ public class ArabicTextView extends View {
 	private Bitmap map;
 	private Rect clsRect = new Rect();
     float[] w = new float[1];
+//	private float startSelct = -1;
+//	private float endSelct;
 	public ArabicTextView(Context context,AttributeSet attr) {
 		super(context,attr);
 		//Typeface mFace = Typeface.createFromAsset(getContext().getAssets(),"fonts/Scheherazade.ttf");
@@ -40,21 +42,18 @@ public class ArabicTextView extends View {
 //        mPaint = BooksListActivity.paint;
 	}
 	
-    public int init(boolean initText)
+    public void init()
     {
-    	
-        dirty = true;
         mPaint.getTextBounds("\u0644", 0, 1, clsRect);
         stepLine = (int) (clsRect.height()*2.5);
-
         invalidate();
-        return 0;
+        
     }
     
     @Override  
     protected void onDraw(Canvas canvas) {
 //    	SirajActivity.text.setText(frame++);
-    	width = canvas.getWidth();
+//    	width = canvas.getWidth();
     	canvas.translate(canvas.getWidth(), 0);
     	mPaint.setColor(Color.BLACK);
     	clsRect.set(-width, 0, 0, canvas.getHeight());
@@ -82,6 +81,26 @@ public class ArabicTextView extends View {
         			cur-=w[i];
 //        		prevCharWitdh = (int) ArabicTextView.getCharWidth(mPaint, text, i,w);
         	}
+        	if(!SirajActivity.selecting)
+        		return;
+        	if(TextSelection.getCurrentSelection()==null || !TextSelection.isLineInSelction(line.numLine))
+        		return;
+        	TextSelection select = TextSelection.getCurrentSelection();
+        	canvas.translate(-canvas.getWidth(), 0);
+        	mPaint.setColor(Color.BLUE);
+        	mPaint.setAlpha(125);
+        	int start,end;
+        	if(line.numLine == select.numLineStart)
+        		start = select.xStart;
+        	else
+        		start = width;
+        	
+        	if(line.numLine == select.numLineEnd) 
+        		end = select.xEnd;
+        	else
+        		end = 0;
+        	
+        	canvas.drawRect(end, 0, start, stepLine, mPaint);
 //        	********************
 //        	map = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_4444);
 //    		Canvas cnvs = new Canvas(map);
@@ -95,53 +114,7 @@ public class ArabicTextView extends View {
 //        canvas.drawBitmap(map, -canvas.getWidth(), 0, mPaint);**************
     }
     
-    private void constructWords(boolean toRequestLayout)
-    {
-//    	try{
-//    	wrds.clear();
-//    	currentLine = (int) (stepLine*0.75);
-//         curseur=0;
-//         int left,right;
-//         Word wrd = new Word();
-//         boolean isNewWrd = true;
-//         for(int i = 0; i<text.length(); i++){
-//        	 float charWidth = getCharWidth(i);
-//         	if(isNewWrd){
-//         		wrd.rect.right = curseur;
-//         		wrd.idxRtxt = i;
-//         	}
-//         	if((curseur -= charWidth)< -width){
-//         		newLine();
-//         		i= wrd.idxRtxt;
-//         		if(currentLine > this.getHeight()){
-//         			
-//         			break;
-//         		}
-//         		charWidth = getCharWidth(i);
-//         		wrd.rect.right = curseur;
-//         		wrd.rect.left = curseur -= charWidth;
-//         	}
-//         	wrd.line = currentLine;
-//         	wrd.rect.left = curseur;
-//         	wrd.idxLtxt = i;
-//         	xpos[i]=curseur;
-//         	
-//         	if(text.charAt(i)==' '){
-//         		isNewWrd = true;
-//         		wrd.txt = text.substring(wrd.idxRtxt, wrd.idxLtxt);
-//         		wrds.add(wrd);
-//         		wrd = new Word();
-//         	}
-//         	else{
-//         		isNewWrd = false;
-//         	}
-//         }
-//         if(toRequestLayout)
-//        	 requestLayout();
-//    	}catch(Exception e){
-//    		System.out.print(e.getMessage());
-//    	}
-    }
+
     
 
  
@@ -157,70 +130,38 @@ public class ArabicTextView extends View {
 	
 	public void setText(String text){
 		this.text = text;
-		init(true);
+		init();
 	}
 
-	private void drawWords(Canvas cnvs)
-    {
-//    	if(dirty){
-//    		map = Bitmap.createBitmap(cnvs.getWidth(), getHeight(), Bitmap.Config.ARGB_4444);
-//    		Canvas canvas = new Canvas(map);
-//    		canvas.translate(canvas.getWidth(), 0);
-//    		mPaint.setColor(Color.BLACK);
-//    		canvas.drawRect(new Rect(-1000, 0, 0, 1000), mPaint);
-//    		mPaint.setColor(Color.WHITE);
-//    		int i;
-//    		boolean stepUp = false;
-//    		for(Word w : wrds){
-//    			for(i=w.idxRtxt;i<=w.idxLtxt;i++){
-//    				if(DariGlyphUtils.isHaraka(text.charAt(i))){
-//    					canvas.drawText(text.charAt(i)+"", xpos[i], stepUp?w.line-15:w.line, harakaPaint);
-//    					stepUp = true;
-//    				}
-//    				else{
-//    					stepUp = false;
-//    					canvas.drawText(text.charAt(i)+"", xpos[i], w.line, mPaint);
-//    				}
-//    			}
-//    		}
-//    	}
-//    	cnvs.drawBitmap(map, -cnvs.getWidth(), 0, mPaint);
-    }
     
 
     
-//    @Override
-//    public boolean onTouchEvent(MotionEvent event) {
-//    	if(event.getAction()== MotionEvent.ACTION_MOVE){
-//    		isDraging = true;
-//    	}
+	
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+    	
+//    	if(!SirajActivity.selecting)
+//    		return false;
 //    	if(event.getAction()== MotionEvent.ACTION_DOWN){
-//    		xStartDrag = (int) event.getX();
+//    		startSelct = event.getX();
 //    	}
-//    	if( event.getAction() == MotionEvent.ACTION_UP){
-//    		if(isDraging ){
-//    			if(Math.abs(xStartDrag - event.getX()) < width/3){
-//    				isDraging = false;
-//    				return false;
-//    			}
-//    			int direct = xStartDrag < event.getX() ? ArabicTextEvent.SLIDE_RIGHT : ArabicTextEvent.SLIDE_LEFT;
-//    			eventListener.onTouch(new ArabicTextEvent(event, direct));
-//
-//    		}else{
-//    			Word w = getWord((int)event.getX()-width, (int)event.getY());
-//    			if(w != null){
-//    				eventListener.onClick(new ArabicTextEvent(event, w));
-//    			}
-//    			//this.invalidate();
-//    		}
-//    		isDraging = false;
+//    	if(event.getAction()== MotionEvent.ACTION_MOVE){
+//    		
+//    		endSelct = event.getX();
+//    		invalidate();
+//    	}
+//    	if(event.getAction()== MotionEvent.ACTION_UP){
+//    		SirajActivity.selecting = false;
 //    	}
 //    	return true;
-//	}
+    	return false;
+
+    }
     
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-    	int width = MeasureSpec.getSize(widthMeasureSpec);
+    	width = MeasureSpec.getSize(widthMeasureSpec);
+    	MyListView.stepLine = stepLine;
     	setMeasuredDimension(width, stepLine);
     }
     
@@ -236,18 +177,11 @@ public class ArabicTextView extends View {
 		return text;
 	}
 
-	public int setText(String text,int cursorBegin) {
+	public void setText(String text,int cursorBegin) {
 		this.text = text.substring(cursorBegin);
-		return init(true);
+		init();
 	}
 
-	public ArabicTextEventListener getEventListener() {
-		return eventListener;
-	}
-
-	public void setEventListener(ArabicTextEventListener eventListener) {
-		this.eventListener = eventListener;
-	}
 
 	public float getTxtSize() {
 		return mPaint.getTextSize();
@@ -258,27 +192,6 @@ public class ArabicTextView extends View {
 	}
 
 }
-
-//class Word{
-//	public Rect rect;
-//	public String root;
-//	public int line;
-//	public int idxRtxt,idxLtxt;
-//	public String txt;
-//	
-//	public Word(){
-//		rect = new Rect();
-//		line = 50;
-//	}
-//	
-//	public Rect getRect(){
-//		return rect;
-//	}
-//	public int newLIne()
-//	{
-//		return line +=70;
-//	}
-//}
 
 interface ArabicTextEventListener{
 	public void onClick(ArabicTextEvent event);

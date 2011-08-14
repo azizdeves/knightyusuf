@@ -29,7 +29,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 	ArrayList<TextLine> lines = new ArrayList<TextLine>();
 	private LayoutInflater mInflater;
 	private DataBaseHelper myDbHelper;
-	boolean isLineInit=false;
+//	boolean isLineInit=false;
 	static public  boolean mBusy;
 	
 	
@@ -44,7 +44,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 	private void constructLine(){
 //		width = 800;
 		lines.clear();
-		int cursor;
+		int numLine = 0;
 		int startCur = 0;
 		int endCur = 0;
 		int lastSpace = -1;
@@ -65,7 +65,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 			if(text.charAt(i)=='\n'){
 				if(startCur!=i)
 				{
-					lines.add(new TextLine(text.substring(startCur, i)));
+					lines.add(new TextLine(text.substring(startCur, i),numLine++));
 					isNewLine = true;
 				}
 				continue;
@@ -73,13 +73,13 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 			}
 			if((lineWidth += ArabicTextView.getCharWidth(ArabicTextView.mPaint, text, i,w))> width){
 				
-				lines.add(new TextLine(text.substring(startCur, lastSpace)));
+				lines.add(new TextLine(text.substring(startCur, lastSpace),numLine++));
 				i = lastSpace;
 				isNewLine = true;
 			}
 
 		}
-		isLineInit = true;
+//		isLineInit = true;
 	}
 
 	@Override
@@ -99,6 +99,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
  			holder = (ViewHolder) view.getTag();
  		}
 //		txt.setTxtSize(10f);
+ 		
 		holder.arabText.setLine(lines.get(position));
 		return view;
 	}
@@ -157,7 +158,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 	@Override
 	public long getItemId(int position) {
 
-		return 0;
+		return lines.get(position).numLine;
 	}
 
 	@Override
@@ -235,9 +236,11 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 
 class TextLine{
 	String txt;
+	int numLine;
 
-	public TextLine(String text) {
+	public TextLine(String text, int numLine) {
 		txt = text;
+		this.numLine = numLine;
 	}
 
 	public String getText(){

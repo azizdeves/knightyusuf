@@ -5,6 +5,6 @@
         <ImageButton android:src="@android:drawable/star_big_on" android:id="@+id/chaptersBtn" android:layout_height="wrap_content" android:layout_width="wrap_content"></ImageButton>
         
     </LinearLayout>
-    <ListView android:layout_height="fill_parent" android:layout_weight="1" android:id="@+id/listMarkView" android:layout_width="match_parent"></ListView>
+    <naitsoft.android.siraj.MyListView android:layout_height="fill_parent" android:layout_weight="1" android:id="@+id/listMarkView" android:layout_width="match_parent"></naitsoft.android.siraj.MyListView>
 
 </LinearLayout>
