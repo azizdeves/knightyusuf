@@ -28,7 +28,10 @@ public class SirajActivity extends Activity {
 
 
 	public static final int CHAPTERS_CODE = 0;
-	public static boolean selecting ;
+	public static final char SELECTING = 's';
+	public static final char SELECTED = 'S';
+	
+	public static char status ;
 	private DataBaseHelper myDbHelper;
 	public int livre;
 	public int chapitre;
@@ -187,7 +190,7 @@ public class SirajActivity extends Activity {
 			startActivity(intent);
 			break;
 		case 3:
-			selecting = true;
+			status = SELECTING;
 
 			break;
 		}
@@ -220,28 +223,35 @@ class MyListView extends ListView
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
 		//		int aaa = ev.getPointerCount();
-		if(!SirajActivity.selecting) 
+		if(SirajActivity.status != SirajActivity.SELECTING) 
 			return super.onTouchEvent(ev); 
 		int indexLine =  ((int)(ev.getY()+getScrollY()) / stepLine);
 		TextSelection select ;
 		if(ev.getAction()== MotionEvent.ACTION_DOWN){
 			select = TextSelection.getInstance();
-			select.numLineStart = indexLine;
-			select.numLineEnd = indexLine;
-			select.xStart = select.xEnd = (int) ev.getX();
+			select.setStartNumLine( indexLine);
+			select.setEndNumLine(indexLine);
+			select.setStartX( (int) ev.getX());
+			select.setEndX( (int) ev.getX());
 		}
 		if(ev.getAction()== MotionEvent.ACTION_MOVE){  
 
 			select = TextSelection.getCurrentSelection();
-			select.numLineEnd = indexLine;
-			select.xEnd = (int) ev.getX();
+			select.editingCursor.numLine = indexLine;
+			select.editingCursor.x = (int) ev.getX();
 			invalidate();
 		}
 		if(ev.getAction()== MotionEvent.ACTION_UP){
 			select = TextSelection.getCurrentSelection();
-			select.numLineEnd = indexLine;
-			select.xEnd = (int) ev.getX();
-			SirajActivity.selecting = false;
+//			select.editingCursor.numLine = indexLine;
+//			select.setEndX((int) ev.getX());
+			//SirajActivity.status = SirajActivity.SELECTED;
+			String t = ((ArabicListAdapter)getAdapter()).getTextFromSelection(select);
+			Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+			shareIntent.setType("text/plain");
+			shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Some text");
+			shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, t);
+			getContext().startActivity(Intent.createChooser(shareIntent, "Title for chooser"));
 		}
 		return true;
 

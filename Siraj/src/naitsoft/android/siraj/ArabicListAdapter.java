@@ -139,10 +139,19 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 	public void initDB()
 	{
 		myDbHelper = DataBaseHelper.getInstance(activity);
-		
-
 	}
 	
+	public String getTextFromSelection(TextSelection select){
+		if(select.startCursor.numLine == select.endCursor.numLine)
+			return lines.get(select.startCursor.numLine).getText().substring(select.startCursor.idxChar, select.endCursor.idxChar);
+		StringBuffer buf = new StringBuffer();
+		buf.append(lines.get(select.startCursor.numLine).getText().substring(select.startCursor.idxChar));
+		for(int i = select.startCursor.numLine+1;i<select.endCursor.numLine;i++){
+			buf.append(lines.get(i).getText());
+		}
+		buf.append(lines.get(select.endCursor.numLine).getText().substring(0, select.endCursor.idxChar));
+		return buf.toString();
+	}
 	@Override
 	public int getCount() {
 

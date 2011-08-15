@@ -77,26 +77,45 @@ public class ArabicTextView extends View {
         	for(int i =0, length=text.length(); i<length;i++){
         		if(text.charAt(i)=='\n')continue;
         		canvas.drawText(text, i, i+1, cur,  y, mPaint);
-        		if(!DariGlyphUtils.isHaraka(text.charAt(i)))
+        		if(!DariGlyphUtils.isHaraka(text.charAt(i))){
         			cur-=w[i];
+        			if(SirajActivity.status == SirajActivity.SELECTING)
+        			w[i]=cur;
+        		}
 //        		prevCharWitdh = (int) ArabicTextView.getCharWidth(mPaint, text, i,w);
         	}
-        	if(!SirajActivity.selecting)
+        	if(SirajActivity.status != SirajActivity.SELECTING)
         		return;
         	if(TextSelection.getCurrentSelection()==null || !TextSelection.isLineInSelction(line.numLine))
         		return;
         	TextSelection select = TextSelection.getCurrentSelection();
+        	select.initOrder();
         	canvas.translate(-canvas.getWidth(), 0);
         	mPaint.setColor(Color.BLUE);
         	mPaint.setAlpha(125);
         	int start,end;
-        	if(line.numLine == select.numLineStart)
-        		start = select.xStart;
+        	int i = 0 ;
+        	if(line.numLine == select.getStartNumLine()){
+        		start = select.getStartX()-width;
+        		for(; i< w.length && w[i]>start; i++) 		;	
+        		start = i == 0? width:(int) w[i-1];
+        		start+=width;
+        		select.startCursor.idxChar=i;
+        	}
         	else
         		start = width;
         	
-        	if(line.numLine == select.numLineEnd) 
-        		end = select.xEnd;
+        	if(line.numLine == select.getEndNumLine()) {
+        		
+        		end = select.getEndX()-width;
+        		for(i=0; i< w.length && w[i]>end; i++) 		;	
+        		if(i>= w.length)
+        			end = (int) w[--i];
+        		else
+        			end = (int) w[i];
+        		end+=width;
+        		select.endCursor.idxChar=i+1;
+        	}
         	else
         		end = 0;
         	
