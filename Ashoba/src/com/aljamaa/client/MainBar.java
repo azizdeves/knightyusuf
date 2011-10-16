@@ -59,7 +59,7 @@ public class MainBar extends Composite {
 		messageHP.add(lblMessage);
 		messageHP.setCellHorizontalAlignment(lblMessage, HasHorizontalAlignment.ALIGN_CENTER);
 		
-		image = new Image((String) null);
+		image = new Image("wait.gif");
 		messageHP.add(image);
 		messageHP.setVisible(false);
 		

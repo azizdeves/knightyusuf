@@ -2,9 +2,9 @@ package com.aljamaa.server.quran;
 
 import java.util.List;
 
-import com.aljamaa.client.quran.QuranService;
 import com.aljamaa.dao.TaskDao;
 import com.aljamaa.entity.quran.Mask;
+import com.aljamaa.quran.client.QuranService;
 import com.aljamaa.shared.TaskException;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 

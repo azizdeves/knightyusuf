@@ -16,7 +16,8 @@
    <extend-property name="locale" values="en"/>
    
 	<set-property name="locale" value="fr" />
-   <inherits name='com.google.gwt.widgetideas.GWTCanvas'/>
+<inherits name='com.google.gwt.widgetideas.GWTCanvas'/>
+   <inherits name='com.aljamaa.quran.Quran'/>
 
   <!-- Specify the app entry point class.                         -->
   <entry-point class='com.aljamaa.client.Task'/>
