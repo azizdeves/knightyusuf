@@ -96,6 +96,8 @@ public class Task implements Serializable, Comparable{
 				seed.getId(), 
 				seed.getMominId(),
 				null);
+		this.setGroup(seed.getGroupId());
+		
 	}
 
 	/**

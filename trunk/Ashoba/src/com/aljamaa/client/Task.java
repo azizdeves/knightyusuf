@@ -1,6 +1,6 @@
 package com.aljamaa.client;
 
-import com.aljamaa.client.quran.HifthUI;
+import com.aljamaa.quran.client.HifthUI;
 import com.aljamaa.shared.FieldVerifier;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -27,7 +27,7 @@ public class Task implements EntryPoint {
 	/**
 	 * Create a remote service proxy to talk to the server-side Greeting service.
 	 */
-	private final TaskServiceAsync taskService = GWT.create(TaskService.class);
+//	private final TaskServiceAsync taskService = GWT.create(TaskService.class);
 
 	/**
 	 * This is the entry point method.
