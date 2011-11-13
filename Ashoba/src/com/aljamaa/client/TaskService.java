@@ -25,7 +25,7 @@ public interface TaskService extends RemoteService {
 	List<com.aljamaa.entity.Task> createSeed(TaskSeed seed) throws IllegalArgumentException, TaskException;
 	
 	TaskSeed getSeed(long id)throws TaskException;
-	String updateSeed(TaskSeed seed)throws TaskException;
+	String updateSeed(TaskSeed seed, char action)throws TaskException;
 
 	List<com.aljamaa.entity.Task> getWeekTasks(Date startWeek, String user, String group) throws IllegalArgumentException, TaskException;
 	
@@ -33,7 +33,7 @@ public interface TaskService extends RemoteService {
 	
 	String shareGroup(String email, int group) throws TaskException;
 	
-	Long deleteTask(Long id) throws TaskException ;
+	Long deleteTask(Task tsk, char action) throws TaskException ;
 	
 	List<Statistic> getStatistics(Date start, Date end, List<String> names)throws TaskException ;
 }

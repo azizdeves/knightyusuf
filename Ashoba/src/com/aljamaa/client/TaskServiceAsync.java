@@ -19,9 +19,9 @@ public interface TaskServiceAsync {
 	void createSeed(TaskSeed seed, AsyncCallback<List<com.aljamaa.entity.Task>> callback);
 	void getCurrentMomin(AsyncCallback<Momin> callback);
 	void shareGroup(String email, int group, AsyncCallback<String> callback);
-	void deleteTask(Long long1, AsyncCallback<Long> callback);
+	void deleteTask(Task long1, char action,  AsyncCallback<Long> callback);
 	void getSeed(long id, AsyncCallback<TaskSeed> callback);
-	void updateSeed(TaskSeed seed, AsyncCallback<String> callback);
+	void updateSeed(TaskSeed seed, char action, AsyncCallback<String> callback);
 
 	void getStatistics(Date start, Date end, List<String> names,
 			AsyncCallback<List<Statistic>> callback);

@@ -24,9 +24,9 @@ import com.aljamaa.entity.Task;
 import com.aljamaa.entity.TaskSeed;
 import com.aljamaa.shared.TaskException;
 
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
-import com.google.appengine.api.labs.taskqueue.TaskOptions;
+//import com.google.appengine.api.labs.taskqueue.Queue;
+//import com.google.appengine.api.labs.taskqueue.QueueFactory;
+//import com.google.appengine.api.labs.taskqueue.TaskOptions;
 import com.google.appengine.api.mail.MailService;
 import com.google.appengine.api.mail.MailService.Message;
 import com.google.appengine.api.mail.MailServiceFactory;
@@ -44,7 +44,9 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
 		TaskService {
 
 	private static final Logger log = Logger.getLogger(TaskServiceImpl.class.getName());
-	
+	static final char ALL_ACTION = 'l';
+	static final char AFTER_ACTION = 'a';
+	static final char ONE_ACTION = 'o';
 	public void checkCross(String mmn)throws TaskException{
 //		Cookie[] cks = getThreadLocalRequest().getCookies();
 //		log.info("mmn = "+mmn+"   <<<<<<<<<<<<<<< ");
@@ -111,13 +113,14 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
 		return list;
 	}
 	
-	public String updateSeed(TaskSeed seed) throws TaskException{
+	public String updateSeed(TaskSeed seed, char action) throws TaskException{
 		TaskDao dao = new TaskDao();
 		Momin mmn = getCurrentMomin();
-		checkCross(mmn.getId());
+		checkCross(mmn.getId()); 
 		seed.setMominId(mmn.getId());
 		
 		dao.saveSeed(seed);
+		dao.deleteTasksAfter(seed.getId(),seed.getStart(),mmn.getId());
 		List <Task> list = TaskGenerator.generate(seed);
 		dao.saveTask(list.toArray(),null);
 		seed.setUpdate(new Date());
@@ -169,17 +172,29 @@ public class TaskServiceImpl extends RemoteServiceServlet implements
 
 
 	@Override
-	public Long deleteTask(Long idTsk) throws TaskException {
+	public Long deleteTask(Task task, char action) throws TaskException {
 
-		TaskDao dao = new TaskDao();
 		Momin mmn = getCurrentMomin();
 		checkCross(mmn.getId());
-		Task tsk = dao.getTaskById(idTsk);
-		if( tsk.getMominId().equals(mmn.getId()))
-			dao.deleteTask(tsk);
-		else
-			throw new TaskException("droit")	;
-		return idTsk;
+		TaskDao dao = new TaskDao();
+		if(action == ONE_ACTION){
+		
+			Task tsk = dao.getTaskById(task.getId());
+			if( tsk.getMominId().equals(mmn.getId()))
+				dao.deleteTask(tsk);
+			else
+				throw new TaskException("droit")	;
+		}else
+			if(action == AFTER_ACTION){
+				TaskSeed seed= dao.getSeed(task.getSeedId());
+				seed.setEnd(new Date());
+				dao.saveSeed(seed);
+				dao.deleteTasksAfter(task.getSeedId(),task.getDate(),mmn.getId());
+//				dao = new TaskDao();
+				
+			}
+		return 0L;
+		
 	}
 
 	@Override

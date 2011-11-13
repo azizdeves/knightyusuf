@@ -42,6 +42,9 @@ import com.google.gwt.event.logical.shared.OpenEvent;
 public class NewTaskUI extends Composite {
 
 	private final TaskServiceAsync taskService = GWT.create(TaskService.class);
+	static final char ALL_ACTION = 'l';
+	static final char AFTER_ACTION = 'a';
+	static final char ONE_ACTION = 'o';
 	SuggestBox nameTextBox;
 	RadioButton boolRadioButton;
 	RadioButton numericRadioButton;
@@ -172,14 +175,23 @@ public class NewTaskUI extends Composite {
 		btnCreatetask = new Button(taskMessages.save());
 		btnCreatetask.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				createTask();
+				if(task != null && task.getSeedId()!=null){
+					updateSeedDlg(true);
+				}else
+					createTask();
+				dlg.hide();
 			}
+			
 		});
 		
 		deleteBtn = new Button(taskMessages.delete());
 		deleteBtn.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				deleteTask();
+				if(task.getSeedId()==null)
+					deleteTask(ONE_ACTION);
+				else
+					updateSeedDlg(false);
+				dlg.hide();
 			}
 		});
 		horizontalPanel_1.add(deleteBtn);
@@ -201,11 +213,16 @@ public class NewTaskUI extends Composite {
 		}
 		return true;
 	}
+	/**
+	 * Charge le seed apartir de BD et Maj l'UI
+	 */
 	protected void initTaskRepeat() {
+//		loadSeed();
+		
 		if(task!=null){
 			taskService.getSeed(task.getSeedId(), new AsyncCallback<TaskSeed>() {
 				public void onSuccess(TaskSeed result) {
-					taskRepeat.init(result);
+					seed = taskRepeat.init(result);
 				}
 				public void onFailure(Throwable caught) {
 					
@@ -213,14 +230,19 @@ public class NewTaskUI extends Composite {
 			});
 		}
 	}
+	
+//	public void loadSeed(){
+//	
+//	}
 
-	public void deleteTask() {
+	public void deleteTask(char action) {
 		if(task==null)
 			return;		
+
 		MainBar.get().message(taskMessages.deleting(),0);
 		btnCreatetask.setEnabled(false);
 		deleteBtn.setEnabled(false);
-		taskService.deleteTask(task.getId(), new AsyncCallback<Long>() {
+		taskService.deleteTask(task, action, new AsyncCallback<Long>() {
 				public void onSuccess(Long id) {		
 					MainBar.get().message(taskMessages.deleted(),1,5);
 					weekCalendar().deleteTask(task);
@@ -236,7 +258,10 @@ public class NewTaskUI extends Composite {
 	}
 
 	public void init(){
+		seed = null;
+		
 		btnCreatetask.setEnabled(true);
+		disclosurePanel.setOpen(false);
 		if(task!=null)
 		{
 			nameTextBox.setText(task.getName());
@@ -275,19 +300,11 @@ public class NewTaskUI extends Composite {
 		
 		if(!verify())
 			return;
+		
 		if(task == null)
 			task = new Task();
-		task.setName(nameTextBox.getValue());
-		if(numericRadioButton.getValue())
-			task.setMin(Integer.parseInt(minTextBox.getValue()));
-		else
-			task.setMin(-1);
 		
-		task.setGroup(groupCB.getSelectedIndex());
-		task.setPriority(priorityComboBox.getSelectedIndex());
-		Date d = CalendarUtil.copyDate(dateBox.getValue());
-		d.setTime(Date.UTC(d.getYear(), d.getMonth(), d.getDate(), hourCB.getSelectedIndex(), minCB.getSelectedIndex()*10, 0));
-		task.setDate(d);
+		initTaskFromUI();
 		
 		MainBar.get().message(taskMessages.saving(),0);
 		
@@ -319,7 +336,22 @@ public class NewTaskUI extends Composite {
 		}
 		//weekCalendar().initData();
 	}
+	private void initTaskFromUI() {
+		task.setName(nameTextBox.getValue());
+		if(numericRadioButton.getValue())
+			task.setMin(Integer.parseInt(minTextBox.getValue()));
+		else
+			task.setMin(-1);
+		
+		task.setGroup(groupCB.getSelectedIndex());
+		task.setPriority(priorityComboBox.getSelectedIndex());
+		Date d = CalendarUtil.copyDate(dateBox.getValue());
+		d.setTime(Date.UTC(d.getYear(), d.getMonth(), d.getDate(), hourCB.getSelectedIndex(), minCB.getSelectedIndex()*10, 0));
+		task.setDate(d);
+		
+	}
 	public void saveTask() {
+		initTaskFromUI();
 		MainBar.get().message(taskMessages.saving(),0);
 		taskService.createTask(task, new AsyncCallback<Task>() {			
 			public void onSuccess(Task tsk) {
@@ -342,49 +374,85 @@ public class NewTaskUI extends Composite {
 		});		
 	}
 
-	public void updateSeedDlg(){
-		final DialogBox dlg =new DialogBox();
+	public void updateSeedDlg(final boolean update){
+		final DialogBox dlgSeed =new DialogBox();
 		HorizontalPanel hp = new HorizontalPanel();
-		final Button oneBt = new Button("just this task");
-		Button afterBt = new Button("all tasks");
+		final Button oneBt = new Button("this task");
+		Button afterBt = new Button("this task and after");
+		Button allBt = new Button("all tasks");
 		Button cancelBt = new Button(taskMessages.cancel());
-		hp.add(oneBt);		hp.add(afterBt);			hp.add(cancelBt);
+		hp.add(cancelBt);	hp.add(oneBt);		hp.add(afterBt);	
+		if(!update)hp.add(allBt);		
 		
-		dlg.add(hp);
-		dlg.center();
-		dlg.show();
+		dlgSeed.add(hp);
+		dlgSeed.center();
+		dlgSeed.show();
 		
 		oneBt.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				oneBt.setEnabled(false);
-				saveTask();
-				dlg.hide();
+				if(update)
+					saveTask();
+				else
+					deleteTask(ONE_ACTION);
+				dlgSeed.hide();
 			}
 		});
 		afterBt.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 //				oneBt.setEnabled(false);
-				updateSeed();
-				dlg.hide();
+				if(update){
+					updateSeed(AFTER_ACTION);
+				}
+				else
+					deleteTask(AFTER_ACTION);
+					
+				dlgSeed.hide();
+			}
+		});
+		allBt.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				oneBt.setEnabled(false);
+				if(update){
+//					updateSeed(ALL_ACTION);
+				}
+				else
+					deleteTask(ALL_ACTION);
+				dlgSeed.hide();
 			}
 		});
 		cancelBt.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
-				dlg.hide();				
+				dlgSeed.hide();				
 			}
 		});		
 	
 	}
 	
-	public void updateSeed(){
+	public void updateSeed(final char action){
 		
+		if(seed == null){
+			taskService.getSeed(task.getSeedId(), new AsyncCallback<TaskSeed>() {
+				public void onSuccess(TaskSeed result) {
+					seed = taskRepeat.init(result);
+					updateSeed(action);
+					
+				}
+				public void onFailure(Throwable caught) {
+					
+				}
+			});
+			return;
+		}
 		TaskSeed seed = taskRepeat.getTaskSeed();
+		initTaskFromUI();
 		seed.setTaskAttributes(task);
-		seed.setLast(new Date());
+		seed.setId(this.seed.getId());
+		seed.setLast(task.getDate());
 //		d.setTime(Date.UTC(d.getYear(), d.getMonth(), d.getDate(), hourCB.getSelectedIndex(), minCB.getSelectedIndex()*10, 0));
-		taskService.updateSeed(seed, new AsyncCallback<String>() {
+		taskService.updateSeed(seed, action, new AsyncCallback<String>() {
 			public void onSuccess(String result) {
-				
+				weekCalendar().initData();
 			}
 			public void onFailure(Throwable caught) {
 				
