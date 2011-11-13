@@ -35,8 +35,8 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
-import com.google.appengine.api.labs.taskqueue.Queue;
-import com.google.appengine.api.labs.taskqueue.QueueFactory;
+//import com.google.appengine.api.labs.taskqueue.Queue;
+//import com.google.appengine.api.labs.taskqueue.QueueFactory;
 import com.google.appengine.api.mail.MailService;
 import com.google.appengine.api.mail.MailServiceFactory;
 import com.google.appengine.api.mail.MailService.Message;
@@ -181,16 +181,16 @@ public class TaskDao {
 		if(!update)
 			return;
 		
-		Queue que= QueueFactory.getQueue("userfeedupdates");
+//		Queue que= QueueFactory.getQueue("userfeedupdates");
 //		que.add(url("/task/tskseed?s=&m="+task.getMominId()+"&w="+task.getDate().getTime()+"&t="+new Date().getTime()+"&n="+ task.getName().replaceAll(" ","+")).method(Method.GET));
 //		que.add(TaskOptions.Builder.url("/task/tskseed?s=&m="+task.getMominId()+"&w="+task.getDate().getTime()+"&t="+new Date().getTime()).param("n", task.getName()).method(Method.GET));
-		que.add(url("/tskseed")
+		/*que.add(url("/tskseed")
 				.param("s","2")
 				.param("n",task.getName())
 				.param("m",task.getMominId()).
 				param("w",task.getDate().getTime()+"")
 				.param("t",new Date().getTime()+"")
-				);
+				);*/
 //		getCache().put(keyWeek, null);
 		//TaskSeedServlet.stat(task.getName(), task.getMominId(), task.getDate(), new Date().getTime());
 //		Key k = KeyFactory.createKey(Task.class.getSimpleName(), task.getId());
@@ -201,9 +201,27 @@ public class TaskDao {
 	
 	public void deleteTask(Task c)
 	{
+		
 		em.getTransaction().begin();
 		em.remove(c);
 		em.getTransaction().commit();
+	}
+	public void deleteTasksAfter(Long  seedId , Date start , String string) {
+		
+		Query query = em.createQuery("select  from "+Task.class.getName()+" t where t.mominId = :momin AND t.date >= :start  AND  seedId= :seed");
+		query.setParameter("seed", seedId);
+		query.setParameter("start", start);
+		query.setParameter("momin", string);
+		List lst = query.getResultList();
+//		DatastoreService dss = DatastoreServiceFactory.getDatastoreService();
+//		lst.add(tsk.getId());
+//		ArrayList<Key> lstKey = new ArrayList<Key>(lst.size());
+		for(Object o : lst){
+			delete(o);
+//			lstKey.add(KeyFactory.createKey(Task.class.getName(), (Long) lg));
+		}
+//		dss.delete(lstKey);
+		
 	}
 	public void delete(Object c)
 	{
@@ -380,4 +398,6 @@ public class TaskDao {
 //		m.setFriendsCalendar(Arrays.asList("105208827974973865566&#0&#naitsoft","110949677754069966012&#0&#sharpensoul","18580476422013912411&#0&#test","11701531798136846518&#0&#test1"));
 		return m; 
 	}
+
+	
 }

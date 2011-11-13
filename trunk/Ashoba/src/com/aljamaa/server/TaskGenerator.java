@@ -33,7 +33,7 @@ public class TaskGenerator {
 		List< Task> list = new ArrayList<Task>();
 		Task task=null;
 		Date last = seed.getLast();
-		for(int i=0;i<10;i++){
+		for(int i=0;i<10 && (seed.getEnd()==null || !last.after(seed.getEnd())) ;i++){
 			log.info(last+"//// ");
 			task = new Task(seed);
 			task.setDate(last);//il copie last

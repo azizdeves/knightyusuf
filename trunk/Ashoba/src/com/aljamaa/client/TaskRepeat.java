@@ -28,7 +28,6 @@ public class TaskRepeat extends Composite {
 	DateBox endDateBox;
 	RadioButton neverRB;
 	RadioButton untilRB;
-	TaskSeed seed;
 
 	
 	public TaskRepeat() {
@@ -205,7 +204,7 @@ public class TaskRepeat extends Composite {
 		return param;
 	}
 	
-	public void init(TaskSeed seed){
+	public TaskSeed init(TaskSeed seed){
 		if(seed.getEnd()!=null){
 			untilRB.setValue(true);
 			endDateBox.setValue(seed.getEnd());
@@ -248,7 +247,7 @@ public class TaskRepeat extends Composite {
 			break;
 		}
 		repeatEveryCombo.setSelectedIndex(seed.getEvery()-1);
-		
+		return seed;
 	}
 	
 	public TaskSeed getTaskSeed(){

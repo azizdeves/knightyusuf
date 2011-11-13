@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.google.gwt.user.client.rpc.GwtTransient;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 
@@ -54,15 +55,17 @@ public class TaskSeed implements IsSerializable {
 	private Date last;
 	
 	
+	@GwtTransient
 	private Date update;
 
 	
 	private int group;
 
-	
+	@GwtTransient
 	private boolean alarm;
 	
 	
+	@GwtTransient
 	private int duration;
 
 	public TaskSeed() {

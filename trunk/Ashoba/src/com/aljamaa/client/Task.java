@@ -45,10 +45,10 @@ public class Task implements EntryPoint {
 		RootPanel.get("mainBar").add(mainBar);
 //		TaskRepeat task=new TaskRepeat();
 		//		NewTaskUI newTask = new NewTaskUI(); 
-//		WeekCalendar week = new WeekCalendar();
-//		RootPanel.get("main").add(week);
-		HifthUI hifth = new HifthUI();
-		RootPanel.get("main").add(hifth);
+		WeekCalendar week = new WeekCalendar();
+		RootPanel.get("main").add(week);
+//		HifthUI hifth = new HifthUI();
+//		RootPanel.get("main").add(hifth);
 		
 		
 
