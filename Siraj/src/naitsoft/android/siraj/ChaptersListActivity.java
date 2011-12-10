@@ -137,6 +137,9 @@ class ChaptersAdapter implements ListAdapter
 			}
 			idParent=c.idParent;
 			parentChap = map.get(idParent);
+			if(parentChap == null)
+				idParent=c.idParent;
+				
 			c.level = (char) (parentChap.level+1);
 			parentChap.addSubChapter(c);
 			

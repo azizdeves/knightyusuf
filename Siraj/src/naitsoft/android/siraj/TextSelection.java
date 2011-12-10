@@ -1,18 +1,65 @@
 package naitsoft.android.siraj;
 
+import android.view.MotionEvent;
+
 
 public class TextSelection {
 	static private TextSelection currentSelection;
 	TextCursor startCursor;
 	TextCursor endCursor;
 	TextCursor editingCursor;
+	static Focusable focusA ;
+	static Focusable focusB ;
 	
 	public TextSelection(){
 		startCursor = new TextCursor();
 		endCursor = new TextCursor();
 		editingCursor = endCursor;
+		initFocus();
+		
 	}
 	
+	private void initFocus(){
+		focusA = new Focusable(android.R.drawable.ic_input_add) {			
+			public void onTouchEvent(MotionEvent ev) {
+				handleTouchEvent(ev);				
+			}
+		};
+		focusB = new Focusable(android.R.drawable.ic_input_add) {			
+			public void onTouchEvent(MotionEvent ev) {
+				handleTouchEvent(ev);				
+			}
+			public boolean isVisible() {
+				return SirajActivity.status==SirajActivity.SELECTING || SirajActivity.status==SirajActivity.SELECTED;
+			}
+		};
+		
+	}
+	
+	protected void handleTouchEvent(MotionEvent ev) {
+		TextSelection select;
+		int indexLine = SirajActivity.listTextLineView.getIndexLine(ev.getY());
+		if(ev.getAction()== MotionEvent.ACTION_DOWN){
+			SirajActivity.status = SirajActivity.SELECTING;
+			select = TextSelection.getCurrentSelection();
+			select.setStartNumLine(indexLine);
+			select.setEndNumLine(indexLine);
+			select.setStartX( (int) ev.getX());
+			select.setEndX( (int) ev.getX());
+		}
+		if(ev.getAction()== MotionEvent.ACTION_MOVE){
+			select = TextSelection.getCurrentSelection();
+			select.editingCursor.numLine = indexLine;
+			select.editingCursor.x = (int) ev.getX();
+			SirajActivity.listTextLineView.invalidate();
+		}
+		if(ev.getAction()== MotionEvent.ACTION_UP){
+			SirajActivity.status = SirajActivity.SELECTED;
+			
+		}
+		
+	}
+
 	public static TextSelection getCurrentSelection(){
 		return currentSelection;
 	}

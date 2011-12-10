@@ -1,19 +1,26 @@
 package naitsoft.android.siraj;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.SQLException;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.PictureDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
+import android.view.GestureDetector.OnGestureListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,10 +43,11 @@ public class SirajActivity extends Activity {
 	public int livre;
 	public int chapitre;
 	int textSize;
+	public static Context context;
 
 	private LayoutInflater mInflater;
 	private ArabicListAdapter arabicAdapter;
-	private MyListView listTextLineView;
+	public static MyListView listTextLineView;
 	private LinearLayout linearLayout;
 	public static TextView text;
 	static public Paint paint;
@@ -48,6 +56,7 @@ public class SirajActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		context = getApplicationContext();
 		livre = 6; 
 		chapitre = 1;
 		//        initDB();
@@ -179,7 +188,6 @@ public class SirajActivity extends Activity {
 	}
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
-		// TODO Auto-generated method stub
 		//		return super.onMenuItemSelected(featureId, item);
 		switch(item.getItemId()){
 		case 1: 
@@ -200,10 +208,14 @@ public class SirajActivity extends Activity {
 
 }
 
-class MyListView extends ListView
+class MyListView extends ListView implements OnGestureListener
 {
 
 	public static int stepLine;
+	private ArrayList<Focusable> focusables= new ArrayList<Focusable>();
+	private Focusable curFocus;
+	private GestureDetector gestDetect = new GestureDetector(this);
+
 	public MyListView(Context context) {
 		super(context);
 	}
@@ -213,50 +225,203 @@ class MyListView extends ListView
 	public MyListView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 	}
+	
 
+//	@Override
+//	protected void onDraw(Canvas canvas) {
+//		super.onDraw(canvas);
+//		for(Focusable focus : focusables){
+//			focus.draw(canvas);
+//		};
+//	}
+	
 	@Override
-	public boolean dispatchTouchEvent(MotionEvent ev) {
-		return super.dispatchTouchEvent(ev);
-		//		return false;
+	public void draw(Canvas canvas) {
+		// TODO Auto-generated method stub
+		super.draw(canvas);
+		for(Focusable focus : focusables){
+			if(focus.isVisible() == true)
+				focus.draw(canvas);
+		};
 	}
 
+	public Focusable getTouchedFocus(MotionEvent ev){ 
+		for(Focusable f : focusables){
+			if( f.getRect().contains((int)ev.getX(), (int)ev.getY()+getListScrollY()))//TODO need improvement 
+				return f;
+		}
+		return null;
+	}
+	public  int getIndexLine(float y){
+		return  ((int)(y+getListScrollY()) / stepLine);
+	}
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
-		//		int aaa = ev.getPointerCount();
-		if(SirajActivity.status != SirajActivity.SELECTING) 
+		if(SirajActivity.status != SirajActivity.SELECTING) {
+			
+			gestDetect.onTouchEvent(ev);
 			return super.onTouchEvent(ev); 
-		int indexLine =  ((int)(ev.getY()+getScrollY()) / stepLine);
-		TextSelection select ;
-		if(ev.getAction()== MotionEvent.ACTION_DOWN){
-			select = TextSelection.getInstance();
-			select.setStartNumLine( indexLine);
-			select.setEndNumLine(indexLine);
-			select.setStartX( (int) ev.getX());
-			select.setEndX( (int) ev.getX());
 		}
-		if(ev.getAction()== MotionEvent.ACTION_MOVE){  
+		if(ev.getAction()== MotionEvent.ACTION_DOWN){
+			Focusable focus = getTouchedFocus(ev);
+			if(focus!=null){
+				curFocus = focus;
+				focus.onTouchEvent(ev);
+			}
+		}
+		if(ev.getAction()== MotionEvent.ACTION_MOVE){
+			if(curFocus!=null){
+				curFocus.onTouchEvent(ev);
+			}
 
-			select = TextSelection.getCurrentSelection();
-			select.editingCursor.numLine = indexLine;
-			select.editingCursor.x = (int) ev.getX();
-			invalidate();
 		}
 		if(ev.getAction()== MotionEvent.ACTION_UP){
-			select = TextSelection.getCurrentSelection();
-//			select.editingCursor.numLine = indexLine;
-//			select.setEndX((int) ev.getX());
-			//SirajActivity.status = SirajActivity.SELECTED;
-			String t = ((ArabicListAdapter)getAdapter()).getTextFromSelection(select);
-			Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
-			shareIntent.setType("text/plain");
-			shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Some text");
-			shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, t);
-			getContext().startActivity(Intent.createChooser(shareIntent, "Title for chooser"));
+			
+			if(curFocus!=null){
+				curFocus.onTouchEvent(ev);
+				curFocus = null;
+			}
+			
+//			String t = ((ArabicListAdapter)getAdapter()).getTextFromSelection(select);
+//			Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
+//			shareIntent.setType("text/plain");
+//			shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Some text");
+//			shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, t);
+//			getContext().startActivity(Intent.createChooser(shareIntent, "Title for chooser"));
 		}
 		return true;
 
 	}
+	@Override
+	public void onLongPress(MotionEvent e) {
+		SirajActivity.status = SirajActivity.SELECTED;
+		TextSelection sel = TextSelection.getInstance();	
+		sel.startCursor.x = (int) (e.getX()+50);
+		sel.endCursor.x = (int) (e.getX()-50);
+		int line = getIndexLine(e.getY());
+		sel.startCursor.numLine = line ;
+		sel.endCursor.numLine = line ;
+		addFocus(sel.focusA);
+		addFocus(sel.focusB);
+		dispatchTouchEvent(e);
+		invalidate();
+	}
+	
+	public int getListScrollY() {
+		View v = getChildAt(0);
+		return -v.getTop();
+	}
+	@Override
+	public boolean onDown(MotionEvent e) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	@Override
+	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+			float velocityY) {
+		return false;
+	}
+	@Override
+	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+			float distanceY) {
+		return false;
+	}
+	@Override
+	public void onShowPress(MotionEvent e) {
+	}
+	@Override
+	public boolean onSingleTapUp(MotionEvent e) {
+		return false;
+	}
 
+	public void addFocus(Focusable f){
+		focusables.add(f);
+	}
+}
+abstract class  Focusable{
+	BitmapDrawable pic;
+	int width;
+	int height;
+	int x;
+	int y;
+	Rect rect;
+	int idDrawable;
+	boolean visible = true;
+	
+	public Focusable(int idDraw){
+		pic = (BitmapDrawable) SirajActivity.context.getResources().getDrawable(idDraw);
+		idDrawable = idDraw;
+	}
+	
+	public void setVisible(boolean v){
+		visible =v;
+	}
+	public  boolean isVisible(){
+		return visible;
+	}
+	public Rect getRect() {
+		return rect;
+	}
 
+	public void setRect(Rect rect) {
+		this.rect = rect;
+	}
 
+	public int getIdDrawable() {
+		return idDrawable;
+	}
+
+	public void draw(Canvas canvas) {
+		if(!visible)return;
+		
+		pic.setBounds(new Rect(x, y, x+50, y+50));
+		pic.draw(canvas);
+	}
+
+	public void setIdDrawable(int idDrawable) {
+		this.idDrawable = idDrawable;
+	}
+
+	public BitmapDrawable getPic() {
+		return pic;
+	}
+
+	public void setPic(BitmapDrawable pic) {
+		this.pic = pic;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public void setX(int x) {
+		this.x = x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public void setY(int y) {
+		this.y = y;
+	}
+
+	public abstract void onTouchEvent(MotionEvent ev) ;
+	
 }

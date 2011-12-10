@@ -15,7 +15,6 @@ import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.speech.tts.TextToSpeech;
 import android.util.AttributeSet;
 import android.util.Config;
 import android.view.MotionEvent;
@@ -79,12 +78,12 @@ public class ArabicTextView extends View {
         		canvas.drawText(text, i, i+1, cur,  y, mPaint);
         		if(!DariGlyphUtils.isHaraka(text.charAt(i))){
         			cur-=w[i];
-        			if(SirajActivity.status == SirajActivity.SELECTING)
+        			if(SirajActivity.status == SirajActivity.SELECTING || SirajActivity.status == SirajActivity.SELECTED)
         			w[i]=cur;
         		}
 //        		prevCharWitdh = (int) ArabicTextView.getCharWidth(mPaint, text, i,w);
         	}
-        	if(SirajActivity.status != SirajActivity.SELECTING)
+        	if(SirajActivity.status != SirajActivity.SELECTING && SirajActivity.status != SirajActivity.SELECTED)
         		return;
         	if(TextSelection.getCurrentSelection()==null || !TextSelection.isLineInSelction(line.numLine))
         		return;
@@ -101,6 +100,8 @@ public class ArabicTextView extends View {
         		start = i == 0? width:(int) w[i-1];
         		start+=width;
         		select.startCursor.idxChar=i;
+        		select.focusA.x = start;
+        		select.focusA.y = getBottom();
         	}
         	else
         		start = width;
@@ -115,6 +116,8 @@ public class ArabicTextView extends View {
         			end = (int) w[i];
         		end+=width;
         		select.endCursor.idxChar=i+1;
+        		select.focusB.x = end;
+        		select.focusB.y = getBottom();
         	}
         	else
         		end = 0;
@@ -132,10 +135,6 @@ public class ArabicTextView extends View {
         
 //        canvas.drawBitmap(map, -canvas.getWidth(), 0, mPaint);**************
     }
-    
-
-    
-
  
     public TextLine getLine() {
 		return line;
@@ -151,10 +150,6 @@ public class ArabicTextView extends View {
 		this.text = text;
 		init();
 	}
-
-    
-
-    
 	
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -212,57 +207,57 @@ public class ArabicTextView extends View {
 
 }
 
-interface ArabicTextEventListener{
-	public void onClick(ArabicTextEvent event);
-	public void onTouch(ArabicTextEvent event);
-}
+//interface ArabicTextEventListener{
+//	public void onClick(ArabicTextEvent event);
+//	public void onTouch(ArabicTextEvent event);
+//}
 
-class ArabicTextEvent{
-
-	final static public int SLIDE_RIGHT = 1;
-	final static public int SLIDE_LEFT = 0;
-	
-	private MotionEvent event;
-	private Word word; 
-	private int dirct;
-
-	public ArabicTextEvent(MotionEvent event){
-		this.event = event;
-	}
-	public ArabicTextEvent(MotionEvent event, Word word){
-		this.event = event;
-		this.word = word;
-	}
-	public ArabicTextEvent(MotionEvent event,  int slideDirect){
-		this.event = event;
-		dirct = slideDirect;
-	}
-
-	public MotionEvent getEvent() {
-		return event;
-	}
-
-	public void setEvent(MotionEvent event) {
-		this.event = event;
-	}
-
-	public Word getWord() {
-		return word;
-	}
-
-	public void setWord(Word word) {
-		this.word = word;
-	}
-
-	public int getDirct() {
-		return dirct;
-	}
-
-	public void setDirct(int dirct) {
-		this.dirct = dirct;
-	}
-	
-}
+//class ArabicTextEvent{
+//
+//	final static public int SLIDE_RIGHT = 1;
+//	final static public int SLIDE_LEFT = 0;
+//	
+//	private MotionEvent event;
+//	private Word word; 
+//	private int dirct;
+//
+//	public ArabicTextEvent(MotionEvent event){
+//		this.event = event;
+//	}
+//	public ArabicTextEvent(MotionEvent event, Word word){
+//		this.event = event;
+//		this.word = word;
+//	}
+//	public ArabicTextEvent(MotionEvent event,  int slideDirect){
+//		this.event = event;
+//		dirct = slideDirect;
+//	}
+//
+//	public MotionEvent getEvent() {
+//		return event;
+//	}
+//
+//	public void setEvent(MotionEvent event) {
+//		this.event = event;
+//	}
+//
+//	public Word getWord() {
+//		return word;
+//	}
+//
+//	public void setWord(Word word) {
+//		this.word = word;
+//	}
+//
+//	public int getDirct() {
+//		return dirct;
+//	}
+//
+//	public void setDirct(int dirct) {
+//		this.dirct = dirct;
+//	}
+//	
+//}
 class ViewHolder{
 	public ArabicTextView arabText;
 	
