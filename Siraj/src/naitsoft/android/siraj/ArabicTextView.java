@@ -88,6 +88,7 @@ public class ArabicTextView extends View {
         	if(TextSelection.getCurrentSelection()==null)
         		return;
         	TextSelection select = TextSelection.getCurrentSelection();
+        	canvas.translate(-canvas.getWidth(), 0);
         	if(line.numLine == select.focusA.line)
         		select.focusA.draw(canvas);
         	if(line.numLine == select.focusB.line)
@@ -95,7 +96,6 @@ public class ArabicTextView extends View {
         	if(!TextSelection.isLineInSelction(line.numLine))
         		return;
         	select.initOrder();
-        	canvas.translate(-canvas.getWidth(), 0);
         	mPaint.setColor(Color.BLUE);
         	mPaint.setAlpha(125);
         	int start,end;
@@ -104,10 +104,10 @@ public class ArabicTextView extends View {
         		start = select.getStartX()-width;
         		for(; i< w.length && w[i]>start; i++);	
         		start = i == 0? width:(int) w[i-1];
-        		select.focusA.x = start;
         		start+=width;
+        		select.focusA.x = start;
         		select.startCursor.idxChar=i;
-        		select.focusA.line = line.numLine;
+        		select.focusA.line = line.numLine+1;
         	}
         	else
         		start = width;
@@ -120,10 +120,10 @@ public class ArabicTextView extends View {
         			end = (int) w[--i];
         		else
         			end = (int) w[i];
-        		select.focusB.x = end;
         		end+=width;
+        		select.focusB.x = end;
         		select.endCursor.idxChar=i+1;
-        		select.focusB.line = line.numLine;
+        		select.focusB.line = line.numLine+1;
         	}
         	else
         		end = 0;

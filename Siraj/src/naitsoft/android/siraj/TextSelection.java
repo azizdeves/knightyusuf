@@ -51,11 +51,11 @@ public class TextSelection {
 		}
 		if(ev.getAction()== MotionEvent.ACTION_MOVE){
 			select = TextSelection.getCurrentSelection();
-			cur.textCursor.numLine = indexLine;
+			cur.textCursor.numLine = indexLine-1;
 			cur.textCursor.x = (int) ev.getX();
 			SirajActivity.listTextLineView.invalidate();
 		}
-		if(ev.getAction()== MotionEvent.ACTION_UP){
+		if(ev.getAction()== MotionEvent.ACTION_UP){ 
 			SirajActivity.status = SirajActivity.SELECTED;
 			
 		}

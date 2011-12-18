@@ -104,7 +104,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		return view;
 	}
 	public void loadChapter(int idBook, int idChap){
-		text = myDbHelper.getChapter(idBook, idChap);
+		text = myDbHelper.getChapter(idBook, idChap).substring(0, 500);
 		text = DariGlyphUtils.reshapeText(text);
 	}
 	

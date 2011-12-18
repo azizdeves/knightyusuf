@@ -58,8 +58,8 @@ public class SirajActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		context = getApplicationContext();
-		livre = 6; 
-		chapitre = 1;
+		livre = 1; 
+		chapitre = 5;
 		//        initDB();
 		//        loadShowChapter();
 		Bundle bund = getIntent().getExtras();
@@ -316,8 +316,9 @@ class MyListView extends ListView implements OnGestureListener
 	}
 	
 	public int getListScrollY() {
-		ArabicTextView atv = (ArabicTextView) ((LinearLayout) getChildAt(0)).getChildAt(0);
-		return -atv.getTop()+atv.line.numLine*atv.stepLine;
+		LinearLayout ll = (LinearLayout) getChildAt(0);
+		ArabicTextView atv = (ArabicTextView) (ll).getChildAt(0);
+		return -ll.getTop()+atv.line.numLine*atv.stepLine;
 	}
 	@Override
 	public boolean onDown(MotionEvent e) {
@@ -385,7 +386,7 @@ abstract class  Focusable{
 
 	public void draw(Canvas canvas) {
 		if(!visible)return;
-		rect.set(x, y, x+50, y+50);
+		rect.set(x-25, y, x+25, y+50);
 		pic.setBounds(rect);
 		pic.draw(canvas);
 	}
