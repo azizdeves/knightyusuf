@@ -37,8 +37,9 @@ public class SirajActivity extends Activity {
 	public static final int CHAPTERS_CODE = 0;
 	public static final char SELECTING = 's';
 	public static final char SELECTED = 'S';
+	public static final char NORMAL = 'n';
 	
-	public static char status ;
+	public static char status = NORMAL;
 	private DataBaseHelper myDbHelper;
 	public int livre;
 	public int chapitre;
@@ -239,17 +240,17 @@ class MyListView extends ListView implements OnGestureListener
 	public void draw(Canvas canvas) {
 		// TODO Auto-generated method stub
 		super.draw(canvas);
-		for(Focusable focus : focusables){
-			if(focus.isVisible() == true)
-				focus.draw(canvas);
-		};
+//		for(Focusable focus : focusables){
+//			if(focus.isVisible() == true)
+//				focus.draw(canvas);
+//		}
 	}
 
 	public Focusable getTouchedFocus(MotionEvent ev){ 
-		for(Focusable f : focusables){
-			if( f.getRect().contains((int)ev.getX(), (int)ev.getY()+getListScrollY()))//TODO need improvement 
-				return f;
-		}
+//		for(Focusable f : focusables){
+//			if( f.getRect().contains((int)ev.getX(), (int)ev.getY()+getListScrollY()))//TODO need improvement 
+//				return f;
+//		}
 		return null;
 	}
 	public  int getIndexLine(float y){
@@ -257,59 +258,66 @@ class MyListView extends ListView implements OnGestureListener
 	}
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
-		if(SirajActivity.status != SirajActivity.SELECTING) {
+		
+		if(SirajActivity.status == SirajActivity.NORMAL  ) {
 			
 			gestDetect.onTouchEvent(ev);
 			return super.onTouchEvent(ev); 
 		}
-		if(ev.getAction()== MotionEvent.ACTION_DOWN){
-			Focusable focus = getTouchedFocus(ev);
-			if(focus!=null){
-				curFocus = focus;
-				focus.onTouchEvent(ev);
+		
+		int line = getIndexLine(ev.getY());
+		if(SirajActivity.status == SirajActivity.SELECTING  ) {
+			
+			if(ev.getAction()== MotionEvent.ACTION_MOVE){
+				if(curFocus!=null){
+					curFocus.onTouchEvent(ev,line);
+				}
+				
 			}
+			if(ev.getAction()== MotionEvent.ACTION_UP){
+				
+				if(curFocus!=null){
+					curFocus.onTouchEvent(ev,line);
+					curFocus = null;
+				}
+				
+			}
+			return true;
 		}
-		if(ev.getAction()== MotionEvent.ACTION_MOVE){
-			if(curFocus!=null){
-				curFocus.onTouchEvent(ev);
+		if(  SirajActivity.status == SirajActivity.SELECTED)				
+			if(ev.getAction()== MotionEvent.ACTION_DOWN){
+				Focusable focus = TextSelection.getTouchedCurseur((int) ev.getX(), line);
+				if(focus!=null){
+					curFocus = focus;
+					focus.onTouchEvent(ev,line);
+					return true;
+				}
 			}
 
-		}
-		if(ev.getAction()== MotionEvent.ACTION_UP){
-			
-			if(curFocus!=null){
-				curFocus.onTouchEvent(ev);
-				curFocus = null;
-			}
-			
-//			String t = ((ArabicListAdapter)getAdapter()).getTextFromSelection(select);
-//			Intent shareIntent = new Intent(android.content.Intent.ACTION_SEND);
-//			shareIntent.setType("text/plain");
-//			shareIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Some text");
-//			shareIntent.putExtra(android.content.Intent.EXTRA_TEXT, t);
-//			getContext().startActivity(Intent.createChooser(shareIntent, "Title for chooser"));
-		}
-		return true;
+		gestDetect.onTouchEvent(ev);
+		return super.onTouchEvent(ev); 
 
 	}
 	@Override
 	public void onLongPress(MotionEvent e) {
+//		if(SirajActivity.status == SirajActivity.SELECTED)
+//			return;
 		SirajActivity.status = SirajActivity.SELECTED;
 		TextSelection sel = TextSelection.getInstance();	
-		sel.startCursor.x = (int) (e.getX()+50);
-		sel.endCursor.x = (int) (e.getX()-50);
+		sel.startCursor.x = (int) (e.getX());
+		sel.endCursor.x = (int) (e.getX());
 		int line = getIndexLine(e.getY());
 		sel.startCursor.numLine = line ;
 		sel.endCursor.numLine = line ;
 		addFocus(sel.focusA);
 		addFocus(sel.focusB);
-		dispatchTouchEvent(e);
+		//dispatchTouchEvent(e);
 		invalidate();
 	}
 	
 	public int getListScrollY() {
-		View v = getChildAt(0);
-		return -v.getTop();
+		ArabicTextView atv = (ArabicTextView) ((LinearLayout) getChildAt(0)).getChildAt(0);
+		return -atv.getTop()+atv.line.numLine*atv.stepLine;
 	}
 	@Override
 	public boolean onDown(MotionEvent e) {
@@ -347,10 +355,14 @@ abstract class  Focusable{
 	Rect rect;
 	int idDrawable;
 	boolean visible = true;
+	int line;
+	TextCursor textCursor;
 	
 	public Focusable(int idDraw){
 		pic = (BitmapDrawable) SirajActivity.context.getResources().getDrawable(idDraw);
 		idDrawable = idDraw;
+		rect = new Rect();
+		line=-1;
 	}
 	
 	public void setVisible(boolean v){
@@ -373,8 +385,8 @@ abstract class  Focusable{
 
 	public void draw(Canvas canvas) {
 		if(!visible)return;
-		
-		pic.setBounds(new Rect(x, y, x+50, y+50));
+		rect.set(x, y, x+50, y+50);
+		pic.setBounds(rect);
 		pic.draw(canvas);
 	}
 
@@ -422,6 +434,6 @@ abstract class  Focusable{
 		this.y = y;
 	}
 
-	public abstract void onTouchEvent(MotionEvent ev) ;
+	public abstract void onTouchEvent(MotionEvent ev, int indexLine)  ;
 	
 }

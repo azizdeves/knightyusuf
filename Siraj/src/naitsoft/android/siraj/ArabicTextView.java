@@ -85,9 +85,15 @@ public class ArabicTextView extends View {
         	}
         	if(SirajActivity.status != SirajActivity.SELECTING && SirajActivity.status != SirajActivity.SELECTED)
         		return;
-        	if(TextSelection.getCurrentSelection()==null || !TextSelection.isLineInSelction(line.numLine))
+        	if(TextSelection.getCurrentSelection()==null)
         		return;
         	TextSelection select = TextSelection.getCurrentSelection();
+        	if(line.numLine == select.focusA.line)
+        		select.focusA.draw(canvas);
+        	if(line.numLine == select.focusB.line)
+        		select.focusB.draw(canvas);
+        	if(!TextSelection.isLineInSelction(line.numLine))
+        		return;
         	select.initOrder();
         	canvas.translate(-canvas.getWidth(), 0);
         	mPaint.setColor(Color.BLUE);
@@ -96,12 +102,12 @@ public class ArabicTextView extends View {
         	int i = 0 ;
         	if(line.numLine == select.getStartNumLine()){
         		start = select.getStartX()-width;
-        		for(; i< w.length && w[i]>start; i++) 		;	
+        		for(; i< w.length && w[i]>start; i++);	
         		start = i == 0? width:(int) w[i-1];
+        		select.focusA.x = start;
         		start+=width;
         		select.startCursor.idxChar=i;
-        		select.focusA.x = start;
-        		select.focusA.y = getBottom();
+        		select.focusA.line = line.numLine;
         	}
         	else
         		start = width;
@@ -114,15 +120,16 @@ public class ArabicTextView extends View {
         			end = (int) w[--i];
         		else
         			end = (int) w[i];
+        		select.focusB.x = end;
         		end+=width;
         		select.endCursor.idxChar=i+1;
-        		select.focusB.x = end;
-        		select.focusB.y = getBottom();
+        		select.focusB.line = line.numLine;
         	}
         	else
         		end = 0;
         	
         	canvas.drawRect(end, 0, start, stepLine, mPaint);
+        	
 //        	********************
 //        	map = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_4444);
 //    		Canvas cnvs = new Canvas(map);

@@ -21,36 +21,38 @@ public class TextSelection {
 	
 	private void initFocus(){
 		focusA = new Focusable(android.R.drawable.ic_input_add) {			
-			public void onTouchEvent(MotionEvent ev) {
-				handleTouchEvent(ev);				
+			public void onTouchEvent(MotionEvent ev, int indexLine) {
+				handleTouchEvent(this, ev,  indexLine);				
 			}
 		};
 		focusB = new Focusable(android.R.drawable.ic_input_add) {			
-			public void onTouchEvent(MotionEvent ev) {
-				handleTouchEvent(ev);				
+			public void onTouchEvent(MotionEvent ev, int indexLine) {
+				handleTouchEvent(this, ev,  indexLine);					
 			}
 			public boolean isVisible() {
 				return SirajActivity.status==SirajActivity.SELECTING || SirajActivity.status==SirajActivity.SELECTED;
 			}
 		};
+		focusA.textCursor = startCursor;
+		focusB.textCursor = endCursor;
 		
 	}
 	
-	protected void handleTouchEvent(MotionEvent ev) {
+	protected void handleTouchEvent(Focusable cur, MotionEvent ev, int indexLine) {
 		TextSelection select;
-		int indexLine = SirajActivity.listTextLineView.getIndexLine(ev.getY());
+//		int indexLine = SirajActivity.listTextLineView.getIndexLine(ev.getY());
 		if(ev.getAction()== MotionEvent.ACTION_DOWN){
 			SirajActivity.status = SirajActivity.SELECTING;
-			select = TextSelection.getCurrentSelection();
-			select.setStartNumLine(indexLine);
-			select.setEndNumLine(indexLine);
-			select.setStartX( (int) ev.getX());
-			select.setEndX( (int) ev.getX());
+//			select = TextSelection.getCurrentSelection();
+//			select.setStartNumLine(indexLine);
+//			select.setEndNumLine(indexLine);
+//			select.setStartX( (int) ev.getX());
+//			select.setEndX( (int) ev.getX());
 		}
 		if(ev.getAction()== MotionEvent.ACTION_MOVE){
 			select = TextSelection.getCurrentSelection();
-			select.editingCursor.numLine = indexLine;
-			select.editingCursor.x = (int) ev.getX();
+			cur.textCursor.numLine = indexLine;
+			cur.textCursor.x = (int) ev.getX();
 			SirajActivity.listTextLineView.invalidate();
 		}
 		if(ev.getAction()== MotionEvent.ACTION_UP){
@@ -58,6 +60,22 @@ public class TextSelection {
 			
 		}
 		
+	}
+	
+	public static Focusable getTouchedCurseur(int x, int numLine) {
+		if(focusA.line== numLine)
+			if(focusB.line == numLine){
+				if(Math.abs(x-focusA.x)<Math.abs(x-focusB.x))
+					return focusA;
+				else 
+					return focusB;
+			}
+			else
+				return focusA;
+		if(focusB.line== numLine)
+			return focusB;
+		
+		return null;
 	}
 
 	public static TextSelection getCurrentSelection(){

@@ -96,6 +96,7 @@ class ChaptersAdapter implements ListAdapter
 			view = mInflater.inflate(R.layout.layout_mark, parent,false);
 			holder = new ViewHolder();
 			holder.arabText = (ArabicTextView) view.findViewById(R.id.textView);
+//			holder.arabText.setCatchTouchEvent(false);
 			view.setTag(holder);
 		}
 		else{
