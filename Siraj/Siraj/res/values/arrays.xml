@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<array name="textsize">
+		<item>20</item>
+		<item>30</item>
+		<item>40</item>
+		<item>50</item>
+	</array>
+
+	<string-array name="textsize_options">
+		<item>20</item>
+		<item>30</item>
+		<item>40</item>
+		<item>50</item>
+	</string-array>
+	<integer-array name="textsize_values">
+		<item>20</item>
+		<item>30</item>
+		<item>40</item>
+		<item>50</item>
+	</integer-array>
+</resources>
