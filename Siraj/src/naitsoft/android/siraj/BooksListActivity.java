@@ -31,15 +31,15 @@ import android.widget.AdapterView.OnItemClickListener;
 public class BooksListActivity extends Activity {
 
 
-	private ListView listMarkView;
+	private GridView listMarkView;
 	public static Paint paint;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.main);
-		listMarkView = (ListView) findViewById(R.id.listMarkView);
+		setContentView(R.layout.chapter);
+		listMarkView = (GridView) findViewById(R.id.listMarkView);
 		listMarkView.setAdapter(new ImageAdapter(this));
 		listMarkView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {

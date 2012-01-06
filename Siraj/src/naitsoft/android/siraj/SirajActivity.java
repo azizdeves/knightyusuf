@@ -3,6 +3,7 @@ package naitsoft.android.siraj;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import android.support.v4.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -18,12 +19,16 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.PictureDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.Menu;
+import android.support.v4.view.MenuItem;
+import android.text.Html;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.MenuInflater;
+
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageButton;
@@ -31,7 +36,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class SirajActivity extends Activity {
+public class SirajActivity extends FragmentActivity {
 
 
 	public static final int CHAPTERS_CODE = 0;
@@ -51,7 +56,7 @@ public class SirajActivity extends Activity {
 	public static MyListView listTextLineView;
 	private LinearLayout linearLayout;
 	public static TextView text;
-	static public Paint paint;
+	static public Paint paint; 
 
 	/** Called when the activity is first created. */
 	@Override
@@ -91,10 +96,12 @@ public class SirajActivity extends Activity {
 		//				
 		//			}
 		//		});
+		ActionBar actionBar = this.getSupportActionBar();
+	    actionBar.setDisplayHomeAsUpEnabled(true);
 	}
 
 	protected void callChaptersActivity() {
-		Intent chapIntent = new Intent(this,BooksListActivity.class);	
+		Intent chapIntent = new Intent(this,ChaptersListActivity.class);	
 		chapIntent.putExtra("idBook", livre);
 		chapIntent.putExtra("idChap", chapitre);
 		startActivity(chapIntent);
@@ -170,26 +177,31 @@ public class SirajActivity extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		// Group ID
-		int groupId = 0;
-		// Unique menu item identifier. Used for event handling.
-		int menuItemId = 1;//MENU_ITEM;
-		// The order position of the item
-		int menuItemOrder = Menu.NONE;
-		// Text to be displayed for this menu item.
-		String menuItemText = "Index";
-		// Create the menu item and keep a reference to it.
-		MenuItem menuItem = menu.add(groupId, menuItemId,
-				menuItemOrder, menuItemText);
 
-		menu.add(0,2,0,"Preference");
-		menu.add(0,3,2,"Select");
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.layout.menu, menu);
 		return true;
+
+//		super.onCreateOptionsMenu(menu);
+//		// Group ID
+//		int groupId = 0;
+//		// Unique menu item identifier. Used for event handling.
+//		int menuItemId = 1;//MENU_ITEM;
+//		// The order position of the item
+//		int menuItemOrder = Menu.NONE;
+//		// Text to be displayed for this menu item.
+//		String menuItemText = "Index";
+//		// Create the menu item and keep a reference to it.
+//		MenuItem menuItem = menu.add(groupId, menuItemId,
+//				menuItemOrder, menuItemText);
+//
+//		menu.add(0,2,0,"Preference");
+//		menu.add(0,3,2,"Select");
+//		return true;
 	}
 	@Override
-	public boolean onMenuItemSelected(int featureId, MenuItem item) {
-		//		return super.onMenuItemSelected(featureId, item);
+	public boolean onMenuItemSelected(int featureId, MenuItem 
+			item) {
 		switch(item.getItemId()){
 		case 1: 
 			callChaptersActivity();
@@ -198,9 +210,20 @@ public class SirajActivity extends Activity {
 			Intent intent = new Intent(this, PreferencesActivity.class);
 			startActivity(intent);
 			break;
-		case 3:
-			status = SELECTING;
+		case R.id.menu_share:
+			String selectionTxt = ArabicListAdapter.getTextFromSelection(TextSelection.getCurrentSelection());
+			Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+//			sharingIntent.setType("text/html");
+			sharingIntent.setType("text/plain");
+			sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, selectionTxt);
+//			sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml("<p>"+selectionTxt+"</p>"));
+			startActivity(Intent.createChooser(sharingIntent,"Share using"));
+			break;
+		case R.id.menu_save:
 
+			break;
+		case android.R.id.home:
+			callChaptersActivity();
 			break;
 		}
 		return true;
@@ -236,15 +259,15 @@ class MyListView extends ListView implements OnGestureListener
 //		};
 //	}
 	
-	@Override
-	public void draw(Canvas canvas) {
-		// TODO Auto-generated method stub
-		super.draw(canvas);
-//		for(Focusable focus : focusables){
-//			if(focus.isVisible() == true)
-//				focus.draw(canvas);
-//		}
-	}
+//	@Override
+//	public void draw(Canvas canvas) {
+//		// TODO Auto-generated method stub
+//		super.draw(canvas);
+////		for(Focusable focus : focusables){
+////			if(focus.isVisible() == true)
+////				focus.draw(canvas);
+////		}
+//	}
 
 	public Focusable getTouchedFocus(MotionEvent ev){ 
 //		for(Focusable f : focusables){
@@ -269,6 +292,10 @@ class MyListView extends ListView implements OnGestureListener
 		if(SirajActivity.status == SirajActivity.SELECTING  ) {
 			
 			if(ev.getAction()== MotionEvent.ACTION_MOVE){
+				if(ev.getY()<50)
+					smoothScrollBy(-50, 3000);
+				if(ev.getY()>getHeight()-50)
+					smoothScrollBy(50, 3000);
 				if(curFocus!=null){
 					curFocus.onTouchEvent(ev,line);
 				}

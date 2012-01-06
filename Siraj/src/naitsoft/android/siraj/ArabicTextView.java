@@ -129,6 +129,7 @@ public class ArabicTextView extends View {
         		end = 0;
         	
         	canvas.drawRect(end, 0, start, stepLine, mPaint);
+//        	Bitmap.createBitmap(getDrawingCache(), 50, 30, 100, 30);
         	
 //        	********************
 //        	map = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_4444);
@@ -198,10 +199,10 @@ public class ArabicTextView extends View {
 		return text;
 	}
 
-	public void setText(String text,int cursorBegin) {
-		this.text = text.substring(cursorBegin);
-		init();
-	}
+//	public void setText(String text,int cursorBegin) {
+//		this.text = text.substring(cursorBegin);
+//		init();
+//	}
 
 
 	public float getTxtSize() {

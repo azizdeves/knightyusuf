@@ -26,7 +26,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 	private Paint paint;
 	int width;
 	SirajActivity activity;
-	ArrayList<TextLine> lines = new ArrayList<TextLine>();
+	static ArrayList<TextLine> lines = new ArrayList<TextLine>();
 	private LayoutInflater mInflater;
 	private DataBaseHelper myDbHelper;
 //	boolean isLineInit=false;
@@ -104,7 +104,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		return view;
 	}
 	public void loadChapter(int idBook, int idChap){
-		text = myDbHelper.getChapter(idBook, idChap).substring(0, 500);
+		text = myDbHelper.getChapter(idBook, idChap);//wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
 		text = DariGlyphUtils.reshapeText(text);
 	}
 	
@@ -141,7 +141,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		myDbHelper = DataBaseHelper.getInstance(activity);
 	}
 	
-	public String getTextFromSelection(TextSelection select){
+	public static String getTextFromSelection(TextSelection select){
 		if(select.startCursor.numLine == select.endCursor.numLine)
 			return lines.get(select.startCursor.numLine).getText().substring(select.startCursor.idxChar, select.endCursor.idxChar);
 		StringBuffer buf = new StringBuffer();

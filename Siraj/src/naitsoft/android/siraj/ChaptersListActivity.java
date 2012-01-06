@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
@@ -16,6 +17,9 @@ import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -54,7 +58,50 @@ public class ChaptersListActivity extends ListActivity {
 			}
 		});
 
+		ActionBar actionBar = getActionBar();
+	    actionBar.setDisplayHomeAsUpEnabled(true);
 
+	}
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		return true;
+
+//		super.onCreateOptionsMenu(menu);
+//		// Group ID
+//		int groupId = 0;
+//		// Unique menu item identifier. Used for event handling.
+//		int menuItemId = 1;//MENU_ITEM;
+//		// The order position of the item
+//		int menuItemOrder = Menu.NONE;
+//		// Text to be displayed for this menu item.
+//		String menuItemText = "Index";
+//		// Create the menu item and keep a reference to it.
+//		MenuItem menuItem = menu.add(groupId, menuItemId,
+//				menuItemOrder, menuItemText);
+//
+//		menu.add(0,2,0,"Preference");
+//		menu.add(0,3,2,"Select");
+//		return true;
+	}
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch(item.getItemId()){
+		case 1: 
+			break;
+		case 2: 
+//			Intent intent = new Intent(this, PreferencesActivity.class);
+//			startActivity(intent);
+			break;
+		case 3:
+
+			break;
+		case android.R.id.home:
+			Intent intent = new Intent(this, BooksListActivity.class);
+			startActivity(intent);
+			break;
+		}
+		return true;
 	}
 	private void callActivity(int pos)
 	{

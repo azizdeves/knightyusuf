@@ -112,8 +112,8 @@ public class TextSelection {
 				swapCursor();
 				
 			}
-			
 	}
+	
 	private void swapCursor(){
 		TextCursor tmp;
 		tmp = currentSelection.startCursor;
@@ -122,6 +122,10 @@ public class TextSelection {
 		//editingCursor = editingCursor == startCursor? endCursor : startCursor;
 	}
 
+	public String getText(){
+		
+		return "";
+	}
 	public void setEndNumLine(int indexLine) {
 		currentSelection.endCursor.numLine = indexLine;
 	}
@@ -137,6 +141,7 @@ public class TextSelection {
 	public void setEndX(int x) {
 		currentSelection.endCursor.x = x;
 	}
+	
 	
 }
 class TextCursor{
