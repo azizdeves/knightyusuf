@@ -1,0 +1,2 @@
+serviceClass: naitsoft.mobile.siraj.client.GreetingService
+path: 0DAB19E69F248DB1ECB29402AD408C48.gwt.rpc
