@@ -30,7 +30,7 @@ public class TextSelection {
 				handleTouchEvent(this, ev,  indexLine);					
 			}
 			public boolean isVisible() {
-				return SirajActivity.status==SirajActivity.SELECTING || SirajActivity.status==SirajActivity.SELECTED;
+				return ArticleFragment.status==ArticleFragment.SELECTING || ArticleFragment.status==ArticleFragment.SELECTED;
 			}
 		};
 		focusA.textCursor = startCursor;
@@ -40,9 +40,9 @@ public class TextSelection {
 	
 	protected void handleTouchEvent(Focusable cur, MotionEvent ev, int indexLine) {
 		TextSelection select;
-//		int indexLine = SirajActivity.listTextLineView.getIndexLine(ev.getY());
+//		int indexLine = ArticleFragment.listTextLineView.getIndexLine(ev.getY());
 		if(ev.getAction()== MotionEvent.ACTION_DOWN){
-			SirajActivity.status = SirajActivity.SELECTING;
+			ArticleFragment.status = ArticleFragment.SELECTING;
 //			select = TextSelection.getCurrentSelection();
 //			select.setStartNumLine(indexLine);
 //			select.setEndNumLine(indexLine);
@@ -53,10 +53,10 @@ public class TextSelection {
 			select = TextSelection.getCurrentSelection();
 			cur.textCursor.numLine = indexLine-1;
 			cur.textCursor.x = (int) ev.getX();
-			SirajActivity.listTextLineView.invalidate();
+			ArticleFragment.listTextLineView.invalidate();
 		}
 		if(ev.getAction()== MotionEvent.ACTION_UP){ 
-			SirajActivity.status = SirajActivity.SELECTED;
+			ArticleFragment.status = ArticleFragment.SELECTED;
 			
 		}
 		
@@ -148,4 +148,18 @@ class TextCursor{
 	int numLine;
 	int x;
 	int idxChar;
+}
+class MarkUI{
+	short startX;
+	short endX;
+	short line;
+	int markId;
+}
+class Mark{
+	int markId;
+	short startChar;
+	short endChar;
+	int idChap;
+	int idBook;
+	String note;
 }

@@ -24,6 +24,8 @@ public class ArabicTextView extends View {
 
 //	private ArabicTextEventListener  eventListener;
 	static public Paint mPaint;
+	int backColor = Color.rgb(238, 255, 237);
+	int fontColor = Color.BLACK;
 	String text;
 	TextLine line ;
 	int stepLine ;
@@ -54,12 +56,12 @@ public class ArabicTextView extends View {
 //    	SirajActivity.text.setText(frame++);
 //    	width = canvas.getWidth();
     	canvas.translate(canvas.getWidth(), 0);
-    	mPaint.setColor(Color.BLACK);
+    	mPaint.setColor(backColor);
     	clsRect.set(-width, 0, 0, canvas.getHeight());
         canvas.drawRect(clsRect, mPaint);
         if(text == null)
         	return;
-        mPaint.setColor(Color.WHITE); 
+        mPaint.setColor(fontColor); 
 //        int prevCharWitdh=0;
         int cur=0;
         	w = new float[text.length()];
@@ -73,17 +75,18 @@ public class ArabicTextView extends View {
         		return;
         	}
         	
+        	//Heavy draw lettre by lettre
         	for(int i =0, length=text.length(); i<length;i++){
         		if(text.charAt(i)=='\n')continue;
         		canvas.drawText(text, i, i+1, cur,  y, mPaint);
         		if(!DariGlyphUtils.isHaraka(text.charAt(i))){
         			cur-=w[i];
-        			if(SirajActivity.status == SirajActivity.SELECTING || SirajActivity.status == SirajActivity.SELECTED)
+        			if(ArticleFragment.status == ArticleFragment.SELECTING || ArticleFragment.status == ArticleFragment.SELECTED)
         			w[i]=cur;
         		}
 //        		prevCharWitdh = (int) ArabicTextView.getCharWidth(mPaint, text, i,w);
         	}
-        	if(SirajActivity.status != SirajActivity.SELECTING && SirajActivity.status != SirajActivity.SELECTED)
+        	if(ArticleFragment.status != ArticleFragment.SELECTING && ArticleFragment.status != ArticleFragment.SELECTED)
         		return;
         	if(TextSelection.getCurrentSelection()==null)
         		return;
@@ -97,7 +100,7 @@ public class ArabicTextView extends View {
         		return;
         	select.initOrder();
         	mPaint.setColor(Color.BLUE);
-        	mPaint.setAlpha(125);
+        	mPaint.setAlpha(65);
         	int start,end;
         	int i = 0 ;
         	if(line.numLine == select.getStartNumLine()){

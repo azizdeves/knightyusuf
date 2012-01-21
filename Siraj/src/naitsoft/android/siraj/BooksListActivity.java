@@ -17,6 +17,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class BooksListActivity extends Activity {
+public class BooksListActivity extends FragmentActivity {
 
 
 	private GridView listMarkView;
@@ -38,8 +39,8 @@ public class BooksListActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.chapter);
-		listMarkView = (GridView) findViewById(R.id.listMarkView);
+		setContentView(R.layout.books);
+		listMarkView = (GridView) findViewById(R.id.listBooks);
 		listMarkView.setAdapter(new ImageAdapter(this));
 		listMarkView.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {

@@ -36,7 +36,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 	public ArabicListAdapter(SirajActivity activ){
 		mInflater = activ.getLayoutInflater(); 
 		activity = activ;
-		paint=activ.paint;
+		paint=SirajActivity.paint;
 		initDB();
 //		loadChapter(activ.livre,activ.chapitre);
 		
@@ -46,7 +46,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		lines.clear();
 		int numLine = 0;
 		int startCur = 0;
-		int endCur = 0;
+//		int endCur = 0;
 		int lastSpace = -1;
 		boolean isNewLine=false;
 		int lineWidth=0;
@@ -104,7 +104,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		return view;
 	}
 	public void loadChapter(int idBook, int idChap){
-		text = myDbHelper.getChapter(idBook, idChap);//wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+		text = myDbHelper.getChapter(idBook, idChap);//.substring(0,300);//wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
 		text = DariGlyphUtils.reshapeText(text);
 	}
 	
@@ -142,6 +142,8 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 	}
 	
 	public static String getTextFromSelection(TextSelection select){
+		try{
+			
 		if(select.startCursor.numLine == select.endCursor.numLine)
 			return lines.get(select.startCursor.numLine).getText().substring(select.startCursor.idxChar, select.endCursor.idxChar);
 		StringBuffer buf = new StringBuffer();
@@ -151,6 +153,28 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		}
 		buf.append(lines.get(select.endCursor.numLine).getText().substring(0, select.endCursor.idxChar));
 		return buf.toString();
+		}catch(Exception e){
+			return "";
+		}
+	}
+	
+	public Mark getAbsoluteTextSelectPosition(TextSelection select){
+		short s=0,e=0,i=0;
+		for(;i<select.startCursor.numLine;i++){
+			
+				s+=lines.get(i).txt.length();
+		}
+		e=s;
+		s+=select.startCursor.idxChar;
+		for(;i<select.endCursor.numLine;i++){
+			
+			e+=lines.get(i).txt.length();
+		}
+		e+=select.endCursor.idxChar;
+		Mark m = new Mark();
+		m.startChar = s;
+		m.endChar = e; 
+		return m;
 	}
 	@Override
 	public int getCount() {
