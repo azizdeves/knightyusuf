@@ -30,6 +30,7 @@ import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
+import android.view.WindowManager;
 
 import android.view.MotionEvent;
 import android.view.View;
@@ -65,6 +66,7 @@ public class SirajActivity extends FragmentActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		context = getApplicationContext(); 
 		livre = 1; 
 		chapitre = 5;
@@ -104,10 +106,10 @@ public class SirajActivity extends FragmentActivity {
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
 //		ArticleFragment af = (ArticleFragment)(
-			ArticleFragment.articleFrag.loadShowChapter();
-//		super.onWindowFocusChanged(hasFocus);
-//		if(!hasFocus)
-//			return;
+		if(!hasFocus)
+			return;
+		ArticleFragment.articleFrag.loadShowChapter();
+		//		super.onWindowFocusChanged(hasFocus);
 //		loadShowChapter();
 
 	}

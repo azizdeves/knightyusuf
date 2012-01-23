@@ -2,64 +2,101 @@ package naitsoft.android.siraj;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 
 
 import android.database.DataSetObserver;
-import android.database.SQLException;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Paint.Style;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.AbsListView.OnScrollListener;
 
 public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListener{
 
 	private String text;
+	ArrayList<Mark> marks = new ArrayList<Mark>();
+	static ArrayList<MarkUI> marksUi ;
 	private Paint paint;
 	int width;
 	SirajActivity activity;
 	static ArrayList<TextLine> lines = new ArrayList<TextLine>();
 	private LayoutInflater mInflater;
 	private DataBaseHelper myDbHelper;
-//	boolean isLineInit=false;
+	//	boolean isLineInit=false;
 	static public  boolean mBusy;
-	
-	
+
+
 	public ArabicListAdapter(SirajActivity activ){
 		mInflater = activ.getLayoutInflater(); 
 		activity = activ;
 		paint=SirajActivity.paint;
 		initDB();
-//		loadChapter(activ.livre,activ.chapitre);
-		
+		//		loadChapter(activ.livre,activ.chapitre);
+
 	}
 	private void constructLine(){
-//		width = 800;
 		lines.clear();
-		int numLine = 0;
-		int startCur = 0;
-//		int endCur = 0;
-		int lastSpace = -1;
+		short numLine = 0;
+		short startCur = 0;
+		short lastSpace = -1;
 		boolean isNewLine=false;
-		int lineWidth=0;
+		boolean isBuildingMarkUi = false;
+		Mark currentMark = null;
+		MarkUI currentMarkUi = null;
+		short lineWidth=0;
 		float[] w = new float[1];
-		for(int i = 0; i<text.length(); i++){
+		marksUi = new ArrayList<MarkUI>();
+		marks = new ArrayList<Mark>();
+
+		Iterator<Mark> iterMark = marks.iterator();
+		if(iterMark.hasNext())
+			currentMark = iterMark.next();
+
+		for(short i = 0; i<text.length(); i++){
+
+			if(currentMark !=null){
+				if(isBuildingMarkUi){
+
+					if(text.charAt(i) == currentMark.endChar){				
+						isBuildingMarkUi = false;
+						currentMarkUi.endX = lineWidth;
+						currentMarkUi.endLine = numLine;
+						if(iterMark.hasNext())
+							currentMark = iterMark.next();
+						else
+							currentMark = null;
+
+					}
+					
+					if(isNewLine)
+						marksUi.add(currentMarkUi);
+				}else{
+					if(text.charAt(i) == currentMark.startChar){				
+						isBuildingMarkUi = true;
+						currentMarkUi = new MarkUI(lineWidth,lineWidth,numLine,numLine, currentMark.markId);
+
+						marksUi.add(currentMarkUi);
+					}
+
+				}
+			}else{
+				if(isNewLine)
+					marksUi.add(currentMarkUi);
+				
+			}
 			if(text.charAt(i)==' ')
 				lastSpace = i;
-
 			if(isNewLine){
 				startCur = i;
 				lineWidth = 0;
 				lastSpace = -1;
 				isNewLine = false;
+				//				if(isBuildingMarkUi)
 
 			}
 			if(text.charAt(i)=='\n'){
@@ -69,37 +106,44 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 					isNewLine = true;
 				}
 				continue;
-				
+
 			}
 			if((lineWidth += ArabicTextView.getCharWidth(ArabicTextView.mPaint, text, i,w))> width){
-				
+
 				lines.add(new TextLine(text.substring(startCur, lastSpace),numLine++));
 				i = lastSpace;
 				isNewLine = true;
 			}
 
 		}
-//		isLineInit = true;
+		if(isBuildingMarkUi){
+			currentMarkUi.endX = lineWidth;
+			currentMarkUi.endLine = numLine;
+		}
+		else
+			marksUi.add(null);
+		
+		//		isLineInit = true;
 	}
 
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {
-//		if(!isLineInit){
-//			width = view.getWidth();
-//			constructLine();
-//		}
+		//		if(!isLineInit){
+		//			width = view.getWidth();
+		//			constructLine();
+		//		}
 		ViewHolder holder;
- 		if(view == null){
-			view = mInflater.inflate(R.layout.layout_mark, parent,false);
+		if(view == null){
+			view = mInflater.inflate(R.layout.rich_text_line, parent,false);
 			holder = new ViewHolder();
-			holder.arabText = (ArabicTextView) view.findViewById(R.id.textView);
+			holder.arabText = (RichArabicTextView) view.findViewById(R.id.textView);
 			view.setTag(holder);
 		}
- 		else{
- 			holder = (ViewHolder) view.getTag();
- 		}
-//		txt.setTxtSize(10f);
- 		
+		else{
+			holder = (ViewHolder) view.getTag();
+		}
+		//		txt.setTxtSize(10f);
+
 		holder.arabText.setLine(lines.get(position));
 		return view;
 	}
@@ -107,67 +151,69 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		text = myDbHelper.getChapter(idBook, idChap);//.substring(0,300);//wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
 		text = DariGlyphUtils.reshapeText(text);
 	}
-	
+
 	@Override
 	public void onScroll(AbsListView arg0, int arg1, int arg2, int arg3) {	}
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
-	       switch (scrollState) {
-	        case OnScrollListener.SCROLL_STATE_IDLE:
-	            mBusy = false;
-	            
-	            int first = view.getFirstVisiblePosition();
-	            int count = view.getChildCount();
-	            for (int i=0; i<count&& !mBusy; i++) {
-	            	ViewHolder holder = (ViewHolder)view.getChildAt(i).getTag();
-	            	holder.arabText.invalidate();
-//	                if (t.getTag() != null) {
-//	                    t.invalidate();
-//	                }
-	            }
-	            
-	            break;
-	        case OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
-	            mBusy = false;
-	            break;
-	        case OnScrollListener.SCROLL_STATE_FLING:
-	            mBusy = true;
-	            break;
-	        }
+		switch (scrollState) {
+		case OnScrollListener.SCROLL_STATE_IDLE:
+			mBusy = false;
+
+			int first = view.getFirstVisiblePosition();
+			int count = view.getChildCount();
+			for (int i=0; i<count&& !mBusy; i++) {
+				ViewHolder holder = (ViewHolder)view.getChildAt(i).getTag();
+				holder.arabText.invalidate();
+				//	                if (t.getTag() != null) {
+					//	                    t.invalidate();
+				//	                }
+			}
+
+			break;
+		case OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
+			mBusy = false;
+			break;
+		case OnScrollListener.SCROLL_STATE_FLING:
+			mBusy = true;
+			break;
+		}
 	}
-	
+
 	public void initDB()
 	{
 		myDbHelper = DataBaseHelper.getInstance(activity);
 	}
-	
+
 	public static String getTextFromSelection(TextSelection select){
 		try{
-			
-		if(select.startCursor.numLine == select.endCursor.numLine)
-			return lines.get(select.startCursor.numLine).getText().substring(select.startCursor.idxChar, select.endCursor.idxChar);
-		StringBuffer buf = new StringBuffer();
-		buf.append(lines.get(select.startCursor.numLine).getText().substring(select.startCursor.idxChar));
-		for(int i = select.startCursor.numLine+1;i<select.endCursor.numLine;i++){
-			buf.append(lines.get(i).getText());
-		}
-		buf.append(lines.get(select.endCursor.numLine).getText().substring(0, select.endCursor.idxChar));
-		return buf.toString();
+
+			if(select.startCursor.numLine == select.endCursor.numLine)
+				return lines.get(select.startCursor.numLine).getText().substring(select.startCursor.idxChar, select.endCursor.idxChar);
+			StringBuffer buf = new StringBuffer();
+			buf.append(lines.get(select.startCursor.numLine).getText().substring(select.startCursor.idxChar));
+			for(int i = select.startCursor.numLine+1;i<select.endCursor.numLine;i++){
+				buf.append(lines.get(i).getText());
+			}
+			buf.append(lines.get(select.endCursor.numLine).getText().substring(0, select.endCursor.idxChar));
+			return buf.toString();
 		}catch(Exception e){
 			return "";
 		}
 	}
-	
+
 	public Mark getAbsoluteTextSelectPosition(TextSelection select){
+		if(select == null)
+			return null;
 		short s=0,e=0,i=0;
 		for(;i<select.startCursor.numLine;i++){
-			
-				s+=lines.get(i).txt.length();
+
+			s+=lines.get(i).txt.length();
 		}
 		e=s;
 		s+=select.startCursor.idxChar;
 		for(;i<select.endCursor.numLine;i++){
-			
+
 			e+=lines.get(i).txt.length();
 		}
 		e+=select.endCursor.idxChar;
@@ -262,6 +308,15 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		this.width = width;
 		if(text == null)return;
 		constructLine();
+	}
+	public void saveMark(Mark mrk) {
+		marks.add(mrk);
+		
+	}
+	public void updateMarkUi(MarkUI m) {
+		for(int i = m.startLine;i<=m.endLine;i++){
+			marksUi.add(i, m);
+		}
 	}
 
 

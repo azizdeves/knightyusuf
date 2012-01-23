@@ -18,6 +18,7 @@ import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.PictureDrawable;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
@@ -56,10 +57,11 @@ public class ArticleFragment extends Fragment {
 	public static ArticleFragment articleFrag;
 
 	private LayoutInflater mInflater;
-	private ArabicListAdapter arabicAdapter;
+	public ArabicListAdapter arabicAdapter;
 	public static MyListView listTextLineView;
 	private LinearLayout linearLayout;
 	private Menu menu;
+	private LinearLayout markBar;
 	public static TextView text;
 	static public Paint paint; 
 
@@ -103,10 +105,10 @@ public class ArticleFragment extends Fragment {
 		arabicAdapter = new ArabicListAdapter((SirajActivity) getActivity());
 		View v = inflater.inflate(R.layout.article_frag,container);
 		listTextLineView = (MyListView) v.findViewById(R.id.listMarkView);
-		//		linearLayout = (LinearLayout)findViewById(R.id.linearLayout); 
-		//ImageButton chapBtn = (ImageButton) findViewById(R.id.chaptersBtn);
 		listTextLineView.setOnScrollListener(arabicAdapter);
-		
+//		listTextLineView.setOverScrollMode(ListView.OVER_SCROLL_NEVER);
+		listTextLineView.setDividerHeight(0);
+		markBar = (LinearLayout) v.findViewById(R.id.mark_bar);
 
 		return v; 
 	}
@@ -124,6 +126,7 @@ public class ArticleFragment extends Fragment {
 		switch(item.getItemId()){
 		case R.id.menu_edit:  
 			listTextLineView.startSelection();
+			markBar.setVisibility(View.VISIBLE);
 			break;
 		case 2: 
 //			Intent intent = new Intent(this, PreferencesActivity.class);
@@ -139,8 +142,15 @@ public class ArticleFragment extends Fragment {
 			startActivity(Intent.createChooser(sharingIntent,"Share using"));
 			break;
 		case R.id.menu_save:
-			MenuItem item1 = menu.findItem(R.id.menu_share);
-			item1.setVisible(false);
+//			MenuItem item1 = menu.findItem(R.id.menu_share);
+			Mark mrk = arabicAdapter.getAbsoluteTextSelectPosition(TextSelection.getCurrentSelection());
+			arabicAdapter.saveMark(mrk);
+			arabicAdapter.updateMarkUi(TextSelection.getCurrentSelection().getMarkUi());
+			status = NORMAL;
+			TextSelection.clear();
+			markBar.setVisibility(View.GONE);
+//			listTextLineView.invalidate();
+			
 
 			break;
 		case android.R.id.home:

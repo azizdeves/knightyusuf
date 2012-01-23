@@ -10,6 +10,7 @@ public class TextSelection {
 	TextCursor editingCursor;
 	static Focusable focusA ;
 	static Focusable focusB ;
+//	MarkUI markUi;
 	
 	public TextSelection(){
 		startCursor = new TextCursor();
@@ -18,6 +19,10 @@ public class TextSelection {
 		initFocus();
 		
 	}
+	
+//	public MarkUI getMarkUi(){
+//		
+//	}
 	
 	private void initFocus(){
 		focusA = new Focusable(android.R.drawable.ic_input_add) {			
@@ -89,6 +94,10 @@ public class TextSelection {
 				|| currentSelection.startCursor.numLine <= numLine && currentSelection.endCursor.numLine >= numLine;
 	}
 	
+	public MarkUI getMarkUi(){
+		return new MarkUI(currentSelection.focusA.x, currentSelection.focusB.x, currentSelection.startCursor.numLine, currentSelection.endCursor.numLine, 0);
+	}
+	
 	public int getStartNumLine(){
 		return currentSelection.startCursor.numLine;
 	}
@@ -141,6 +150,10 @@ public class TextSelection {
 	public void setEndX(int x) {
 		currentSelection.endCursor.x = x;
 	}
+
+	public static void clear() {
+		currentSelection = null;		
+	}
 	
 	
 }
@@ -150,16 +163,41 @@ class TextCursor{
 	int idxChar;
 }
 class MarkUI{
-	short startX;
-	short endX;
-	short line;
+	int startX;
+	int endX;
+	int startLine;
+	int endLine;
 	int markId;
+	public MarkUI(int startX, int endX, int startLine, int endLine, int markId) {
+		super();
+		this.startX = startX;
+		this.endX = endX;
+		this.startLine = startLine;
+		this.endLine = endLine;
+		this.markId = markId;
+	}
+	
 }
 class Mark{
 	int markId;
+	int color;
 	short startChar;
 	short endChar;
 	int idChap;
 	int idBook;
 	String note;
+	public Mark(){
+		
+	}
+	public Mark(int markId, short startChar, short endChar, int idChap,
+			int idBook, String note) {
+		super();
+		this.markId = markId;
+		this.startChar = startChar;
+		this.endChar = endChar;
+		this.idChap = idChap;
+		this.idBook = idBook;
+		this.note = note;
+	}
+	
 }
