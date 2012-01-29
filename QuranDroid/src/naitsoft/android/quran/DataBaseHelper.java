@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -16,7 +17,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DataBaseHelper extends SQLiteOpenHelper{
 	 
-	
     public static SQLiteDatabase getMyDataBase() {
 		return myDataBase;
 	}
@@ -33,6 +33,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     private static String MARK_TAB = "marks";
     
  
+    static public DataBaseHelper myDbHelper;
     static private SQLiteDatabase myDataBase; 
  
     private final Context myContext;
@@ -74,6 +75,25 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         	}
     	}
  
+    }
+    
+    
+    public static DataBaseHelper getInstance(Context ctx){
+    	if(myDbHelper == null){
+    		myDbHelper = new DataBaseHelper(ctx);
+    		
+    		try {
+    			myDbHelper.createDataBase();
+    		} catch (IOException ioe) {
+    			throw new Error("Unable to create database");
+    		}
+    		try {
+    			myDbHelper.openDataBase();
+    		}catch(SQLException sqle){
+    			throw sqle;
+    		}
+    	}
+    	return myDbHelper;
     }
  
     /**
@@ -167,13 +187,22 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	public static String getAya(int sura , int aya)
 	{
 		Cursor cur = myDataBase.query(QURAN_TAB, new String[]{"text"}, "sura=? and aya=?", new String[]{String.valueOf(sura),String.valueOf(aya)}, null, null, null);
-		if(cur.moveToFirst())
-			return cur.getString(0);
-		return "";
+		String i = "";
+		if(cur.moveToFirst()){
+			i = cur.getString(0);
+		}
+		cur.close();
+		return i;
 	}
-	
+//	public static int getAyaCount(int sura){
+//		Cursor cur = myDataBase.rawQuery("select count(*) from ? where sura=?", new String[]{QURAN_TAB,String.valueOf(sura)});
+//		if(cur.moveToFirst())
+//			return cur.getInt(0);
+//		return 0;
+//		
+//	}
 	public static Cursor getMarks(){
-		Cursor cur = myDataBase.query(MARK_TAB, new String[]{"type","date","sura","aya","_id"},null, null, null, null, "date desc");
+		Cursor cur = myDataBase.query(MARK_TAB, new String[]{"type","date","sura","aya","_id"},"type=?", new String[]{String.valueOf("*")}, null, null, "date desc");
 		return cur;
 	}
 	
@@ -183,9 +212,11 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	
 	public Surah getLastMark(){
 		Cursor cur = myDataBase.query(MARK_TAB, new String[]{"type","sura","aya"},null, null, null, null, "date desc","1");
+		Surah sura = null;
 		if(cur.moveToFirst())
-			return new Surah(cur);
-		return null;
+			 sura = new Surah(cur);
+		cur.close();
+		return sura;
 	}
 	
 	public void addMark(String type,int sura, int aya){

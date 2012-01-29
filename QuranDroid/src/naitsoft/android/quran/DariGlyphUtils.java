@@ -137,7 +137,7 @@ public class DariGlyphUtils {
                 dariGlyphs.put(1606, new Glyph(1606, 65253, 65255, 65256, 65254, 4 ));
                 dariGlyphs.put(1607, new Glyph(1607, 65257, 65259, 65260, 65258, 4 ));
                 dariGlyphs.put(1608, new Glyph(1608, 65261, 65261, 65262, 65262, 2 ));
-                dariGlyphs.put(1609, new Glyph(1609, 65265, 65267, 65268, 65266, 4 ));
+                dariGlyphs.put(1609, new Glyph(1609, 65265, 65267, 65268, 65264, 4 ));
                 dariGlyphs.put(1610, new Glyph(1610, 65265, 65267, 65268, 65266, 4 ));
                 dariGlyphs.put(1662, new Glyph(1662, 64342, 64344, 64345, 64343, 4 ));
                 dariGlyphs.put(1670, new Glyph(1670, 64378, 64380, 64381, 64379, 4 ));
@@ -260,15 +260,15 @@ public class DariGlyphUtils {
                                 reshapeChars(i, outputGlyphs);
                                 return;
                         }
-                        if(nextGlyph != null && previousGlyph.isLam() && previousGlyph.isStarting() && thisGlyph.isLam() && nextGlyph.isHe()){
-                                //special case for Allah
-                                
-                                outputGlyphs.set(i-1, new Glyph(65010));
-                                outputGlyphs.remove(nextGlyph);
-                                outputGlyphs.remove(thisGlyph);
-                                reshapeChars(i, outputGlyphs);
-                                return;
-                        }
+//                        if(nextGlyph != null && previousGlyph.isLam() && previousGlyph.isStarting() && thisGlyph.isLam() && nextGlyph.isHe()){
+//                                //special case for Allah
+//                                
+//                                outputGlyphs.set(i-1, new Glyph(65010));
+//                                outputGlyphs.remove(nextGlyph);
+//                                outputGlyphs.remove(thisGlyph);
+//                                reshapeChars(i, outputGlyphs);
+//                                return;
+//                        }
                         if(!thisGlyph.isDari){
                                 reshapeChars(i+1, outputGlyphs);
                                 return;

@@ -1,6 +1,7 @@
 package naitsoft.android.quran;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -45,24 +46,19 @@ public class ListMarksActivity extends Activity {
 		setContentView(R.layout.layout_mark);
 		listMarkView = (ListView) findViewById(R.id.listMarkView);
 		listMarkView.setAdapter(markAdapter);
-		listMarkView.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-				Intent intent = new Intent();
-				Mark mrk =  markAdapter.getMark(pos);
-				intent.putExtra("sura",mrk.sura);
-				intent.putExtra("aya", mrk.aya);
-				setResult(QuranDroidActivity.MARK_CODE, intent);
-				finish();
-			}
-		});
+//		listMarkView.setOnItemClickListener(new OnItemClickListener() {
+//			public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
+//				sendResult(pos);
+//			}
+//		});
 //		Button addMarkBtn = (Button) findViewById(R.id.addMarkBtn);
-		ImageButton addMarkBtn = (ImageButton) findViewById(R.id.imgMarkBtn);
-		addMarkBtn.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				markAdapter.addMark('*', currSura, currAya);
-				listMarkView.setAdapter(markAdapter);
-			}
-		});
+//		ImageButton addMarkBtn = (ImageButton) findViewById(R.id.imgMarkBtn);
+//		addMarkBtn.setOnClickListener(new View.OnClickListener() {
+//			public void onClick(View v) {
+//				markAdapter.addMark('*', currSura, currAya);
+//				listMarkView.setAdapter(markAdapter);
+//			}
+//		});
 		Bundle bund = getIntent().getExtras();
 		if(bund != null){
 			currAya = bund.getInt("aya");
@@ -71,6 +67,15 @@ public class ListMarksActivity extends Activity {
 	
 	}
 	
+	protected void sendResult(int pos) {
+		Intent intent = new Intent();
+		Mark mrk =  markAdapter.getMark(pos);
+		intent.putExtra("sura",mrk.sura);
+		intent.putExtra("aya", mrk.aya);
+		setResult(QuranDroidActivity.MARK_CODE, intent);
+		finish();		
+	}
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -82,6 +87,10 @@ public class ListMarksActivity extends Activity {
 
 	public void setmInflater(LayoutInflater mInflater) {
 		this.mInflater = mInflater;
+	}
+
+	public void update() {
+		listMarkView.setAdapter(markAdapter);
 	}
 
 //	public DataBaseHelper getMyDbHelper() {
@@ -98,12 +107,14 @@ public class ListMarksActivity extends Activity {
 
 class ListMarkAdapter extends BaseAdapter implements ListAdapter 
 {
-	private LayoutInflater mInflater;
+//	private LayoutInflater mInflater;
 	private  DataBaseHelper myDbHelper;
 	private ArrayList<Mark> marks ;
+	private 
 	int size;
+	private ListMarksActivity listeMarkActivity;
 	public ListMarkAdapter(ListMarksActivity activ)
-	{		mInflater = activ.getLayoutInflater(); 
+	{		listeMarkActivity = activ; 
 			//myDbHelper = activ.getMyDbHelper();
 			initDB();
 			loadMarks();
@@ -122,20 +133,21 @@ class ListMarkAdapter extends BaseAdapter implements ListAdapter
 			do{
 				marks.add(new Mark(cur));
 			}while(cur.moveToNext());
-			size = cur.getCount();
+//			size = cur.getCount();
 		}
+		
 	}
 	public void addMark(char type , int sura , int aya){
 		myDbHelper.addMark(String.valueOf(type), sura, aya);
 		loadMarks();
 //		marks.add(new Mark("+", 10, 3, 20));
-		size = marks.size();
+//		size = marks.size();
 		//this.notifyDataSetChanged();
 	}
 
 	@Override
 	public int getCount() {
-		return size;
+		return marks.size();
 	}
 
 	@Override
@@ -156,7 +168,7 @@ class ListMarkAdapter extends BaseAdapter implements ListAdapter
 	@Override
 	public View getView(final int position, View view, ViewGroup parent) {
  		if(view == null){
-			view = mInflater.inflate(R.layout.list_item, parent,false);
+			view = listeMarkActivity.getLayoutInflater().inflate(R.layout.list_item, parent,false);
 		}
  		Mark mrk = marks.get(position);
  		ImageView typeImage = (ImageView) view.findViewById(R.id.imageType);
@@ -168,12 +180,21 @@ class ListMarkAdapter extends BaseAdapter implements ListAdapter
  		}
  		
 		TextView txt = (TextView) view.findViewById(R.id.textView1);
-		TextView txt1 = (TextView) view.findViewById(R.id.textView2);
+//		TextView txt1 = (TextView) view.findViewById(R.id.textView2);
 		ImageButton deleteMarkBtn = (ImageButton) view.findViewById(R.id.deleteMark);
 		txt.setTextSize(30);
-		txt.setText("sura "+mrk.sura);
-		txt1.setTextSize(30);
-		txt1.setText("aya "+mrk.aya);
+		txt.setText(mrk.sura+" : "+mrk.aya);
+		txt.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				listeMarkActivity.sendResult(position);
+				
+			}
+		});
+//		txt1.setTextSize(30);
+//		txt1.setText(new Date(mrk.date).toString());
+		
 		deleteMarkBtn.setOnClickListener(new DeleteMarkClickListener(mrk.id));
 		return view;
 	}
@@ -230,21 +251,23 @@ class ListMarkAdapter extends BaseAdapter implements ListAdapter
 			throw sqle;
 		}
 	}
-	
+	class DeleteMarkClickListener implements View.OnClickListener{
+		int id;
+		public DeleteMarkClickListener(int id){
+			this.id = id;
+		}
+		@Override
+		public void onClick(View v) {
+			DataBaseHelper.deleteMark(id);
+			loadMarks();
+			listeMarkActivity.update();
+			
+		}
+	}
 	
 }
 
-class DeleteMarkClickListener implements View.OnClickListener{
-	int id;
-	public DeleteMarkClickListener(int id){
-		this.id = id;
-	}
-	@Override
-	public void onClick(View v) {
-		DataBaseHelper.deleteMark(id);
-		
-	}
-}
+
 
 class Mark{
 	String type;
