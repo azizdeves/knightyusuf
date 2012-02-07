@@ -1,0 +1,2 @@
+serviceClass: naitsoft.web.marocpress.client.GreetingService
+path: BC2E05DC3AD0BF83BC1D9D0DB639A816.gwt.rpc
