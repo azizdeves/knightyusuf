@@ -14,7 +14,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     </tr>
    
     <tr>
-      <td><xsl:value-of select="//div[@class='article-content']"/></td>
+      <td><xsl:value-of select="//div[@id='article_body']"/></td>
  
     </tr>
 

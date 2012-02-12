@@ -9,6 +9,7 @@ public class FeedMessage {
 	String link;
 	String author;
 	String guid;
+	String media;
 
 	public String getTitle() {
 		return title;
@@ -16,6 +17,13 @@ public class FeedMessage {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+	public String getMedia() {
+		return media;
+	}
+	
+	public void setMedia(String media){
+		this.media = media;
 	}
 
 	public String getDescription() {
