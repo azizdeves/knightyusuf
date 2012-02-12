@@ -43,39 +43,20 @@ import java.io.OutputStreamWriter;
 
 public class Handler {
 
-	public static void mains(String[] args) {
-//		RSSFeedParser parser = new RSSFeedParser(
-//				"http://lakome.com/index.php?format=feed&type=rss&title=");
-//		Feed feed = parser.readFeed();
-//		System.out.println(feed);
-//		for (FeedMessage message : feed.getMessages()) {
-//			System.out.println(message);
-//
-//		}
+	final static String hesRss = "http://hespress.com/feed/index.rss";
+	final static String lakomeRss = "http://lakome.com/index.php?format=feed&type=rss&title=";
+	final static String demainRss = "http://www.demainonline.com/feed/";
+	final static String hibaRss = "http://hibapress.com/rss.php";
+	public static void main(String[] args) {
+		RSSFeedParser parser = new RSSFeedParser(hibaRss);
+		Feed feed = parser.readFeed();
+		System.out.println(feed);
+		for (FeedMessage message : feed.getMessages()) {
+			System.out.println(message);
 
+		}
 
-	        try {
-	        	String message = URLEncoder.encode("my message", "UTF-8");
-	            URL url = new URL("http://www.lakome.com");
-	            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-	            connection.setDoOutput(true);
-//	            connection.setRequestMethod("POST");
-//	            connection.setRequestProperty("X-MyApp-Version", "2.7.3");
-	            connection.getInputStream();
-//	            OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
-//	            writer.write("message=" + message);
-//	            writer.close();
 	    
-	            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-	                // OK
-	            } else {
-	                // Server returned HTTP error code.
-	            }
-	        } catch (MalformedURLException e) {
-	            // ...
-	        } catch (IOException e) {
-	            // ...
-	        }
 	        
 
         HttpClient httpclient = new DefaultHttpClient();
@@ -113,7 +94,7 @@ public class Handler {
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void amain(String[] args) {
 		// create an instance of HtmlCleaner
 		HtmlCleaner cleaner = new HtmlCleaner();
         HttpClient httpclient = new DefaultHttpClient();
@@ -122,31 +103,18 @@ public class Handler {
 
 		props.setOmitXmlDeclaration(true);
 
-//		File file = new File("aar.html");
 		try {
-            HttpGet httpget = new HttpGet("http://www.hespress.com/");
-
             URL url = new URL("http://hespress.com/politique/47144.html");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             
             connection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
             connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.77 Safari/535.7");
             connection.setRequestProperty("Accept-Charset", "ISO-8859-1,UTF-8;q=0.7,*;q=0.3");
-            connection.setRequestProperty("Accept-Encoding", "gzip,deflate,sdch");
             connection.setRequestProperty("Accept-Language", "en-GB,en-US;q=0.8,en;q=0.6,fr;q=0.4");
             connection.setRequestProperty("Connection", "keep-alive");
 //            connection.setRequestProperty("Host", "hespress.com");
 //            connection.setRequestProperty("Referer", "http://hespress.com/");
             
-            
-//          httpget.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-//          httpget.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.77 Safari/535.7");
-//          httpget.setHeader("Accept-Charset", "ISO-8859-1,UTF-8;q=0.7,*;q=0.3");
-//          httpget.setHeader("Accept-Encoding", "gzip,deflate,sdch");
-//          httpget.setHeader("Accept-Language", "en-GB,en-US;q=0.8,en;q=0.6,fr;q=0.4");
-//          httpget.setHeader("Connection", "keep-alive");
-//          httpget.setHeader("Host", "hespress.com");
-//          httpget.setHeader("Referer", "http://hespress.com/");
           // Create a response handler
 //          ResponseHandler<String> responseHandler = new BasicResponseHandler();
 //          String responseBody = httpclient.execute(httpget, responseHandler);
@@ -154,7 +122,7 @@ public class Handler {
           
 //			TagNode node = cleaner.clean(new URL("http://lakome.com/%D8%B1%D8%A3%D9%8A/49-%D9%83%D8%AA%D8%A7%D8%A8-%D8%A7%D9%84%D8%B1%D8%A3%D9%8A/12099-2012-02-03.html"),"UTF-8");
 			TagNode node = cleaner.clean(connection.getInputStream(),"UTF-8");
-//			TagNode[] myNodes = node.getElementsByAttValue("class", "article-content", true, true);
+			TagNode[] myNodes = node.getElementsByAttValue("class", "article-content", true, true);
 			String content = new PrettyXmlSerializer(props).getAsString( node,"UTF-8");
 			
 			TransformerFactory tFactory = TransformerFactory.newInstance();
