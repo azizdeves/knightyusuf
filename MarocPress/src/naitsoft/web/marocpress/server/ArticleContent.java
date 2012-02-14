@@ -11,7 +11,7 @@ import javax.persistence.Transient;
 import com.google.gwt.user.client.rpc.GwtTransient;
 
 @Entity
-public class Article implements Serializable{
+public class ArticleContent implements Serializable{
         
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,12 +19,7 @@ public class Article implements Serializable{
         
         private String link;
         
-        private String descripion;
-        
-        private String media;
-        
-        private Long feedId;
-        
+        private String content;
 
 		public Long getId() {
 			return id;
@@ -42,34 +37,13 @@ public class Article implements Serializable{
 			this.link = link;
 		}
 
-		public String getDescripion() {
-			return descripion;
+		public String getContent() {
+			return content;
 		}
 
-		public void setDescripion(String descripion) {
-			this.descripion = descripion;
+		public void setContent(String content) {
+			this.content = content;
 		}
-
-		public String getMedia() {
-			return media;
-		}
-
-		public void setMedia(String media) {
-			this.media = media;
-		}
-
-		public Long getFeedId() {
-			return feedId;
-		}
-
-		public void setFeedId(Long feedId) {
-			this.feedId = feedId;
-		}
-        
-		
-        
-        
-
 
         
         
