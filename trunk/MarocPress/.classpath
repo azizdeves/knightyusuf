@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="lib" path="C:/Myworkspace/MarocPress/war/WEB-INF/lib/rome-1.0.jar" sourcepath="war/WEB-INF/lib/rome-1.0-sources.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" output="test-classes" path="test"/>
 	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
 	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/htmlcleaner-2.2.jar" sourcepath="C:/Documents and Settings/user/Mes documents/Downloads/htmlcleaner-2.2-all"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jdom-1.1.2.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
