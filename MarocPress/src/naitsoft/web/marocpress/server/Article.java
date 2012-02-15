@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Transient;
 
 import com.google.gwt.user.client.rpc.GwtTransient;
+import com.sun.syndication.feed.synd.SyndEntry;
 
 @Entity
 public class Article implements Serializable{
@@ -25,6 +26,24 @@ public class Article implements Serializable{
         
         private Long feedId;
         
+        @Transient
+        @GwtTransient
+        private Feed feed;
+        
+
+		public Article(SyndEntry entry,Feed feed) {
+			link = entry.getLink();
+			feedId = feed.getId();
+			this.feed = feed;
+		}
+
+		public Feed getFeed() {
+			return feed;
+		}
+
+		public void setFeed(Feed feed) {
+			this.feed = feed;
+		}
 
 		public Long getId() {
 			return id;

@@ -1,63 +1,67 @@
 package naitsoft.web.marocpress.server;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 /*
  * Stores an RSS feed
  */
+@Entity
 public class Feed {
 
-	final String title;
-	final String link;
-	final String description;
-	final String language;
-	final String copyright;
-	final String pubDate;
-	final List<FeedMessage> entries = new ArrayList<FeedMessage>();
-
-	public Feed(String title, String link, String description, String language,
-			String copyright, String pubDate) {
-		this.title = title;
-		this.link = link;
-		this.description = description;
-		this.language = language;
-		this.copyright = copyright;
-		this.pubDate = pubDate;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id; 
+    
+	private String name;
+	private String rssLink ;
+	private String xslt;
+	private String mediaXPath;
+	private Date lastArticle;
+	
+	
+	
+	public Long getId() {
+		return id;
 	}
-
-	public List<FeedMessage> getMessages() {
-		return entries;
+	public void setId(Long id) {
+		this.id = id;
 	}
-
-	public String getTitle() {
-		return title;
+	public String getName() {
+		return name;
 	}
-
-	public String getLink() {
-		return link;
+	public void setName(String name) {
+		this.name = name;
 	}
-
-	public String getDescription() {
-		return description;
+	public String getRssLink() {
+		return rssLink;
 	}
-
-	public String getLanguage() {
-		return language;
+	public void setRssLink(String rssLink) {
+		this.rssLink = rssLink;
 	}
-
-	public String getCopyright() {
-		return copyright;
+	public String getXslt() {
+		return xslt;
 	}
-
-	public String getPubDate() {
-		return pubDate;
+	public void setXslt(String xslt) {
+		this.xslt = xslt;
 	}
-
-	@Override
-	public String toString() {
-		return "Feed [copyright=" + copyright + ", description=" + description
-				+ ", language=" + language + ", link=" + link + ", pubDate="
-				+ pubDate + ", title=" + title + "]";
+	public String getMediaXPath() {
+		return mediaXPath;
 	}
-
+	public void setMediaXPath(String mediaXPath) {
+		this.mediaXPath = mediaXPath;
+	}
+	public Date getLastArticle() {
+		return lastArticle;
+	}
+	public void setLastArticle(Date lastArticle) {
+		this.lastArticle = lastArticle;
+	}
+	
+	
 }

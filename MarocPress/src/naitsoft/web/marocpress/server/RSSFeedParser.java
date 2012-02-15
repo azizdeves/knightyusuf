@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -17,9 +19,13 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.PrettyXmlSerializer;
 import org.htmlcleaner.TagNode;
 
+import com.sun.syndication.feed.atom.Entry;
+import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
+
+import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.*;
 
 public class RSSFeedParser {
 	static final String TITLE = "title";
@@ -45,7 +51,7 @@ public class RSSFeedParser {
 	}
 
 	@SuppressWarnings("null")
-	public Feed readFeed() {
+	public Feed readFeed(Feed feedSrc) {
 		try {
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
@@ -57,12 +63,40 @@ public class RSSFeedParser {
 			XmlReader reader = null;
 			reader = new XmlReader(connection.getInputStream(),true,"UTF-8");
 			SyndFeed feed = new SyndFeedInput().build(reader); 
+
+			SyndEntry entry = null;
+			ArrayList<Article> entriesToHandle = new ArrayList<Article>();
+			for (Iterator i = feed.getEntries().iterator(); i.hasNext();) {
+				entry = (SyndEntry) i.next();
+				if(entry.getPublishedDate().compareTo(feedSrc.getLastArticle())>0)
+					break;
+				
+				entriesToHandle.add(new Article(entry,feedSrc));
+			}
+			feedSrc.setLastArticle(entry.getPublishedDate());
+			//save feed
+			for(Article e : entriesToHandle)
+			{
+				
+//				Queue que= QueueFactory.getQueue("userfeedupdates");
+//				que.add(url("/task/tskseed?s=&m="+task.getMominId()+"&w="+task.getDate().getTime()+"&t="+new Date().getTime()+"&n="+ task.getName().replaceAll(" ","+")).method(Method.GET));
+//				que.add(TaskOptions.Builder.url("/task/tskseed?s=&m="+task.getMominId()+"&w="+task.getDate().getTime()+"&t="+new Date().getTime()).param("n", task.getName()).method(Method.GET));
+				/*que.add(url("/tskseed")
+						.param("s","2")
+						.param("n",task.getName())
+						.param("m",task.getMominId()).
+						param("w",task.getDate().getTime()+"")
+						.param("t",new Date().getTime()+"")
+						);*/
+			}
 		}catch(Exception e){
 			System.out.print(e);
 		}
 		return null;
 
 	}
+
+	 
 
 
 }
