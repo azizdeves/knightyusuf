@@ -16,6 +16,17 @@
     <url-pattern>/marocpress/greet</url-pattern>
   </servlet-mapping>
   
+   <!-- Servlets -->
+  <servlet>
+    <servlet-name>feedServlet</servlet-name>
+    <servlet-class>naitsoft.web.marocpress.server.XsltTransformServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>feedServlet</servlet-name>
+    <url-pattern>/marocpress/feed</url-pattern>
+  </servlet-mapping>
+  
   <!-- Default page to serve -->
   <welcome-file-list>
     <welcome-file>MarocPress.html</welcome-file>

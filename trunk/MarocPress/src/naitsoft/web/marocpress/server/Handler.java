@@ -30,7 +30,9 @@ import org.htmlcleaner.PrettyXmlSerializer;
 import org.htmlcleaner.SimpleHtmlSerializer;
 import org.htmlcleaner.SimpleXmlSerializer;
 import org.htmlcleaner.TagNode;
+import org.htmlcleaner.XPatherException;
 
+import com.google.appengine.api.datastore.Text;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
@@ -42,6 +44,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Iterator;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipInputStream;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
@@ -54,7 +58,7 @@ public class Handler {
 	final static String lakomeRss = "http://lakome.com/index.php?format=feed&type=rss&title=";
 	final static String demainRss = "http://www.demainonline.com/feed/";
 	final static String hibaRss = "http://hibapress.com/rss.php";
-	
+
 	/**
 	 * @param args
 	 */
@@ -74,26 +78,33 @@ public class Handler {
 			connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.77 Safari/535.7");
 			connection.setRequestProperty("Accept-Charset", "ISO-8859-1,UTF-8;q=0.7,*;q=0.3");
 			connection.setRequestProperty("Accept-Language", "en-GB,en-US;q=0.8,en;q=0.6,fr;q=0.4");
-			connection.setRequestProperty("Connection", "keep-alive");
+			connection.setRequestProperty("Accept-Encoding", "gzip,deflate,sdch");
+//			connection.setRequestProperty("Connection", "keep-alive");
+			TagNode node = cleaner.clean(new GZIPInputStream(connection.getInputStream()),"UTF-8");
+			if(article.getFeed().getMediaXPath()!=null){
+				Object[] myNodes = node.evaluateXPath(article.getFeed().getMediaXPath());
 
-			TagNode node = cleaner.clean(connection.getInputStream(),"UTF-8");
-			TagNode[] myNodes = node.getElementsByAttValue("class", "article-content", true, true);
+				if(myNodes[0]!=null)
+					article.setMedia(((TagNode)myNodes[0]).getAttributeByName("src"));
+			}
 			String content = new PrettyXmlSerializer(props).getAsString( node,"UTF-8");
 
 			TransformerFactory tFactory = TransformerFactory.newInstance();
 			content = content.replaceAll("xmlns:xml=\"xml\"", "");
-			Transformer transformer =
-					tFactory.newTransformer
-					(new StreamSource
-							("templatear.xsl"));
+			Transformer transformer = tFactory.newTransformer(new StreamSource(article.getFeed().getXslt()));
 
 			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			transformer.transform(new StreamSource(new ByteArrayInputStream(content.getBytes("UTF-8")))
-			,new StreamResult(out));
+				,new StreamResult(out));
 
 			ArticleContent articleContent = new ArticleContent();
-			articleContent.setContent(out.toString("UTF-8"));
+			articleContent.setContent(new Text(out.toString("UTF-8")));
+//			System.out.println(articleContent.getContent());
+			
+//			Dao dao = new Dao();
+			Dao.save(article);
+			Dao.save(articleContent);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -102,7 +113,8 @@ public class Handler {
 		catch (TransformerException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (XPatherException e) {
 			e.printStackTrace();
 		} 
 

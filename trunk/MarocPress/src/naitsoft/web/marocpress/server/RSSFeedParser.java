@@ -5,6 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 
 import javax.xml.stream.XMLEventReader;
@@ -19,13 +20,16 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.PrettyXmlSerializer;
 import org.htmlcleaner.TagNode;
 
+import com.google.appengine.api.taskqueue.Queue;
+import com.google.appengine.api.taskqueue.QueueFactory;
+import com.google.appengine.api.taskqueue.TaskOptions;
 import com.sun.syndication.feed.atom.Entry;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.SyndFeedInput;
 import com.sun.syndication.io.XmlReader;
 
-import static com.google.appengine.api.labs.taskqueue.TaskOptions.Builder.*;
+import static com.google.appengine.api.taskqueue.TaskOptions.Builder.*;
 
 public class RSSFeedParser {
 	static final String TITLE = "title";
@@ -40,19 +44,11 @@ public class RSSFeedParser {
 	static final String GUID = "guid";
 	static final String MEDIA = "media:thumbnail";
 
-	final URL url;
-
-	public RSSFeedParser(String feedUrl) {
-		try {
-			this.url = new URL(feedUrl);
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(e);
-		}
-	}
 
 	@SuppressWarnings("null")
-	public Feed readFeed(Feed feedSrc) {
+	public static Feed readFeed(Feed feedSrc) {
 		try {
+			final URL url=  new URL(feedSrc.getRssLink());;
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 			connection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
@@ -61,22 +57,29 @@ public class RSSFeedParser {
 			connection.setRequestProperty("Accept-Language", "en-GB,en-US;q=0.8,en;q=0.6,fr;q=0.4");
 
 			XmlReader reader = null;
+//			byte[] b =new byte[100];
+//			connection.getInputStream().read(b);
 			reader = new XmlReader(connection.getInputStream(),true,"UTF-8");
 			SyndFeed feed = new SyndFeedInput().build(reader); 
-
+			Date lastPublish=feedSrc.getLastArticle();
 			SyndEntry entry = null;
 			ArrayList<Article> entriesToHandle = new ArrayList<Article>();
 			for (Iterator i = feed.getEntries().iterator(); i.hasNext();) {
 				entry = (SyndEntry) i.next();
-				if(entry.getPublishedDate().compareTo(feedSrc.getLastArticle())>0)
-					break;
+				if(entry.getPublishedDate().compareTo(feedSrc.getLastArticle())<0)
+					continue;
 				
 				entriesToHandle.add(new Article(entry,feedSrc));
+				if(entry.getPublishedDate().compareTo(lastPublish)>0)
+					lastPublish = entry.getPublishedDate();
 			}
-			feedSrc.setLastArticle(entry.getPublishedDate());
+//			Dao dao = new Dao();
+			feedSrc.setLastArticle(lastPublish);
+			Dao.update(feedSrc);
 			//save feed
 			for(Article e : entriesToHandle)
 			{
+				Handler.transform(e);
 				
 //				Queue que= QueueFactory.getQueue("userfeedupdates");
 //				que.add(url("/task/tskseed?s=&m="+task.getMominId()+"&w="+task.getDate().getTime()+"&t="+new Date().getTime()+"&n="+ task.getName().replaceAll(" ","+")).method(Method.GET));
@@ -89,6 +92,7 @@ public class RSSFeedParser {
 						.param("t",new Date().getTime()+"")
 						);*/
 			}
+			
 		}catch(Exception e){
 			System.out.print(e);
 		}

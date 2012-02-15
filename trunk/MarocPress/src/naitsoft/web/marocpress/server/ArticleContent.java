@@ -7,6 +7,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.google.appengine.api.datastore.Text;
+
 
 @Entity
 public class ArticleContent implements Serializable{
@@ -17,7 +19,7 @@ public class ArticleContent implements Serializable{
         
         private String link;
         
-        private String content;
+        private Text content;
 
 		public Long getId() {
 			return id;
@@ -35,11 +37,11 @@ public class ArticleContent implements Serializable{
 			this.link = link;
 		}
 
-		public String getContent() {
+		public Text getContent() {
 			return content;
 		}
 
-		public void setContent(String content) {
+		public void setContent(Text content) {
 			this.content = content;
 		}
 
