@@ -1,6 +1,7 @@
 package naitsoft.web.marocpress.server;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,6 +21,10 @@ public class Article implements Serializable{
         
         private String link;
         
+        private Date date;
+        
+        private String title;
+        
         private String descripion;
         
         private String media;
@@ -34,6 +39,8 @@ public class Article implements Serializable{
 		public Article(SyndEntry entry,Feed feed) {
 			link = entry.getLink();
 			feedId = feed.getId();
+			title = entry.getTitle();
+			date = entry.getPublishedDate();
 			this.feed = feed;
 		}
 
@@ -83,6 +90,22 @@ public class Article implements Serializable{
 
 		public void setFeedId(Long feedId) {
 			this.feedId = feedId;
+		}
+
+		public String getTitle() {
+			return title;
+		}
+
+		public void setTitle(String title) {
+			this.title = title;
+		}
+
+		public Date getDate() {
+			return date;
+		}
+
+		public void setDate(Date date) {
+			this.date = date;
 		}
         
 		
