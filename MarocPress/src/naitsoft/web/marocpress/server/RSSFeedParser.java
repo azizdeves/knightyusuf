@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -62,11 +64,19 @@ public class RSSFeedParser {
 			reader = new XmlReader(connection.getInputStream(),true,"UTF-8");
 			SyndFeed feed = new SyndFeedInput().build(reader); 
 			Date lastPublish=feedSrc.getLastArticle();
+			if(lastPublish == null){
+		    	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		    	try {
+		    		lastPublish = format.parse("2010-11-01");
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
 			SyndEntry entry = null;
 			ArrayList<Article> entriesToHandle = new ArrayList<Article>();
 			for (Iterator i = feed.getEntries().iterator(); i.hasNext();) {
 				entry = (SyndEntry) i.next();
-				if(entry.getPublishedDate().compareTo(feedSrc.getLastArticle())<0)
+				if(entry.getPublishedDate().compareTo(feedSrc.getLastArticle())<=0)
 					continue;
 				
 				entriesToHandle.add(new Article(entry,feedSrc));

@@ -17,7 +17,7 @@ public class ArticleContent implements Serializable{
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;        
         
-        private String link;
+//        private String link;
         
         private Text content;
 
@@ -29,13 +29,13 @@ public class ArticleContent implements Serializable{
 			this.id = id;
 		}
 
-		public String getLink() {
-			return link;
-		}
-
-		public void setLink(String link) {
-			this.link = link;
-		}
+//		public String getLink() {
+//			return link;
+//		}
+//
+//		public void setLink(String link) {
+//			this.link = link;
+//		}
 
 		public Text getContent() {
 			return content;

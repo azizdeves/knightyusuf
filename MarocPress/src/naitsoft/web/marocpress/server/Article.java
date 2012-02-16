@@ -3,11 +3,13 @@ package naitsoft.web.marocpress.server;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 
 import com.google.gwt.user.client.rpc.GwtTransient;
 import com.sun.syndication.feed.synd.SyndEntry;
@@ -19,6 +21,7 @@ public class Article implements Serializable{
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;        
         
+       // @Column(unique=true, nullable=false) 
         private String link;
         
         private Date date;
@@ -30,6 +33,8 @@ public class Article implements Serializable{
         private String media;
         
         private Long feedId;
+        
+        private Long contentId;
         
         @Transient
         @GwtTransient
@@ -43,6 +48,17 @@ public class Article implements Serializable{
 			date = entry.getPublishedDate();
 			this.feed = feed;
 		}
+
+		
+		public Long getContentId() {
+			return contentId;
+		}
+
+
+		public void setContentId(Long contentId) {
+			this.contentId = contentId;
+		}
+
 
 		public Feed getFeed() {
 			return feed;
