@@ -103,8 +103,9 @@ public class Handler {
 //			System.out.println(articleContent.getContent());
 			
 //			Dao dao = new Dao();
-			Dao.save(article);
 			Dao.save(articleContent);
+			article.setContentId(articleContent.getId());
+			Dao.save(article);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -116,7 +117,9 @@ public class Handler {
 			e.printStackTrace();
 		} catch (XPatherException e) {
 			e.printStackTrace();
-		} 
+		} catch(Exception e){
+			e.printStackTrace();
+		}
 
 	}
 
