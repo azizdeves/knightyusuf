@@ -9,6 +9,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -46,7 +48,7 @@ public class RSSFeedParser {
 	static final String GUID = "guid";
 	static final String MEDIA = "media:thumbnail";
 
-
+    private static final Logger log = Logger.getLogger(RSSFeedParser.class.getName());
 	@SuppressWarnings("null")
 	public static Feed readFeed(Feed feedSrc) {
 		try {
@@ -62,7 +64,9 @@ public class RSSFeedParser {
 //			byte[] b =new byte[100];
 //			connection.getInputStream().read(b);
 			reader = new XmlReader(connection.getInputStream(),true,"UTF-8");
-			SyndFeed feed = new SyndFeedInput().build(reader); 
+			log.info( "building entries= ");
+			SyndFeed feed = new SyndFeedInput().build(reader);
+			log.info( "entries builded nbr: "+feed.getEntries().size());
 			Date lastPublish=feedSrc.getLastArticle();
 			if(lastPublish == null){
 		    	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -83,7 +87,7 @@ public class RSSFeedParser {
 				if(entry.getPublishedDate().compareTo(lastPublish)>0)
 					lastPublish = entry.getPublishedDate();
 			}
-//			Dao dao = new Dao();
+			log.info( "new entries to handle "+entriesToHandle.size()+"   lastPublish= "+lastPublish);
 			feedSrc.setLastArticle(lastPublish);
 			Dao.update(feedSrc);
 			//save feed
