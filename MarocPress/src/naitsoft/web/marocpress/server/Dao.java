@@ -30,7 +30,7 @@ public class Dao {
 	static Cache cache;
 	static EntityManager em;
 	public Dao() {
-//		em=EMF.get().createEntityManager();
+		em=EMF.get().createEntityManager();
 	}
 
 	//    @SuppressWarnings("unchecked")

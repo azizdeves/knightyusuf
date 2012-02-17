@@ -44,6 +44,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 import java.io.BufferedReader;
@@ -58,7 +60,7 @@ public class Handler {
 	final static String lakomeRss = "http://lakome.com/index.php?format=feed&type=rss&title=";
 	final static String demainRss = "http://www.demainonline.com/feed/";
 	final static String hibaRss = "http://hibapress.com/rss.php";
-
+    private static final Logger log = Logger.getLogger(RSSFeedParser.class.getName());
 	/**
 	 * @param args
 	 */
@@ -80,6 +82,7 @@ public class Handler {
 			connection.setRequestProperty("Accept-Language", "en-GB,en-US;q=0.8,en;q=0.6,fr;q=0.4");
 			connection.setRequestProperty("Accept-Encoding", "gzip,deflate,sdch");
 //			connection.setRequestProperty("Connection", "keep-alive");
+			log.info( "start cleaning ");
 			TagNode node = cleaner.clean(new GZIPInputStream(connection.getInputStream()),"UTF-8");
 			if(article.getFeed().getMediaXPath()!=null){
 				Object[] myNodes = node.evaluateXPath(article.getFeed().getMediaXPath());
