@@ -14,7 +14,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import naitsoft.web.marocpress.server.entity.Article;
-import naitsoft.web.marocpress.server.entity.ArticleContent;
+import naitsoft.web.marocpress.server.entity.ArticleContentDto;
 import naitsoft.web.marocpress.server.entity.Feed;
 import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
@@ -115,10 +115,10 @@ public class Dao {
 	}
 	
 	
-	public ArticleContent getArticleContentById(Long  id)
+	public ArticleContentDto getArticleContentById(Long  id)
 	{
-		Key key=KeyFactory.createKey(ArticleContent.class.getSimpleName(), id);
-		ArticleContent kh=em.find(ArticleContent.class,key);
+		Key key=KeyFactory.createKey(ArticleContentDto.class.getSimpleName(), id);
+		ArticleContentDto kh=em.find(ArticleContentDto.class,key);
 		return kh;
 	}
 
@@ -145,7 +145,7 @@ public class Dao {
 //		em.close();
 	}
 	
-	public void saveArticleContent(ArticleContent artContent)
+	public void saveArticleContent(ArticleContentDto artContent)
 	{
 		em.getTransaction().begin();
 		if(artContent.getId()!=null){
@@ -171,5 +171,9 @@ public class Dao {
 	{
 		if(em.isOpen())
 			em.close();
+	}
+
+	public ArticleContent getArticleContent(long id) {
+		return em.find(ArticleContent.class, id);
 	}
 }

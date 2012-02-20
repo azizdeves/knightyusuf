@@ -1,4 +1,4 @@
-package naitsoft.web.marocpress.server.entity;
+package naitsoft.web.marocpress.server;
 
 import java.io.Serializable;
 
@@ -6,8 +6,12 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Transient;
+
+import naitsoft.web.marocpress.server.entity.ArticleContentDto;
 
 import com.google.appengine.api.datastore.Text;
+import com.google.gwt.user.client.rpc.GwtTransient;
 
 
 @Entity
@@ -15,10 +19,12 @@ public class ArticleContent implements Serializable{
         
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;        
+        private Long id;   
         
-//        private String link;
+//        @Transient
+//        private String sContent;
         
+        @GwtTransient
         private Text content;
 
 		public Long getId() {
@@ -29,12 +35,15 @@ public class ArticleContent implements Serializable{
 			this.id = id;
 		}
 
-//		public String getLink() {
-//			return link;
-//		}
+		public ArticleContentDto getDtoContent() {
+			ArticleContentDto dto = new ArticleContentDto();
+			dto.setContent(content.getValue());
+			dto.setId(id);
+			return dto;
+		}
 //
-//		public void setLink(String link) {
-//			this.link = link;
+//		public void setsContent(String sContent) {
+//			this.sContent = sContent;
 //		}
 
 		public Text getContent() {

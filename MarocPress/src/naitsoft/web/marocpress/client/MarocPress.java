@@ -1,5 +1,6 @@
 package naitsoft.web.marocpress.client;
 
+import naitsoft.web.marocpress.server.entity.ArticleContentDto;
 import naitsoft.web.marocpress.shared.FieldVerifier;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -49,10 +50,12 @@ public class MarocPress implements EntryPoint {
 //		ArticleThumb art = new ArticleThumb();
 		GridArticles grid = new GridArticles();
 		grid.initContent();
+		ArticleView articleView = new ArticleView();
+//		articleView.setContent(new ArticleContentDto());
 		// Add the nameField and sendButton to the RootPanel
 		// Use RootPanel.get() to get the entire body element
 		RootPanel.get("nameFieldContainer").add(grid);
-		RootPanel.get("sendButtonContainer").add(sendButton);
+		RootPanel.get("sendButtonContainer").add(articleView);
 		RootPanel.get("errorLabelContainer").add(errorLabel);
 
 		// Focus the cursor on the name field when the app loads

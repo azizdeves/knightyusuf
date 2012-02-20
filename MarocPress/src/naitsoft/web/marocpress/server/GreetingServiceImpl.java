@@ -4,6 +4,7 @@ import java.util.List;
 
 import naitsoft.web.marocpress.client.GreetingService;
 import naitsoft.web.marocpress.server.entity.Article;
+import naitsoft.web.marocpress.server.entity.ArticleContentDto;
 import naitsoft.web.marocpress.shared.FieldVerifier;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -55,5 +56,12 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 	public List<Article> getArticles() {
 		Dao dao = new Dao();
 		return dao.getArticles();
+	}
+
+	@Override
+	public ArticleContentDto getArticleContent(long contentId) {
+		Dao dao = new Dao();
+		ArticleContent content = dao.getArticleContent(contentId);
+		return content.getDtoContent();
 	}
 }

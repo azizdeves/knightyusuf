@@ -19,7 +19,7 @@ import javax.xml.transform.stream.StreamSource;
 
 
 import naitsoft.web.marocpress.server.entity.Article;
-import naitsoft.web.marocpress.server.entity.ArticleContent;
+import naitsoft.web.marocpress.server.entity.ArticleContentDto;
 
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.HttpClient;
