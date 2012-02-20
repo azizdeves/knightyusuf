@@ -1,4 +1,4 @@
-package naitsoft.web.marocpress.server;
+package naitsoft.web.marocpress.server.entity;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import com.google.gwt.thirdparty.guava.common.annotations.GwtIncompatible;
 import com.google.gwt.user.client.rpc.GwtTransient;
 import com.sun.syndication.feed.synd.SyndEntry;
 
@@ -41,15 +42,14 @@ public class Article implements Serializable{
         private Feed feed;
         
 
-		public Article(SyndEntry entry,Feed feed) {
-			link = entry.getLink();
-			feedId = feed.getId();
-			title = entry.getTitle();
-			date = entry.getPublishedDate();
-			this.feed = feed;
-		}
+		
 
 		
+		public Article() {
+			// TODO Auto-generated constructor stub
+		}
+
+
 		public Long getContentId() {
 			return contentId;
 		}

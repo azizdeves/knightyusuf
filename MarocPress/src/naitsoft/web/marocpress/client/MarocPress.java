@@ -46,10 +46,12 @@ public class MarocPress implements EntryPoint {
 
 		// We can add style names to widgets
 		sendButton.addStyleName("sendButton");
-
+//		ArticleThumb art = new ArticleThumb();
+		GridArticles grid = new GridArticles();
+		grid.initContent();
 		// Add the nameField and sendButton to the RootPanel
 		// Use RootPanel.get() to get the entire body element
-		RootPanel.get("nameFieldContainer").add(nameField);
+		RootPanel.get("nameFieldContainer").add(grid);
 		RootPanel.get("sendButtonContainer").add(sendButton);
 		RootPanel.get("errorLabelContainer").add(errorLabel);
 

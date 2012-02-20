@@ -13,6 +13,9 @@ import java.util.TreeSet;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import naitsoft.web.marocpress.server.entity.Article;
+import naitsoft.web.marocpress.server.entity.ArticleContent;
+import naitsoft.web.marocpress.server.entity.Feed;
 import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
 import net.sf.jsr107cache.CacheFactory;
@@ -24,11 +27,12 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
+import com.sun.syndication.feed.synd.SyndEntry;
 
 public class Dao {
 
 	static Cache cache;
-	static EntityManager em;
+	EntityManager em;
 	public Dao() {
 		em=EMF.get().createEntityManager();
 	}
@@ -41,12 +45,12 @@ public class Dao {
 	//            TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 	////          String keyWeek = momin + startWeek.toGMTString().substring(0, 11);
 	//            if(group == null){
-	//                    query = em().createQuery("select from "+Task.class.getName()+" t where t.mominId = :momin AND t.date >= :start  AND  t.date  < :end order by date asc");     
+	//                    query = em.createQuery("select from "+Task.class.getName()+" t where t.mominId = :momin AND t.date >= :start  AND  t.date  < :end order by date asc");     
 	////                  list = (List<Task>) getCache().get(keyWeek);
 	////                  if(list!=null)
 	////                          return list;            
 	//            }else{
-	//                    query = em().createQuery("select from "+Task.class.getName()+" t where t.mominId = :momin AND  group =:group AND  t.date >= :start  AND  t.date  < :end order by date asc");         
+	//                    query = em.createQuery("select from "+Task.class.getName()+" t where t.mominId = :momin AND  group =:group AND  t.date >= :start  AND  t.date  < :end order by date asc");         
 	//                    query.setParameter("group",Integer.parseInt(group));                    
 	//            }               
 	//        Date end = CalendarUtil.copyDate(startWeek);
@@ -66,16 +70,32 @@ public class Dao {
 	public List<Article> getArticles(){
 		Query query;
 		List<Article> list;
-		query = em().createQuery("select from "+Article.class.getName()+" a where a. order by date desc");     
+		query = em.createQuery("select from "+Article.class.getName()+" a  order by date desc limit 1,10 ");   
+//		query.setMaxResults(10);
 		return list =new  ArrayList((List<Article>)query.getResultList());
 	}
-	public static List<Feed> getFeeds(){
-		Query query;
+	public  List<Feed> getFeeds(){
+		
+		try{
+			Query query;
 		List<Feed> list;
-		query = em().createQuery("select from "+Feed.class.getName()+" a ");     
+		query = em.createQuery("select from "+Feed.class.getName()+" a "); 
 		return list =new  ArrayList((List<Feed>)query.getResultList());
+		}finally{
+//			em.close();
+			
+		}
 	}
 
+	public static Article getArticleFromEntry(SyndEntry entry,Feed feed) {
+		Article art = new Article();
+		art.setLink(entry.getLink());
+		art.setFeedId(feed.getId());
+		art.setTitle(entry.getTitle());
+		art.setDate( entry.getPublishedDate());
+		art.setFeed(feed) ;
+		return art;
+	}
 
 	public static Cache getCache()
 	{
@@ -90,51 +110,66 @@ public class Dao {
 		return cache;
 	}
 
+	public static void cache(String key, Object o){
+		cache.put(key, o);
+	}
+	
+	
 	public ArticleContent getArticleContentById(Long  id)
 	{
 		Key key=KeyFactory.createKey(ArticleContent.class.getSimpleName(), id);
-		ArticleContent kh=em().find(ArticleContent.class,key);
+		ArticleContent kh=em.find(ArticleContent.class,key);
 		return kh;
 	}
 
-	public static void update(Object o){
-		em().getTransaction().begin();
-		em().merge(o);
-		em().flush();
-		em().getTransaction().commit();
+	public  void update(Object o){
+		em.getTransaction().begin();
+//		em.joinTransaction();
+		em.merge(o);
+		em.flush();
+		em.getTransaction().commit();
+//		em.close();
 	}
-	private static EntityManager em(){
-		if(em == null)
-		{
-			em=EMF.get().createEntityManager();
-		}
-		return em;
-	}
-	public static void save(Object o){
-		em().getTransaction().begin();
-		em().persist(o);
-		em().flush();
-		em().getTransaction().commit();
+//	private static EntityManager em{
+//		if(em == null)
+//		{
+//			em=EMF.get().createEntityManager();
+//		}
+//		return em;
+//	}
+	public  void save(Object o){
+		em.getTransaction().begin();
+		em.persist(o);
+		em.flush();
+		em.getTransaction().commit();
+//		em.close();
 	}
 	
 	public void saveArticleContent(ArticleContent artContent)
 	{
-		em().getTransaction().begin();
+		em.getTransaction().begin();
 		if(artContent.getId()!=null){
-			em().merge(artContent);
+			em.merge(artContent);
 		}
 		else{
-			em().persist(artContent);
+			em.persist(artContent);
 		}
-		em().flush();
-		em().getTransaction().commit();
+		em.flush();
+		em.getTransaction().commit();
+//		em.close();
 
 	}
 
 	public void delete(Object c)
 	{
-		em().getTransaction().begin();
-		em().remove(c);
-		em().getTransaction().commit();
+		em.getTransaction().begin();
+		em.remove(c);
+		em.getTransaction().commit();
+	}
+	
+	public void close()
+	{
+		if(em.isOpen())
+			em.close();
 	}
 }

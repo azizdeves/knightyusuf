@@ -18,6 +18,9 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 
+import naitsoft.web.marocpress.server.entity.Article;
+import naitsoft.web.marocpress.server.entity.ArticleContent;
+
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -67,7 +70,8 @@ public class Handler {
 	public static void transform(Article article) {
 		// create an instance of HtmlCleaner
 		HtmlCleaner cleaner = new HtmlCleaner();
-
+//		http://t1.hespress.com/files/amdhnewcons_865104348.jpg
+//		http://s1.hespress.com/cache/thumbnail/article_medium/amdhnewcons_865104348.jpg
 		CleanerProperties props = cleaner.getProperties();
 
 		props.setOmitXmlDeclaration(true);
@@ -85,10 +89,15 @@ public class Handler {
 			log.info( "start cleaning ");
 			TagNode node = cleaner.clean(new GZIPInputStream(connection.getInputStream()),"UTF-8");
 			if(article.getFeed().getMediaXPath()!=null){
+				
 				Object[] myNodes = node.evaluateXPath(article.getFeed().getMediaXPath());
 
-				if(myNodes[0]!=null)
-					article.setMedia(((TagNode)myNodes[0]).getAttributeByName("src"));
+				if(myNodes[0]!=null){
+					String src =((TagNode)myNodes[0]).getAttributeByName("src");
+					if(!src.contains(article.getFeed().getName()))
+						src = article.getFeed().getName()+src;
+					article.setMedia(src);
+				}
 			}
 			String content = new PrettyXmlSerializer(props).getAsString( node,"UTF-8");
 
@@ -102,13 +111,15 @@ public class Handler {
 				,new StreamResult(out));
 
 			ArticleContent articleContent = new ArticleContent();
-			articleContent.setContent(new Text(out.toString("UTF-8")));
+			content = out.toString("UTF-8");
+			articleContent.setContent(new Text(content));
 //			System.out.println(articleContent.getContent());
 			
-//			Dao dao = new Dao();
-			Dao.save(articleContent);
+			Dao dao = new Dao();
+			dao.save(articleContent);
+			article.setDescripion(content.substring(0, content.length()<250?content.length():250));
 			article.setContentId(articleContent.getId());
-			Dao.save(article);
+			dao.save(article);
 
 		} catch (IOException e) {
 			e.printStackTrace();

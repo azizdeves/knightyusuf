@@ -1,4 +1,4 @@
-package naitsoft.web.marocpress.server;
+package naitsoft.web.marocpress.server.entity;
 
 import java.io.Serializable;
 
