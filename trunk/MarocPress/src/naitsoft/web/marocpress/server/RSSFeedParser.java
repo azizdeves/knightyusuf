@@ -17,6 +17,9 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
+import naitsoft.web.marocpress.server.entity.Article;
+import naitsoft.web.marocpress.server.entity.Feed;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.htmlcleaner.CleanerProperties;
@@ -83,13 +86,14 @@ public class RSSFeedParser {
 				if(entry.getPublishedDate().compareTo(feedSrc.getLastArticle())<=0)
 					continue;
 				
-				entriesToHandle.add(new Article(entry,feedSrc));
+				entriesToHandle.add(Dao.getArticleFromEntry(entry,feedSrc));
 				if(entry.getPublishedDate().compareTo(lastPublish)>0)
 					lastPublish = entry.getPublishedDate();
 			}
 			log.info( "new entries to handle "+entriesToHandle.size()+"   lastPublish= "+lastPublish);
 			feedSrc.setLastArticle(lastPublish);
-			Dao.update(feedSrc);
+			Dao dao = new Dao();
+			dao.update(feedSrc);
 			//save feed
 			for(Article e : entriesToHandle)
 			{

@@ -1,4 +1,4 @@
-package naitsoft.web.marocpress.server;
+package naitsoft.web.marocpress.server.entity;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

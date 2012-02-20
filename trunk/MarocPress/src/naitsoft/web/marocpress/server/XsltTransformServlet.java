@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import naitsoft.web.marocpress.server.entity.Feed;
+
 public class XsltTransformServlet extends HttpServlet {
 
 	final static String hesRss = "http://hespress.com/feed/index.atom";
@@ -32,14 +34,17 @@ public class XsltTransformServlet extends HttpServlet {
 //		} catch (ParseException e) {
 //			e.printStackTrace();
 //		}
-//    	feed.setRssLink(lakomeRss);
-//    	feed.setXslt("template_lakome.xsl");
-////    	Dao dao = new Dao();
+//    	feed.setRssLink(hesRss);
+//    	feed.setXslt("templatear.xsl");
+    	Dao dao = new Dao();
+//    	Dao dao1 = new Dao();
 //    	Dao.save(feed);
-    	List<Feed> feeds = Dao.getFeeds();
+    	
+    	List<Feed> feeds = dao.getFeeds();
+    	dao.close();
     	for(Feed f : feeds){
     		log.info("traitement feed= "+f.getName());
-    		
+//    		dao1.update(f); 
     		RSSFeedParser.readFeed(f);
     	}
     }
