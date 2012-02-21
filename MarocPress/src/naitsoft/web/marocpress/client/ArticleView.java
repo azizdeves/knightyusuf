@@ -27,7 +27,8 @@ public class ArticleView extends Composite{
 		panel = new HTMLPanel("<div id='content' class='article_body'></div>");
 		div = panel.getElementById("content");
 		initWidget(panel);
-		panel.setSize("310px", "250px");
+		panel.setSize("100%", "100%");
+		setSize("100%", "100%");
 		view = this;
 	}
 	

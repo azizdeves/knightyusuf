@@ -11,6 +11,7 @@ import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class ArticleThumb extends Composite{
@@ -79,8 +80,15 @@ public class ArticleThumb extends Composite{
 			
 			@Override
 			public void onSuccess(ArticleContentDto result) {
-				// TODO Auto-generated method stub
 				ArticleView.view.setContent(result);
+				PopupPanel pop = new PopupPanel(false,true);
+				pop.setWidget(ArticleView.view);
+				pop.setAnimationEnabled(true);
+				pop.setHeight("100%");
+				pop.setWidth("50%");
+				pop.setGlassEnabled(true);
+				pop.center();
+				pop.show();
 			}
 			
 			@Override
