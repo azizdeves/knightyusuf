@@ -56,6 +56,7 @@ public class RSSFeedParser {
 		    	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		    	try {
 		    		lastPublish = format.parse("2010-11-01");
+		    		feedSrc.setLastArticle(lastPublish);
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
@@ -72,6 +73,7 @@ public class RSSFeedParser {
 					lastPublish = entry.getPublishedDate();
 			}
 			log.info( "new entries to handle "+entriesToHandle.size()+"   lastPublish= "+lastPublish);
+			feedSrc.setLastArticle(lastPublish);
 			feedSrc.setLastArticle(lastPublish);
 			Dao dao = new Dao();
 			dao.update(feedSrc);
