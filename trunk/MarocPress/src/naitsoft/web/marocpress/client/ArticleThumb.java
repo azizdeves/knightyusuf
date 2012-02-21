@@ -30,8 +30,8 @@ public class ArticleThumb extends Composite{
 		String htmlContent = "<div class='subfeature'>+" +
 				"<img id='img"+article.getId()+"' src='' alt='' class='post-image' width='310' height='250'>				<div class='overlay'><a id='overlay"+article.getId()+"' href='#' title=''><img src='http://ugsmag.com/wp-content/themes/ugsmag2010/images/overlay-h250.png' width='310' height='250' alt='' class='bigpng'></a></div>" +
 				"<div class='comcat'>" +
-				"<div class='category'><a href='http://ugsmag.com/category/features/interviews/' title='View all posts in Interview' rel='category tag'>Interview</a></div>" +
-				"<div class='commentsnum'><a href='http://ugsmag.com/2011/07/eric-steuer/#respond' title='Comment on Eric Steuer'>Comment</a></div>" +
+				"<div class='category'><a href='' id='feed"+article.getId()+"' title='' rel='feed'></a></div>" +
+//				"<div class='commentsnum'><a href='http://ugsmag.com/2011/07/eric-steuer/#respond' title='Comment on Eric Steuer'>Comment</a></div>" +
 				"<div class='date'></div>" +
 				"</div>" +
 				"<div class='subfeature-txt'><h2 id='title"+article.getId()+"'><a id='h2href"+article.getId()+"' href='#' rel='bookmark' ></a></h2>" +
@@ -61,6 +61,9 @@ public class ArticleThumb extends Composite{
 		Element desc = panel.getElementById("desc"+article.getId());
 		Element title = panel.getElementById("h2href"+article.getId());
 		Element overlay = panel.getElementById("overlay"+article.getId());
+		Element feed = panel.getElementById("feed"+article.getId());
+		feed.setAttribute("href", article.getFeedId().toString());
+		feed.setInnerText("hespress");
 		overlay.setAttribute("title", article.getTitle());
 //		overlay.setAttribute("href", article.getLink());
 		title.setInnerText(article.getTitle());

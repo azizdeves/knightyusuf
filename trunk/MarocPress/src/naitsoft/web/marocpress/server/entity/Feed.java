@@ -18,6 +18,7 @@ public class Feed {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; 
     
+    private String link;
 	private String name;
 	private String rssLink ;
 	private String xslt;
@@ -61,6 +62,12 @@ public class Feed {
 	}
 	public void setLastArticle(Date lastArticle) {
 		this.lastArticle = lastArticle;
+	}
+	public String getLink() {
+		return link;
+	}
+	public void setLink(String link) {
+		this.link = link;
 	}
 	
 	

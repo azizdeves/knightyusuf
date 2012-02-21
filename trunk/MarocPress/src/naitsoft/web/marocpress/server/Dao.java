@@ -110,17 +110,17 @@ public class Dao {
 		return cache;
 	}
 
-	public static void cache(String key, Object o){
-		cache.put(key, o);
+	public static void cache(Object key, Object o){
+		getCache().put(key, o);
 	}
 	
-	
-	public ArticleContentDto getArticleContentById(Long  id)
-	{
-		Key key=KeyFactory.createKey(ArticleContentDto.class.getSimpleName(), id);
-		ArticleContentDto kh=em.find(ArticleContentDto.class,key);
-		return kh;
-	}
+//	
+//	public ArticleContentDto getArticleContentById(Long  id)
+//	{
+//		Key key=KeyFactory.createKey(ArticleContentDto.class.getSimpleName(), id);
+//		ArticleContentDto kh=em.find(ArticleContentDto.class,key);
+//		return kh;
+//	}
 
 	public  void update(Object o){
 		em.getTransaction().begin();
@@ -145,7 +145,7 @@ public class Dao {
 //		em.close();
 	}
 	
-	public void saveArticleContent(ArticleContentDto artContent)
+	public void saveArticleContent(ArticleContent artContent)
 	{
 		em.getTransaction().begin();
 		if(artContent.getId()!=null){
@@ -156,6 +156,7 @@ public class Dao {
 		}
 		em.flush();
 		em.getTransaction().commit();
+		cache(artContent.getId(), artContent);
 //		em.close();
 
 	}
@@ -174,6 +175,11 @@ public class Dao {
 	}
 
 	public ArticleContent getArticleContent(long id) {
-		return em.find(ArticleContent.class, id);
+		ArticleContent ac = (ArticleContent) getCache().get(id);
+		if(ac==null){
+			ac = em.find(ArticleContent.class, id);
+			cache(ac.getId(),ac);
+		}
+		return ac;
 	}
 }
