@@ -1,5 +1,6 @@
 package naitsoft.web.marocpress.server;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -26,6 +27,9 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.Key;
 import com.google.appengine.api.datastore.KeyFactory;
+import com.google.appengine.api.mail.MailService;
+import com.google.appengine.api.mail.MailServiceFactory;
+import com.google.appengine.api.mail.MailService.Message;
 import com.google.gwt.user.datepicker.client.CalendarUtil;
 import com.sun.syndication.feed.synd.SyndEntry;
 
@@ -181,5 +185,14 @@ public class Dao {
 			cache(ac.getId(),ac);
 		}
 		return ac;
+	}
+	public static void sendMail(Exception e){
+		MailService mailService = MailServiceFactory.getMailService();
+		Message message = new Message("naitsoft@gmail.com","sharpen.soul@gmail.com", "Exception",e.getMessage());
+		try {
+			mailService.send(message);
+		} catch (IOException s) {
+			s.printStackTrace();
+		}
 	}
 }
