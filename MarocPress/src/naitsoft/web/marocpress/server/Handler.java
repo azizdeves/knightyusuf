@@ -74,7 +74,7 @@ public class Handler {
 //		http://s1.hespress.com/cache/thumbnail/article_medium/amdhnewcons_865104348.jpg
 		CleanerProperties props = cleaner.getProperties();
 
-		props.setOmitXmlDeclaration(true);
+//		props.setOmitXmlDeclaration(true);
 
 		try {
 			URL url = new URL(article.getLink());
@@ -99,24 +99,27 @@ public class Handler {
 					article.setMedia(src);
 				}
 			}
-			String content = new PrettyXmlSerializer(props).getAsString( node,"UTF-8");
+			Object[] myNodes = node.evaluateXPath(article.getFeed().getXslt());
+			
+			String content = new PrettyXmlSerializer(props).getAsString( (TagNode) myNodes[0],"UTF-8");
+//
+//			TransformerFactory tFactory = TransformerFactory.newInstance();
+//			content = content.replaceAll("xmlns:xml=\"xml\"", "");
+//			Transformer transformer = tFactory.newTransformer(new StreamSource(article.getFeed().getXslt()));
+//
+//			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+//			ByteArrayOutputStream out = new ByteArrayOutputStream();
+//			transformer.transform(new StreamSource(new ByteArrayInputStream(content.getBytes("UTF-8")))
+//				,new StreamResult(out));
 
-			TransformerFactory tFactory = TransformerFactory.newInstance();
-			content = content.replaceAll("xmlns:xml=\"xml\"", "");
-			Transformer transformer = tFactory.newTransformer(new StreamSource(article.getFeed().getXslt()));
-
-			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			transformer.transform(new StreamSource(new ByteArrayInputStream(content.getBytes("UTF-8")))
-				,new StreamResult(out));
-
+			
 			ArticleContent articleContent = new ArticleContent();
-			content = out.toString("UTF-8");
+//			content = out.toString("UTF-8");
 			articleContent.setContent(new Text(content));
 //			System.out.println(articleContent.getContent());
 			
 			Dao dao = new Dao();
-			dao.save(articleContent);
+			dao.saveArticleContent(articleContent);
 			article.setDescripion(content.substring(0, content.length()<250?content.length():250));
 			article.setContentId(articleContent.getId());
 			dao.save(article);
@@ -125,9 +128,10 @@ public class Handler {
 			e.printStackTrace();
 		}
 
-		catch (TransformerException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
+//		catch (TransformerException e) {
+//			e.printStackTrace();
+//		}
+		catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (XPatherException e) {
 			e.printStackTrace();
@@ -140,78 +144,52 @@ public class Handler {
 	public static void main(String[] args) {
 
 
-		XmlReader reader = null;
+		HtmlCleaner cleaner = new HtmlCleaner();
+//		http://t1.hespress.com/files/amdhnewcons_865104348.jpg
+//		http://s1.hespress.com/cache/thumbnail/article_medium/amdhnewcons_865104348.jpg
+		CleanerProperties props = cleaner.getProperties();
+
+//		props.setOmitXmlDeclaration(true);
+
 		try {
-			URL url  = new URL(hesRss);
+			URL url = new URL("http://hespress.com/societe/48050.html");
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 			connection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
 			connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.77 Safari/535.7");
 			connection.setRequestProperty("Accept-Charset", "ISO-8859-1,UTF-8;q=0.7,*;q=0.3");
 			connection.setRequestProperty("Accept-Language", "en-GB,en-US;q=0.8,en;q=0.6,fr;q=0.4");
+			connection.setRequestProperty("Accept-Encoding", "gzip,deflate,sdch");
+//			connection.setRequestProperty("Connection", "keep-alive");
+			log.info( "start cleaning ");
+			TagNode node = cleaner.clean(new GZIPInputStream(connection.getInputStream()),"UTF-8");
+			String content = new PrettyXmlSerializer(props).getAsString( node,"UTF-8");
 
-			reader = new XmlReader(connection.getInputStream(),true,"UTF-8");
-			SyndFeed feed = new SyndFeedInput().build(reader); 
-			System.out.println("Feed Title: "+ feed.getAuthor());
+			TransformerFactory tFactory = TransformerFactory.newInstance();
+			content = content.replaceAll("xmlns:xml=\"xml\"", "");
+			Transformer transformer = tFactory.newTransformer(new StreamSource("d://templatear.xsl"));
+	
+			transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			transformer.transform(new StreamSource(new ByteArrayInputStream(content.getBytes("UTF-8")))
+				,new StreamResult(out));
 
-			for (Iterator i = feed.getEntries().iterator(); i.hasNext();) {
-				SyndEntry entry = (SyndEntry) i.next();
-				System.out.println(entry.getTitle());
-			}
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (FeedException e) {
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
+			ArticleContent articleContent = new ArticleContent();
+			content = out.toString("UTF-8");
+			articleContent.setContent(new Text(content));
+			
+
 		} catch (IOException e) {
 			e.printStackTrace();
-		} finally {
-			//	            if (reader != null)
-			//	                reader.close();
 		}
 
-		//		RSSFeedParser parser = new RSSFeedParser(hibaRss);
-		//		Feed feed = parser.readFeed();
-		//		System.out.println(feed);
-		//		for (FeedMessage message : feed.getMessages()) {
-		//			System.out.println(message);
-		//
-		//		}
-
-
-
-
-		HttpClient httpclient = new DefaultHttpClient();
-		try {
-			HttpGet httpget = new HttpGet("http://www.hespress.com/");
-
-			//            System.out.println("executing request " + getURI());
-
-			httpget.setHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-			httpget.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.77 Safari/535.7");
-			httpget.setHeader("Accept-Charset", "ISO-8859-1,UTF-8;q=0.7,*;q=0.3");
-			httpget.setHeader("Accept-Encoding", "gzip,deflate,sdch");
-			httpget.setHeader("Accept-Language", "en-GB,en-US;q=0.8,en;q=0.6,fr;q=0.4");
-			httpget.setHeader("Connection", "keep-alive");
-			httpget.setHeader("Host", "hespress.com");
-			httpget.setHeader("Referer", "http://hespress.com/");
-			// Create a response handler
-			ResponseHandler<String> responseHandler = new BasicResponseHandler();
-			String responseBody = httpclient.execute(httpget, responseHandler);
-			System.out.println("----------------------------------------");
-			System.out.println(responseBody);
-			System.out.println("----------------------------------------");
-
-		} catch (IOException e) {
+		catch (TransformerException e) {
 			e.printStackTrace();
-		} finally {
-			// When HttpClient instance is no longer needed,
-			// shut down the connection manager to ensure
-			// immediate deallocation of all system resources
-			httpclient.getConnectionManager().shutdown();
-		}	
-
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 
 }
