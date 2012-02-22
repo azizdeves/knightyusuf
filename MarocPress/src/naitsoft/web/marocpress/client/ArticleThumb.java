@@ -28,8 +28,8 @@ public class ArticleThumb extends Composite{
 //	}
 	public ArticleThumb(Article art) {
 		article = art;
-		String htmlContent = "<div class='subfeature'>+" +
-				"<img id='img"+article.getId()+"' src='' alt='' class='post-image' width='310' height='250'>				<div class='overlay'><a id='overlay"+article.getId()+"' href='#' title=''><img src='http://ugsmag.com/wp-content/themes/ugsmag2010/images/overlay-h250.png' width='310' height='250' alt='' class='bigpng'></a></div>" +
+		String htmlContent = "<span class='subfeature'>+" +
+				"<img id='img"+article.getId()+"' src='' alt='' class='post-image' width='310' height='250'><div class='overlay'><a id='overlay"+article.getId()+"' href='#' title=''><img src='http://ugsmag.com/wp-content/themes/ugsmag2010/images/overlay-h250.png' width='310' height='250' alt='' class='bigpng'></a></div>" +
 				"<div class='comcat'>" +
 				"<div class='category'><a href='' id='feed"+article.getId()+"' title='' rel='feed'></a></div>" +
 //				"<div class='commentsnum'><a href='http://ugsmag.com/2011/07/eric-steuer/#respond' title='Comment on Eric Steuer'>Comment</a></div>" +
@@ -38,7 +38,7 @@ public class ArticleThumb extends Composite{
 				"<div class='subfeature-txt'><h2 id='title"+article.getId()+"'><a id='h2href"+article.getId()+"' href='#' rel='bookmark' ></a></h2>" +
 				"<p id='desc"+article.getId()+"'></p>" +
 				"</div>" +
-				"</div>";
+				"</sapn>";
 		panel = new HTMLPanel(htmlContent);
 		initContent();
 		initWidget(panel);
@@ -81,14 +81,14 @@ public class ArticleThumb extends Composite{
 			@Override
 			public void onSuccess(ArticleContentDto result) {
 				ArticleView.view.setContent(result);
-				PopupPanel pop = new PopupPanel(false,true);
-				pop.setWidget(ArticleView.view);
-				pop.setAnimationEnabled(true);
-				pop.setHeight("100%");
-				pop.setWidth("50%");
-				pop.setGlassEnabled(true);
-				pop.center();
-				pop.show();
+//				PopupPanel pop = new PopupPanel(false,true);
+//				pop.setWidget(ArticleView.view);
+//				pop.setAnimationEnabled(true);
+//				pop.setHeight("100%");
+//				pop.setWidth("100%");
+//				pop.setGlassEnabled(true);
+//				pop.center();
+//				pop.show();
 			}
 			
 			@Override
