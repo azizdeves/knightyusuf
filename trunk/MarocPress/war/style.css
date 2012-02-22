@@ -643,12 +643,12 @@ a.submitnews:hover {
 
 /* Posts */
 
-.post {
+/*.post {
 	background:#fff;
 	clear:both;
 	width:640px;
 	padding-bottom:15px;
-}
+}*/
 .post .title {
 	background:#000;
 	padding:17px 30px 20px 30px;

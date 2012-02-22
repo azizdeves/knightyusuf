@@ -75,7 +75,7 @@ public class Dao {
 		Query query;
 		List<Article> list;
 		query = em.createQuery("select from "+Article.class.getName()+" a  order by date desc limit 1,10 ");   
-//		query.setMaxResults(10);
+		query.setMaxResults(5);
 		return list =new  ArrayList((List<Article>)query.getResultList());
 	}
 	public  List<Feed> getFeeds(){

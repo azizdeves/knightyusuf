@@ -22,7 +22,7 @@ public class GridArticles extends Composite{
 											.create(GreetingService.class);
 	
 	public GridArticles() {
-		grid = new Grid(10, 2);
+		grid = new Grid(10, 1);
 		initWidget(grid);
 		grid.setSize("640px", "43px");
 		
@@ -51,7 +51,7 @@ public class GridArticles extends Composite{
 		for(Article art : articles){
 			thumb = new ArticleThumb(art);
 			grid.setWidget(row, column++, thumb);
-			if(column>1)
+			if(column>0)
 			{
 				row++;
 				column = 0;

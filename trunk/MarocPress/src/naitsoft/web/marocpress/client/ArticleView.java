@@ -24,11 +24,11 @@ public class ArticleView extends Composite{
 //		initContent();
 //	}
 	public ArticleView() {
-		panel = new HTMLPanel("<div id='content' class='article_body'></div>");
+		panel = new HTMLPanel("<span id='content' class='article_body'></span>");
 		div = panel.getElementById("content");
 		initWidget(panel);
-		panel.setSize("100%", "100%");
-		setSize("100%", "100%");
+//		panel.setSize("50%", "100%");
+//		setSize("50%", "100%");
 		view = this;
 	}
 	
@@ -37,7 +37,8 @@ public class ArticleView extends Composite{
 		div = panel.getElementById("content");
 //		initContent();
 		initWidget(panel);
-		panel.setSize("310px", "250px");
+//		panel.setSize("50%", "100%");
+//		setSize("50%", "100%");
 		view = this;
 	}
 
