@@ -24,7 +24,7 @@ public class GridArticles extends Composite{
 	public GridArticles() {
 		grid = new Grid(10, 1);
 		initWidget(grid);
-		grid.setSize("640px", "43px");
+		grid.setSize("100%", "43px");
 		
 	}
 

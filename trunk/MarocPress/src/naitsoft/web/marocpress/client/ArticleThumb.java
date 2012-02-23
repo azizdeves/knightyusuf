@@ -29,7 +29,7 @@ public class ArticleThumb extends Composite{
 	public ArticleThumb(Article art) {
 		article = art;
 		String htmlContent = "<span class='subfeature'>+" +
-				"<img id='img"+article.getId()+"' src='' alt='' class='post-image' width='310' height='250'><div class='overlay'><a id='overlay"+article.getId()+"' href='#' title=''><img src='http://ugsmag.com/wp-content/themes/ugsmag2010/images/overlay-h250.png' width='310' height='250' alt='' class='bigpng'></a></div>" +
+				"<img id='img"+article.getId()+"' src='' alt='' class='post-image' width='100%' height='250'><div class='overlay'><a id='overlay"+article.getId()+"' href='#' title=''><img src='http://ugsmag.com/wp-content/themes/ugsmag2010/images/overlay-h250.png' width='100%' height='250' alt='' class='bigpng'></a></div>" +
 				"<div class='comcat'>" +
 				"<div class='category'><a href='' id='feed"+article.getId()+"' title='' rel='feed'></a></div>" +
 //				"<div class='commentsnum'><a href='http://ugsmag.com/2011/07/eric-steuer/#respond' title='Comment on Eric Steuer'>Comment</a></div>" +
@@ -42,7 +42,7 @@ public class ArticleThumb extends Composite{
 		panel = new HTMLPanel(htmlContent);
 		initContent();
 		initWidget(panel);
-		panel.setSize("310px", "250px");
+		panel.setSize("100%", "250px");
 		panel.sinkEvents(Event.ONCLICK);
 		
 	}
@@ -81,14 +81,16 @@ public class ArticleThumb extends Composite{
 			@Override
 			public void onSuccess(ArticleContentDto result) {
 				ArticleView.view.setContent(result);
-//				PopupPanel pop = new PopupPanel(false,true);
-//				pop.setWidget(ArticleView.view);
-//				pop.setAnimationEnabled(true);
+				PopupPanel pop = new PopupPanel(false,true);
+				pop.setStyleName("mypanel");
+				pop.setWidget(ArticleView.view);
+				pop.setAnimationEnabled(true);
 //				pop.setHeight("100%");
 //				pop.setWidth("100%");
-//				pop.setGlassEnabled(true);
-//				pop.center();
-//				pop.show();
+				pop.setGlassEnabled(true);
+				pop.center();
+				pop.show();
+				//http://jsfiddle.net/qqPcb/	http://jsfiddle.net/qqPcb/	http://jsfiddle.net/qqPcb/	http://jsfiddle.net/qqPcb/	http://jsfiddle.net/qqPcb/	http://jsfiddle.net/qqPcb/	
 			}
 			
 			@Override
