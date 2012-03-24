@@ -49,7 +49,7 @@
 	        android:id="@+id/next"
 	        android:layout_width="wrap_content"
 	        android:layout_height="match_parent"
-	        android:layout_weight="0.1"
+	        android:layout_weight="0.2"
 	        android:src="@android:drawable/ic_media_previous"
 	        android:text="next" >
 
@@ -62,13 +62,15 @@
 	        android:src="@android:drawable/ic_media_next"
 	        android:text="prev" >
 	    </ImageButton>
+
 	    <ImageButton
 	        android:id="@+id/markBtn"
 	        android:layout_width="wrap_content"
-	        android:layout_weight="0.1"
 	        android:layout_height="match_parent"
+	        android:layout_weight="0"
 	        android:src="@android:drawable/btn_star"
 	        android:text="prev" >
+
 	    </ImageButton>
 	</LinearLayout>
 

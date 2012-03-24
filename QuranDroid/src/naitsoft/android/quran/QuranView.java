@@ -77,12 +77,12 @@ public class QuranView extends View {
         dirty = true;
         Rect rec = new  Rect();
         mPaint.getTextBounds("\u0644", 0, 1, rec);
-        stepLine = (int) (rec.height()*2.5);
+        stepLine = (int) (rec.height()*3);
         currentLine = (int) (stepLine*0.75);
     	widths = new float[text.length()];
         xpos = new int[text.length()];
         mPaint.getTextWidths(text, widths);
-        requestLayout(); 
+        requestLayout();
         invalidate();
     }
     
