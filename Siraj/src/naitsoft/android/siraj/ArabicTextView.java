@@ -24,7 +24,7 @@ import android.view.View;
 public class ArabicTextView extends View {
 
 	//	private ArabicTextEventListener  eventListener;
-	static public Paint mPaint;
+	static public Paint mPaint = new Paint();
 	static int a,b;
 	int backColor = Color.rgb(238, 255, 237);
 	int fontColor = Color.BLACK;
@@ -35,7 +35,7 @@ public class ArabicTextView extends View {
 	boolean dirty = true;
 	private Bitmap map;
 	protected Rect clsRect = new Rect();
-	float[] w = new float[1];
+	float[] w = new float[200];
 	//	private float startSelct = -1;
 	//	private float endSelct;
 	public ArabicTextView(Context context,AttributeSet attr) {
@@ -66,14 +66,15 @@ public class ArabicTextView extends View {
 		mPaint.setColor(fontColor); 
 		//        int prevCharWitdh=0;
 		int cur=0;
-		w = new float[text.length()];
+//		w = new float[text.length()];
 		mPaint.getTextWidths(text, w);
 		//        	canvas.translate(canvas.getWidth(), 0);
 
 		float y = stepLine/1.5f;
 
 		//Light draw
-		if(ArabicListAdapter.mBusy){
+//		if(ArabicListAdapter.mBusy){
+		if(true){
 			canvas.drawText(text, 0, y, mPaint);
 			return;
 		}
@@ -137,9 +138,9 @@ public class ArabicTextView extends View {
 		setMeasuredDimension(width, stepLine);
 	}
 
-	static public float getCharWidth(Paint paint, String text, int indxTxt,float[] w ){
-		if(DariGlyphUtils.isHaraka(text.charAt(indxTxt)))
-			return 0f;
+	static public float getCharWidth(Paint paint, String text, int indxTxt, float[] w ){
+//		if(DariGlyphUtils.isHaraka(text.charAt(indxTxt)))
+//			return 0f;
 
 		paint.getTextWidths(text, indxTxt, indxTxt+1, w);
 		return w[0]; 

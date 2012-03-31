@@ -12,7 +12,7 @@ public class TextSelection {
 	static Focusable focusB ;
 //	MarkUI markUi;
 	
-	public TextSelection(){
+	public TextSelection(){ 
 		startCursor = new TextCursor();
 		endCursor = new TextCursor();
 		editingCursor = endCursor;
@@ -58,7 +58,7 @@ public class TextSelection {
 			select = TextSelection.getCurrentSelection();
 			cur.textCursor.numLine = indexLine-1;
 			cur.textCursor.x = (int) ev.getX();
-			ArticleFragment.listTextLineView.invalidate();
+			ArticleFragment.articleTextView.invalidate();
 		}
 		if(ev.getAction()== MotionEvent.ACTION_UP){ 
 			ArticleFragment.status = ArticleFragment.SELECTED;
@@ -70,7 +70,7 @@ public class TextSelection {
 	public static Focusable getTouchedCurseur(int x, int numLine) {
 		if(focusA.line== numLine)
 			if(focusB.line == numLine){
-				if(Math.abs(x-focusA.x)<Math.abs(x-focusB.x))
+				if(Math.abs(x-focusA.x)<Math.abs(x-focusB.x)) 
 					return focusA;
 				else 
 					return focusB;

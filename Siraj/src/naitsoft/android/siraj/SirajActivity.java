@@ -28,6 +28,7 @@ import android.util.AttributeSet;
 import android.view.ActionMode;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.WindowManager;
@@ -70,7 +71,7 @@ public class SirajActivity extends FragmentActivity {
 		context = getApplicationContext(); 
 		livre = 1; 
 		chapitre = 5;
-		//        initDB();
+		        initDB();
 		//        loadShowChapter();
 //		Bundle bund = getIntent().getExtras();
 //		if(bund != null){ 
@@ -90,7 +91,9 @@ public class SirajActivity extends FragmentActivity {
 
 //		arabicAdapter = new ArabicListAdapter(this);
 		setContentView(R.layout.article_activ);
-
+		
+//		ArticleFragment artFrag = (ArticleFragment)
+//				getFragmentManager().findFragmentById(R.id.article_frag);
 		ActionBar actionBar = this.getSupportActionBar();
 	    actionBar.setDisplayHomeAsUpEnabled(true);
 
@@ -162,7 +165,20 @@ public class SirajActivity extends FragmentActivity {
 			//			loadShowChapter();
 		}
 	}
-
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		return super.onKeyDown(keyCode, event);
+//		if(keyCode == 24){
+//			
+//		}
+		
+//		if(keyCode == 25){
+//			
+//		}
+	}
+	
 	@Override
 	protected void onStop() {
 		super.onStop();

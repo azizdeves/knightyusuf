@@ -80,7 +80,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 						isBuildingMarkUi = true;
 						currentMarkUi = new MarkUI(lineWidth,lineWidth,numLine,numLine, currentMark.markId);
 
-						marksUi.add(currentMarkUi);
+						marksUi.add(currentMarkUi); 
 					}
 
 				}
@@ -126,6 +126,94 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		//		isLineInit = true;
 	}
 
+	private void constructSimppeLine(){
+		lines.clear();
+		short numLine = 0;
+		short startCur = 0;
+		short lastSpace = -1;
+		boolean isNewLine=false;
+		boolean isBuildingMarkUi = false;
+		Mark currentMark = null;
+		MarkUI currentMarkUi = null;
+		int lineWidth=0;
+		float[] w = new float[1];
+		marksUi = new ArrayList<MarkUI>();
+		marks = new ArrayList<Mark>();
+
+		Iterator<Mark> iterMark = marks.iterator();
+		if(iterMark.hasNext())
+			currentMark = iterMark.next();
+
+		for(short i = 0; i<text.length(); i++){
+
+			if(currentMark !=null){
+				if(isBuildingMarkUi){
+
+					if(text.charAt(i) == currentMark.endChar){				
+						isBuildingMarkUi = false;
+						currentMarkUi.endX = lineWidth;
+						currentMarkUi.endLine = numLine;
+						if(iterMark.hasNext())
+							currentMark = iterMark.next();
+						else
+							currentMark = null;
+
+					}
+					
+					if(isNewLine)
+						marksUi.add(currentMarkUi);
+				}else{
+					if(text.charAt(i) == currentMark.startChar){				
+						isBuildingMarkUi = true;
+						currentMarkUi = new MarkUI(lineWidth,lineWidth,numLine,numLine, currentMark.markId);
+
+						marksUi.add(currentMarkUi); 
+					}
+
+				}
+			}else{
+				if(isNewLine)
+					marksUi.add(currentMarkUi);
+				
+			}
+			if(text.charAt(i)==' ')
+				lastSpace = i;
+			if(isNewLine){
+				startCur = i;
+				lineWidth = 0;
+				lastSpace = -1;
+				isNewLine = false;
+				//				if(isBuildingMarkUi)
+
+			}
+			if(text.charAt(i)=='\n'){
+				if(startCur!=i)
+				{
+					lines.add(new TextLine(text.substring(startCur, i),numLine++));
+					isNewLine = true;
+				}
+				continue;
+
+			}
+//			if((lineWidth += ArabicTextView.getCharWidth(ArabicTextView.mPaint, text, i,w))> width){
+			if((lineWidth = ArabicTextView.mPaint.getTextWidths( text, startCur,i+1,w))> width){
+				lines.add(new TextLine(text.substring(startCur, lastSpace),numLine++));
+				i = lastSpace;
+				isNewLine = true;
+			}
+
+		}
+		if(isBuildingMarkUi){
+			currentMarkUi.endX = lineWidth;
+			currentMarkUi.endLine = numLine;
+		}
+		else
+			marksUi.add(null);
+		
+		//		isLineInit = true;
+	}
+
+	
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {
 		//		if(!isLineInit){
@@ -194,6 +282,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 			buf.append(lines.get(select.startCursor.numLine).getText().substring(select.startCursor.idxChar));
 			for(int i = select.startCursor.numLine+1;i<select.endCursor.numLine;i++){
 				buf.append(lines.get(i).getText());
+				buf.append(" ");
 			}
 			buf.append(lines.get(select.endCursor.numLine).getText().substring(0, select.endCursor.idxChar));
 			return buf.toString();

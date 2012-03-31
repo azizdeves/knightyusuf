@@ -5,10 +5,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.AttributeSet;
 
-public class RichArabicTextView extends ArabicTextView {
+public class RichArabicTextView1 extends ArabicTextView {
 
 
-	public RichArabicTextView(Context context,AttributeSet attr) {
+	public RichArabicTextView1(Context context,AttributeSet attr) {
 		super(context,attr);
 		//Typeface mFace = Typeface.createFromAsset(getContext().getAssets(),"fonts/Scheherazade.ttf");
 
@@ -73,11 +73,11 @@ public class RichArabicTextView extends ArabicTextView {
 		for(int i =0, length=text.length(); i<length;i++){
 			if(text.charAt(i)=='\n')continue;
 //			canvas.drawText(text, i, i+1, cur,  y, mPaint);
-//			if(!DariGlyphUtils.isHaraka(text.charAt(i))){
+			if(!DariGlyphUtils.isHaraka(text.charAt(i))){
 				cur-=w[i];
 				if(ArticleFragment.status == ArticleFragment.SELECTING || ArticleFragment.status == ArticleFragment.SELECTED)
 					w[i]=cur;
-//			}
+			}
 			//        		prevCharWitdh = (int) ArabicTextView.getCharWidth(mPaint, text, i,w);
 		}
 		if(ArticleFragment.status != ArticleFragment.SELECTING && ArticleFragment.status != ArticleFragment.SELECTED)
