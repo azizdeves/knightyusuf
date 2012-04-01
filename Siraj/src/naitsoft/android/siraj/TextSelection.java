@@ -168,6 +168,7 @@ class MarkUI{
 	int startLine;
 	int endLine;
 	int markId;
+	MarkUI next;
 	public MarkUI(int startX, int endX, int startLine, int endLine, int markId) {
 		super();
 		this.startX = startX;

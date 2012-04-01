@@ -2,7 +2,10 @@ package naitsoft.android.siraj;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
 
 
 
@@ -19,7 +22,8 @@ import android.widget.AbsListView.OnScrollListener;
 public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListener{
 
 	private String text;
-	ArrayList<Mark> marks = new ArrayList<Mark>();
+	ArrayList<Mark> marks ;
+	ArrayList<Mark> currentMarks ;
 	static ArrayList<MarkUI> marksUi ;
 	private Paint paint;
 	int width;
@@ -27,6 +31,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 	static ArrayList<TextLine> lines = new ArrayList<TextLine>();
 	private LayoutInflater mInflater;
 	private DataBaseHelper myDbHelper;
+	private ArrayList<Mark> tmpMarks;
 	//	boolean isLineInit=false;
 	static public  boolean mBusy;
 
@@ -52,43 +57,49 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		float[] w = new float[1];
 		marksUi = new ArrayList<MarkUI>();
 		marks = new ArrayList<Mark>();
+		currentMarks = new ArrayList<Mark>();
+		tmpMarks = new ArrayList<Mark>();
+		HashMap<Mark, MarkUI> markMap = new HashMap<Mark, MarkUI>();
 
-		Iterator<Mark> iterMark = marks.iterator();
-		if(iterMark.hasNext())
-			currentMark = iterMark.next();
+
+		//		Iterator<Mark> iterMark = marks.iterator();
+		int indexCurrentMark=0;
+		//		if()
+		//			currentMark = iterMark.next();
 
 		for(short i = 0; i<text.length(); i++){
 
-			if(currentMark !=null){
-				if(isBuildingMarkUi){
+//			initMarkByStartChar(i, indexCurrentMark);
+			while(indexCurrentMark<marks.size() && marks.get(indexCurrentMark).startChar <= indexCurrentMark)
+				if(marks.get(indexCurrentMark).startChar == i){
+					currentMarks.add(marks.get(indexCurrentMark));
+					currentMarkUi = new MarkUI(lineWidth,lineWidth, numLine, numLine, marks.get(indexCurrentMark).markId);
+					if(marksUi.get(numLine)==null)
+						marksUi.add(currentMarkUi); 
+					else 
+						marksUi.get(numLine).next = currentMarkUi;
+					markMap.put(marks.get(indexCurrentMark++), currentMarkUi);
+				
+				}
+			for(Mark mrk : currentMarks){
+			}
 
-					if(text.charAt(i) == currentMark.endChar){				
-						isBuildingMarkUi = false;
+			if(!currentMarks.isEmpty()){
+				//				if(isBuildingMarkUi){
+				initCurrentMarksByEndChar(i);
+				if(!tmpMarks.isEmpty()){	
+					for(Mark mrk:tmpMarks){
+						currentMarkUi = markMap.get(mrk);
 						currentMarkUi.endX = lineWidth;
 						currentMarkUi.endLine = numLine;
-						if(iterMark.hasNext())
-							currentMark = iterMark.next();
-						else
-							currentMark = null;
-
-					}
-					
-					if(isNewLine)
-						marksUi.add(currentMarkUi);
-				}else{
-					if(text.charAt(i) == currentMark.startChar){				
-						isBuildingMarkUi = true;
-						currentMarkUi = new MarkUI(lineWidth,lineWidth,numLine,numLine, currentMark.markId);
-
-						marksUi.add(currentMarkUi); 
+						currentMarks.remove(mrk);
+						markMap.remove(mrk);
 					}
 
 				}
-			}else{
-				if(isNewLine)
-					marksUi.add(currentMarkUi);
-				
+				//				}
 			}
+
 			if(text.charAt(i)==' ')
 				lastSpace = i;
 			if(isNewLine){
@@ -115,15 +126,39 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 				isNewLine = true;
 			}
 
+
+			if(!markMap.isEmpty()){
+				for(MarkUI mrkUi : markMap.values()){
+					mrkUi.endX = lineWidth;
+					mrkUi.endLine = numLine;
+				}
+
+			}
+			else
+				marksUi.add(null);
 		}
-		if(isBuildingMarkUi){
-			currentMarkUi.endX = lineWidth;
-			currentMarkUi.endLine = numLine;
-		}
-		else
-			marksUi.add(null);
-		
 		//		isLineInit = true;
+	}
+	/**
+	 * return la liste des Mark qui ont le startChar passé en parametre
+	 * @return
+	 */
+	private void initMarkByStartChar( int startChar, int indexList){
+		//		tmpMarks.clear();
+		while(indexList<marks.size() && marks.get(indexList).startChar <= startChar)
+			if(marks.get(indexList).startChar == startChar)
+				currentMarks.add(marks.get(indexList++));
+
+		//		return currentMarks;
+	}
+	private void initCurrentMarksByEndChar(int endChar){
+		tmpMarks.clear();
+		for(Mark m : currentMarks){
+			if(m.endChar == endChar)
+				tmpMarks.add(m);
+		}
+		//		return tmpMarks;
+
 	}
 
 	private void constructSimppeLine(){
@@ -159,7 +194,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 							currentMark = null;
 
 					}
-					
+
 					if(isNewLine)
 						marksUi.add(currentMarkUi);
 				}else{
@@ -174,7 +209,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 			}else{
 				if(isNewLine)
 					marksUi.add(currentMarkUi);
-				
+
 			}
 			if(text.charAt(i)==' ')
 				lastSpace = i;
@@ -195,7 +230,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 				continue;
 
 			}
-//			if((lineWidth += ArabicTextView.getCharWidth(ArabicTextView.mPaint, text, i,w))> width){
+			//			if((lineWidth += ArabicTextView.getCharWidth(ArabicTextView.mPaint, text, i,w))> width){
 			if((lineWidth = ArabicTextView.mPaint.getTextWidths( text, startCur,i+1,w))> width){
 				lines.add(new TextLine(text.substring(startCur, lastSpace),numLine++));
 				i = lastSpace;
@@ -209,11 +244,11 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		}
 		else
 			marksUi.add(null);
-		
+
 		//		isLineInit = true;
 	}
 
-	
+
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {
 		//		if(!isLineInit){
@@ -254,7 +289,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 				ViewHolder holder = (ViewHolder)view.getChildAt(i).getTag();
 				holder.arabText.invalidate();
 				//	                if (t.getTag() != null) {
-					//	                    t.invalidate();
+				//	                    t.invalidate();
 				//	                }
 			}
 
@@ -400,7 +435,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 	}
 	public void saveMark(Mark mrk) {
 		marks.add(mrk);
-		
+
 	}
 	public void updateMarkUi(MarkUI m) {
 		for(int i = m.startLine;i<=m.endLine;i++){
