@@ -61,27 +61,29 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		tmpMarks = new ArrayList<Mark>();
 		HashMap<Mark, MarkUI> markMap = new HashMap<Mark, MarkUI>();
 
+		marks.add(new Mark(0, 25, 40, 0, 0, ""));
 
 		//		Iterator<Mark> iterMark = marks.iterator();
 		int indexCurrentMark=0;
 		//		if()
 		//			currentMark = iterMark.next();
 
+		marksUi.add(null);
 		for(short i = 0; i<text.length(); i++){
 
 //			initMarkByStartChar(i, indexCurrentMark);
-			while(indexCurrentMark<marks.size() && marks.get(indexCurrentMark).startChar <= indexCurrentMark)
-				if(marks.get(indexCurrentMark).startChar == i){
+			while(indexCurrentMark<marks.size() && marks.get(indexCurrentMark).startChar <= i)
+				if(marks.get(indexCurrentMark).startChar == i){ 
 					currentMarks.add(marks.get(indexCurrentMark));
 					currentMarkUi = new MarkUI(lineWidth,lineWidth, numLine, numLine, marks.get(indexCurrentMark).markId);
 					if(marksUi.get(numLine)==null)
-						marksUi.add(currentMarkUi); 
+						marksUi.set(numLine, currentMarkUi); 
 					else 
 						marksUi.get(numLine).next = currentMarkUi;
 					markMap.put(marks.get(indexCurrentMark++), currentMarkUi);
 				
 				}
-			for(Mark mrk : currentMarks){
+			for(Mark mrk : currentMarks){ 
 			}
 
 			if(!currentMarks.isEmpty()){
@@ -115,6 +117,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 				{
 					lines.add(new TextLine(text.substring(startCur, i),numLine++));
 					isNewLine = true;
+					marksUi.add(null);
 				}
 				continue;
 
@@ -124,18 +127,19 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 				lines.add(new TextLine(text.substring(startCur, lastSpace),numLine++));
 				i = lastSpace;
 				isNewLine = true;
-			}
-
-
-			if(!markMap.isEmpty()){
-				for(MarkUI mrkUi : markMap.values()){
-					mrkUi.endX = lineWidth;
-					mrkUi.endLine = numLine;
-				}
-
-			}
-			else
 				marksUi.add(null);
+			}
+
+
+//			if(!markMap.isEmpty()){
+//				for(MarkUI mrkUi : markMap.values()){
+//					mrkUi.endX = lineWidth;
+//					mrkUi.endLine = numLine;
+//				}
+//
+//			}
+//			else
+//				marksUi.add(null);
 		}
 		//		isLineInit = true;
 	}
@@ -270,7 +274,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		holder.arabText.setLine(lines.get(position));
 		return view;
 	}
-	public void loadChapter(int idBook, int idChap){
+	public void loadChapter(int idBook, int idChap){ 
 		text = myDbHelper.getChapter(idBook, idChap);//.substring(0,300);//wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
 		text = DariGlyphUtils.reshapeText(text);
 	}

@@ -37,7 +37,8 @@ public class RichArabicTextView extends ArabicTextView {
 
 //		draw Mark
 		MarkUI mrkUi= ArabicListAdapter.marksUi.get(line.numLine);
-		if(mrkUi!=null) {
+		while(mrkUi!=null) {
+			
 			
 			if(mrkUi.startLine == line.numLine){
 				a=mrkUi.startX;
@@ -51,8 +52,8 @@ public class RichArabicTextView extends ArabicTextView {
 			mPaint.setAlpha(65);
 			canvas.drawRect(b-width, 0, a-width, stepLine, mPaint);
 			mPaint.setColor(fontColor); 
-//			mPaint.setAlpha(65);
-		}
+			mrkUi = mrkUi.next;
+			}
 		//Light draw
 //		if(ArabicListAdapter.mBusy){
 		if(true){

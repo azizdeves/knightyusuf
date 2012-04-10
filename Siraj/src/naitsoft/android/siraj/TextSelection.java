@@ -182,20 +182,20 @@ class MarkUI{
 class Mark{
 	int markId;
 	int color;
-	short startChar;
-	short endChar;
+	int startChar;
+	int endChar;
 	int idChap;
 	int idBook;
 	String note;
 	public Mark(){
 		
 	}
-	public Mark(int markId, short startChar, short endChar, int idChap,
+	public Mark(int markId, int i, int j, int idChap,
 			int idBook, String note) {
 		super();
 		this.markId = markId;
-		this.startChar = startChar;
-		this.endChar = endChar;
+		this.startChar = i;
+		this.endChar = j;
 		this.idChap = idChap;
 		this.idBook = idBook;
 		this.note = note;
