@@ -45,6 +45,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 
 	}
 	private void constructLine(){
+		text = "تيب خسيهت بسيبنت سيخهت يبمنت يسبهت خسيب منستيب هيسب";
 		lines.clear();
 		short numLine = 0;
 		short startCur = 0;
@@ -61,7 +62,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		tmpMarks = new ArrayList<Mark>();
 		HashMap<Mark, MarkUI> markMap = new HashMap<Mark, MarkUI>();
 
-		marks.add(new Mark(0, 25, 40, 0, 0, ""));
+		marks.add(new Mark(0, 2, 10, 0, 0, ""));
 
 		//		Iterator<Mark> iterMark = marks.iterator();
 		int indexCurrentMark=0;
@@ -117,17 +118,17 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 				{
 					lines.add(new TextLine(text.substring(startCur, i),numLine++));
 					isNewLine = true;
-					marksUi.add(null);
+					marksUi.add(marksUi.get(numLine-1));
 				}
 				continue;
 
 			}
-			if((lineWidth += ArabicTextView.getCharWidth(ArabicTextView.mPaint, text, i,w))> width){
+			if((lineWidth += ArabicTextView.getCharWidth(ArabicTextView.mPaint, text, i,w))> 100){
 
 				lines.add(new TextLine(text.substring(startCur, lastSpace),numLine++));
 				i = lastSpace;
 				isNewLine = true;
-				marksUi.add(null);
+				marksUi.add(marksUi.get(numLine-1));
 			}
 
 
@@ -144,7 +145,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		//		isLineInit = true;
 	}
 	/**
-	 * return la liste des Mark qui ont le startChar pass� en parametre
+	 * return la liste des Mark qui ont le startChar passé en parametre
 	 * @return
 	 */
 	private void initMarkByStartChar( int startChar, int indexList){
