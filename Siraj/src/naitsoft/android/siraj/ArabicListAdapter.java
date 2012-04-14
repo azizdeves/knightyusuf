@@ -45,7 +45,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 
 	}
 	private void constructLine(){
-		text = "تيب خسيهت بسيبنت سيخهت يبمنت يسبهت خسيب منستيب هيسب";
+		text = "تيب خسيهت بسي بنت سيخهت يبمنت يسبهت خسيب منس تيب هيسب";
 		lines.clear();
 		short numLine = 0;
 		short startCur = 0;
@@ -61,7 +61,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		currentMarks = new ArrayList<Mark>();
 		tmpMarks = new ArrayList<Mark>();
 		HashMap<Mark, MarkUI> markMap = new HashMap<Mark, MarkUI>();
-
+		width = -width;
 		marks.add(new Mark(0, 2, 10, 0, 0, ""));
 
 		//		Iterator<Mark> iterMark = marks.iterator();
@@ -71,24 +71,30 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 
 		marksUi.add(null);
 		for(short i = 0; i<text.length(); i++){
-
-//			initMarkByStartChar(i, indexCurrentMark);
+			
+			if(text.charAt(i)==' ')
+				lastSpace = i;
+			if(isNewLine){
+				startCur = i;
+				lineWidth = 0;
+				lastSpace = -1;
+				isNewLine = false;
+				marksUi.add(null);
+			}
+			
 			while(indexCurrentMark<marks.size() && marks.get(indexCurrentMark).startChar <= i)
 				if(marks.get(indexCurrentMark).startChar == i){ 
 					currentMarks.add(marks.get(indexCurrentMark));
 					currentMarkUi = new MarkUI(lineWidth,lineWidth, numLine, numLine, marks.get(indexCurrentMark).markId);
-					if(marksUi.get(numLine)==null)
-						marksUi.set(numLine, currentMarkUi); 
-					else 
-						marksUi.get(numLine).next = currentMarkUi;
+					addMarkUi(numLine,currentMarkUi);
 					markMap.put(marks.get(indexCurrentMark++), currentMarkUi);
-				
 				}
-			for(Mark mrk : currentMarks){ 
-			}
 
 			if(!currentMarks.isEmpty()){
-				//				if(isBuildingMarkUi){
+				if(isNewLine){				
+					addMarkUi(numLine, marksUi.get(numLine-1));
+				}
+					
 				initCurrentMarksByEndChar(i);
 				if(!tmpMarks.isEmpty()){	
 					for(Mark mrk:tmpMarks){
@@ -98,37 +104,23 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 						currentMarks.remove(mrk);
 						markMap.remove(mrk);
 					}
-
 				}
-				//				}
 			}
 
-			if(text.charAt(i)==' ')
-				lastSpace = i;
-			if(isNewLine){
-				startCur = i;
-				lineWidth = 0;
-				lastSpace = -1;
-				isNewLine = false;
-				//				if(isBuildingMarkUi)
-
-			}
+			
 			if(text.charAt(i)=='\n'){
 				if(startCur!=i)
 				{
 					lines.add(new TextLine(text.substring(startCur, i),numLine++));
 					isNewLine = true;
-					marksUi.add(marksUi.get(numLine-1));
 				}
 				continue;
-
 			}
-			if((lineWidth += ArabicTextView.getCharWidth(ArabicTextView.mPaint, text, i,w))> 100){
+			if((lineWidth -= ArabicTextView.getCharWidth(ArabicTextView.mPaint, text, i,w))< width){
 
 				lines.add(new TextLine(text.substring(startCur, lastSpace),numLine++));
 				i = lastSpace;
 				isNewLine = true;
-				marksUi.add(marksUi.get(numLine-1));
 			}
 
 
@@ -143,6 +135,13 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 //				marksUi.add(null);
 		}
 		//		isLineInit = true;
+	}
+	private void addMarkUi(int numLine, MarkUI currentMarkUi) {
+		if(marksUi.get(numLine)==null)
+			marksUi.set(numLine, currentMarkUi); 
+		else 
+			marksUi.get(numLine).next = currentMarkUi;
+		
 	}
 	/**
 	 * return la liste des Mark qui ont le startChar passé en parametre

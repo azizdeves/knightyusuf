@@ -26,8 +26,8 @@ public class ArabicTextView extends View {
 	//	private ArabicTextEventListener  eventListener;
 	static public Paint mPaint = new Paint();
 	static int a,b;
-	int backColor = Color.rgb(238, 255, 237);
-	int fontColor = Color.BLACK;
+	static final int backColor = Color.rgb(238, 255, 237);
+	static final int fontColor = Color.BLACK;
 	String text;
 	TextLine line ;
 	int stepLine ;
