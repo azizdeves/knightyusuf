@@ -138,7 +138,7 @@ public class ArticleFragment extends Fragment {
 //			MenuItem item1 = menu.findItem(R.id.menu_share);
 			Mark mrk = arabicAdapter.getAbsoluteTextSelectPosition(TextSelection.getCurrentSelection());
 			arabicAdapter.saveMark(mrk);
-			arabicAdapter.updateMarkUi(TextSelection.getCurrentSelection().getMarkUi());
+			arabicAdapter.updateMarkUi(TextSelection.getCurrentSelection().getMarkUi(arabicAdapter.width));
 			status = NORMAL;
 			TextSelection.clear();
 			markBar.setVisibility(View.GONE);

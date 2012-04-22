@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -118,7 +119,8 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         	try {
  
         		copyDatabaseSplited();
- 
+        		myDataBase.execSQL("create table marks(_id Integer primary key, type Integer, start Integer, end Integer, book Integer, chapter Integer, note text)");
+        		
     		} catch (IOException e) {
  
         		throw new Error("Error copying database");
@@ -222,9 +224,11 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	public static String getChapter(int livre , int chapitre)
 	{
 		Cursor cur = myDataBase.query(CONTENT_BOOK_TAB, new String[]{"contenu_chapitre"}, "id_chapitre=? and id_livre=?", new String[]{String.valueOf(chapitre),String.valueOf(livre)},null, null, null);
+		String s = "";
 		if(cur.moveToFirst())
-			return cur.getString(0);
-		return "";
+			s= cur.getString(0);
+		cur.close();
+		return s;
 	}
 	
 	public  Cursor getChaptersOfBook(int livre)
@@ -232,17 +236,36 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		Cursor cur = myDataBase.query(CONTENT_BOOK_TAB, new String[]{"id_chapitre","id_chapitrep","titre_chapitre"},"id_livre=?", new String[]{String.valueOf(livre)}, null, null, null);
 		return cur;
 	}
-	public static Cursor getMarks(){
-		Cursor cur = myDataBase.query(MARK_TAB, new String[]{"type","date","sura","aya"},null, null, null, null, null);
-		return cur;
+	public static ArrayList<Mark> getMarks(int book, int chapter){
+		Cursor cur = myDataBase.query(MARK_TAB, new String[]{"_id","type","book","chapter","start","end","note"},"book=? and chapter=?", new String[]{String.valueOf(book), String.valueOf(chapter)}, null, null, "start asc");
+		ArrayList<Mark> marks = new ArrayList<Mark>();;
+		if(cur.moveToFirst()){			//TODO cur empty
+			Mark m;
+			do{
+				m = new Mark(); //TODO optimiz
+				m.markId = cur.getInt(0);
+				m.type = cur.getInt(1);
+				m.idBook = cur.getInt(2);
+				m.idChap = cur.getInt(3);
+				m.startChar = cur.getInt(4);
+				m.endChar = cur.getInt(5);
+				m.note = cur.getString(6);
+				marks.add(m);
+			}while(cur.moveToNext());
+		}
+		cur.close();
+		return marks;
 	}
 	
-	public void addMark(String type,int sura, int aya){
+	public void addMark(Mark m){
 		ContentValues val = new ContentValues(4);
-		val.put("type", type);
-		val.put("date", (int)(new Date().getTime()));
-		val.put("aya", aya);
-		val.put("sura", sura);
+		val.put("type", m.type);
+//		val.put("date", (int)(new Date().getTime()));
+		val.put("chapter", m.idChap);
+		val.put("book", m.idBook);
+		val.put("note", m.note);
+		val.put("start", m.startChar);
+		val.put("end", m.endChar);
 //		myDataBase.beginTransaction();
 		myDataBase.insert(MARK_TAB, null, val);
 //		myDataBase.endTransaction();

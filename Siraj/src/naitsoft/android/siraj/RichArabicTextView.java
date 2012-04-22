@@ -43,11 +43,11 @@ public class RichArabicTextView extends ArabicTextView {
 			if(mrkUi.startLine == line.numLine){
 				a=mrkUi.startX;
 			}else
-				a = width;
+				a = 0;
 			if(mrkUi.endLine == line.numLine){
 				b=mrkUi.endX;
 			}else
-				b =0 ;
+				b =-width ;
 			mPaint.setColor(Color.BLUE);
 			mPaint.setAlpha(65);
 			canvas.drawRect(b, 0, a, stepLine, mPaint);

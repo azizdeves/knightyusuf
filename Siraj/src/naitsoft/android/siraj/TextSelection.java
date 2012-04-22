@@ -94,8 +94,8 @@ public class TextSelection {
 				|| currentSelection.startCursor.numLine <= numLine && currentSelection.endCursor.numLine >= numLine;
 	}
 	
-	public MarkUI getMarkUi(){
-		return new MarkUI(currentSelection.focusA.x, currentSelection.focusB.x, currentSelection.startCursor.numLine, currentSelection.endCursor.numLine, 0);
+	public MarkUI getMarkUi(int width){
+		return new MarkUI(currentSelection.focusA.x+width, currentSelection.focusB.x+width, currentSelection.startCursor.numLine, currentSelection.endCursor.numLine, 0);
 	}
 	
 	public int getStartNumLine(){
@@ -181,7 +181,7 @@ class MarkUI{
 }
 class Mark{
 	int markId;
-	int color;
+	int type;
 	int startChar;
 	int endChar;
 	int idChap;

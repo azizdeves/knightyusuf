@@ -45,7 +45,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 
 	}
 	private void constructLine(){
-		text = "تيب خسيهت بسي بنت سيخهت يبمنت يسبهت خسيب منس تيب هيسب";
+		//		text = "تيب خسيهت بسي بنت سيخهت يبمنت يسبهت خسيب منس تيب هيسب";
 		lines.clear();
 		short numLine = 0;
 		short startCur = 0;
@@ -57,34 +57,30 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		short lineWidth=0;
 		float[] w = new float[1];
 		marksUi = new ArrayList<MarkUI>();
-		marks = new ArrayList<Mark>();
+//		marks = new ArrayList<Mark>();
 		currentMarks = new ArrayList<Mark>();
 		tmpMarks = new ArrayList<Mark>();
 		HashMap<Mark, MarkUI> markMap = new HashMap<Mark, MarkUI>();
 		width = -width;
-		marks.add(new Mark(0, 2, 10, 0, 0, ""));
+		//		marks.add(new Mark(0, 2, 10, 0, 0, ""));
+//		marks.add(new Mark(0, 5, 25, 0, 0, ""));
 
 		//		Iterator<Mark> iterMark = marks.iterator();
 		int indexCurrentMark=0;
 		//		if()
 		//			currentMark = iterMark.next();
 
+//		text = text.substring(0, 80);
 		marksUi.add(null);
 		for(short i = 0; i<text.length(); i++){
-			
-			if(text.charAt(i)==' ')
-				lastSpace = i;
+
 			if(isNewLine){
-				startCur = i;
-				lineWidth = 0;
-				lastSpace = -1;
-				isNewLine = false;
 				marksUi.add(null);
 			}
-			
+				
 			while(indexCurrentMark<marks.size() && marks.get(indexCurrentMark).startChar <= i)
 				if(marks.get(indexCurrentMark).startChar == i){ 
-					currentMarks.add(marks.get(indexCurrentMark));
+					currentMarks.add(marks.get(indexCurrentMark)); 
 					currentMarkUi = new MarkUI(lineWidth,lineWidth, numLine, numLine, marks.get(indexCurrentMark).markId);
 					addMarkUi(numLine,currentMarkUi);
 					markMap.put(marks.get(indexCurrentMark++), currentMarkUi);
@@ -94,7 +90,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 				if(isNewLine){				
 					addMarkUi(numLine, marksUi.get(numLine-1));
 				}
-					
+
 				initCurrentMarksByEndChar(i);
 				if(!tmpMarks.isEmpty()){	
 					for(Mark mrk:tmpMarks){
@@ -107,32 +103,43 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 				}
 			}
 
-			
+			if(text.charAt(i)==' ')
+				lastSpace = i;
+			if(isNewLine){
+				startCur = i;
+				lineWidth = 0;
+				lastSpace = -1;
+				isNewLine = false;
+			}
+
 			if(text.charAt(i)=='\n'){
 				if(startCur!=i)
 				{
-					lines.add(new TextLine(text.substring(startCur, i),numLine++));
+					lines.add(new TextLine(text.substring(startCur, i+1),numLine++));
 					isNewLine = true;
 				}
 				continue;
 			}
 			if((lineWidth -= ArabicTextView.getCharWidth(ArabicTextView.mPaint, text, i,w))< width){
 
+//				if(lastSpace == -1)/******************************************/
+//					lastSpace = startCur;
+				
 				lines.add(new TextLine(text.substring(startCur, lastSpace),numLine++));
 				i = lastSpace;
 				isNewLine = true;
 			}
 
 
-//			if(!markMap.isEmpty()){
-//				for(MarkUI mrkUi : markMap.values()){
-//					mrkUi.endX = lineWidth;
-//					mrkUi.endLine = numLine;
-//				}
-//
-//			}
-//			else
-//				marksUi.add(null);
+			//			if(!markMap.isEmpty()){
+			//				for(MarkUI mrkUi : markMap.values()){
+			//					mrkUi.endX = lineWidth;
+			//					mrkUi.endLine = numLine;
+			//				}
+			//
+			//			}
+			//			else
+			//				marksUi.add(null);
 		}
 		//		isLineInit = true;
 	}
@@ -141,7 +148,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 			marksUi.set(numLine, currentMarkUi); 
 		else 
 			marksUi.get(numLine).next = currentMarkUi;
-		
+
 	}
 	/**
 	 * return la liste des Mark qui ont le startChar passé en parametre
@@ -177,7 +184,6 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		int lineWidth=0;
 		float[] w = new float[1];
 		marksUi = new ArrayList<MarkUI>();
-		marks = new ArrayList<Mark>();
 
 		Iterator<Mark> iterMark = marks.iterator();
 		if(iterMark.hasNext())
@@ -277,6 +283,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 	public void loadChapter(int idBook, int idChap){ 
 		text = myDbHelper.getChapter(idBook, idChap);//.substring(0,300);//wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
 		text = DariGlyphUtils.reshapeText(text);
+		marks = myDbHelper.getMarks(idBook, idChap);
 	}
 
 	@Override
@@ -348,6 +355,8 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		Mark m = new Mark();
 		m.startChar = s;
 		m.endChar = e; 
+		m.idBook = ArticleFragment.articleFrag.livre;
+		m.idChap = ArticleFragment.articleFrag.chapitre;
 		return m;
 	}
 	@Override
@@ -438,6 +447,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		constructLine();
 	}
 	public void saveMark(Mark mrk) {
+		myDbHelper.addMark(mrk);
 		marks.add(mrk);
 
 	}

@@ -165,6 +165,7 @@ class ChaptersAdapter implements ListAdapter
 			size = cur.getCount();
 			initLevels();
 		}
+		cur.close();
 	}
 
 	private void initLevels(){
@@ -269,7 +270,7 @@ class Chapter{
 	public char level;
 	public Integer idChap;
 	public ArrayList<Chapter> subChapters;
-	//	int _id;
+
 	public Chapter(Cursor cur) {
 		init(cur);
 //		subChapters = new ArrayList<Chapter>();
@@ -279,6 +280,7 @@ class Chapter{
 		title = DariGlyphUtils.reshapeText(cur.getString(2));
 		idChap = cur.getInt(0);
 		idParent = cur.getInt(1);
+//		cur.close();
 	}
 	public void addSubChapter(Chapter c){
 		if(subChapters == null)

@@ -50,8 +50,8 @@ public class SirajActivity extends FragmentActivity {
 	
 //	public static char status = NORMAL;
 	private DataBaseHelper myDbHelper;
-	public int livre;
-	public int chapitre;
+//	public int livre;
+//	public int chapitre;
 	int textSize;
 	public static Context context;
 
@@ -69,8 +69,8 @@ public class SirajActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		context = getApplicationContext(); 
-		livre = 1; 
-		chapitre = 5;
+//		livre = 1; 
+//		chapitre = 5;
 		        initDB();
 		//        loadShowChapter();
 //		Bundle bund = getIntent().getExtras();
@@ -99,12 +99,12 @@ public class SirajActivity extends FragmentActivity {
 
 	}
 
-	protected void callChaptersActivity() {
-		Intent chapIntent = new Intent(this,ChaptersListActivity.class);	
-		chapIntent.putExtra("idBook", livre);
-		chapIntent.putExtra("idChap", chapitre);
-		startActivity(chapIntent);
-	}
+//	protected void callChaptersActivity() {
+//		Intent chapIntent = new Intent(this,ChaptersListActivity.class);	
+//		chapIntent.putExtra("idBook", livre);
+//		chapIntent.putExtra("idChap", chapitre);
+//		startActivity(chapIntent);
+//	}
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
@@ -161,7 +161,7 @@ public class SirajActivity extends FragmentActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if(requestCode == CHAPTERS_CODE){
 			if(data==null)return;
-			chapitre = data.getExtras().getInt("idChap");
+//			chapitre = data.getExtras().getInt("idChap");
 			//			loadShowChapter();
 		}
 	}
