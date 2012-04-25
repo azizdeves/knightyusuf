@@ -113,9 +113,10 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 			}
 
 			if(text.charAt(i)=='\n'){
+				
 				if(startCur!=i)
 				{
-					lines.add(new TextLine(text.substring(startCur, i+1),numLine++));
+					lines.add(new TextLine(text.substring(startCur, i).concat(" "),numLine++));
 					isNewLine = true;
 				}
 				continue;
@@ -125,7 +126,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 //				if(lastSpace == -1)/******************************************/
 //					lastSpace = startCur;
 				
-				lines.add(new TextLine(text.substring(startCur, lastSpace),numLine++));
+				lines.add(new TextLine(text.substring(startCur, lastSpace+1),numLine++));
 				i = lastSpace;
 				isNewLine = true;
 			}
@@ -453,7 +454,8 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 	}
 	public void updateMarkUi(MarkUI m) {
 		for(int i = m.startLine;i<=m.endLine;i++){
-			marksUi.add(i, m);
+			addMarkUi(i, m);
+//			marksUi.add(i, m);
 		}
 	}
 
