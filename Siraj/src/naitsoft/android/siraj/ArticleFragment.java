@@ -61,7 +61,7 @@ public class ArticleFragment extends Fragment {
 	public static MyListView articleTextView;
 	private LinearLayout linearLayout;
 	private Menu menu;
-	private LinearLayout markBar;
+	static public LinearLayout markBar;
 	public static TextView text;
 	static public Paint paint; 
 
@@ -118,6 +118,13 @@ public class ArticleFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()){
 		case R.id.menu_edit:  
+			if(ArticleFragment.status == ArticleFragment.SELECTED && TextSelection.markUi != null){
+				arabicAdapter.deleteMark(TextSelection.markUi.markId);
+				status = NORMAL;
+				TextSelection.clear();
+				markBar.setVisibility(View.GONE);
+				break;
+			}
 			articleTextView.startSelection();
 			markBar.setVisibility(View.VISIBLE);
 			break;
@@ -137,7 +144,14 @@ public class ArticleFragment extends Fragment {
 		case R.id.menu_save:
 //			MenuItem item1 = menu.findItem(R.id.menu_share);
 			Mark mrk = arabicAdapter.getAbsoluteTextSelectPosition(TextSelection.getCurrentSelection());
-			arabicAdapter.saveMark(mrk);
+			if(TextSelection.markUi != null)
+			{
+				mrk.markId = TextSelection.markUi.markId;
+				arabicAdapter.saveMark(mrk,true);
+			}
+			else
+				arabicAdapter.saveMark(mrk, false);
+			
 			arabicAdapter.updateMarkUi(TextSelection.getCurrentSelection().getMarkUi(arabicAdapter.width));
 			status = NORMAL;
 			TextSelection.clear();
@@ -270,23 +284,7 @@ class MyListView extends ListView implements OnGestureListener
 		smoothScrollBy(50, 3000);
 	}
 
-//	@Override
-//	protected void onDraw(Canvas canvas) {
-//		super.onDraw(canvas);
-//		for(Focusable focus : focusables){
-//			focus.draw(canvas);
-//		};
-//	}
-	
-//	@Override
-//	public void draw(Canvas canvas) {
-//		// TODO Auto-generated method stub
-//		super.draw(canvas);
-////		for(Focusable focus : focusables){
-////			if(focus.isVisible() == true)
-////				focus.draw(canvas);
-////		}
-//	}
+
 
 	public Focusable getTouchedFocus(MotionEvent ev){ 
 //		for(Focusable f : focusables){
@@ -385,13 +383,32 @@ class MyListView extends ListView implements OnGestureListener
 	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
 			float distanceY) {
 		return false;
-	}
+	}	
 	@Override
 	public void onShowPress(MotionEvent e) {
-	}
+	}	
 	@Override
 	public boolean onSingleTapUp(MotionEvent e) {
-		return false;
+		if(ArticleFragment.status == ArticleFragment.NORMAL){
+			int line = getIndexLine(e.getY());
+			MarkUI m = ArabicListAdapter.marksUi.get(line);
+			m = MarkUI.getMarkUiByEvent(m, line, (int) e.getX()-getWidth());
+			if(m== null)
+				return true;
+			m.isActive = false;
+			TextSelection sel = TextSelection.getInstance();	
+			TextSelection.markUi = m;
+			sel.startCursor.x = m.startX+getWidth();
+			sel.endCursor.x = m.endX+getWidth();
+			sel.startCursor.numLine = m.startLine ;
+			sel.endCursor.numLine = m.endLine ;
+			addFocus(sel.focusA);
+			addFocus(sel.focusB);
+			ArticleFragment.status = ArticleFragment.SELECTED;
+//			invalidate();
+			ArticleFragment.markBar.setVisibility(View.VISIBLE);
+		}
+		return true;
 	}
 
 	public void addFocus(Focusable f){

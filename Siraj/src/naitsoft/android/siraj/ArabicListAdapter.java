@@ -447,15 +447,21 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		if(text == null)return;
 		constructLine();
 	}
-	public void saveMark(Mark mrk) {
-		myDbHelper.addMark(mrk);
-		marks.add(mrk);
+	public void saveMark(Mark mrk, boolean isPersist) {
+		if(isPersist)
+			myDbHelper.updateMark(mrk);
+		else{
+			myDbHelper.addMark(mrk);
+			marks.add(mrk);
+		}
 
+	}
+	public void deleteMark(int id){
+		myDbHelper.deleteMark(id);
 	}
 	public void updateMarkUi(MarkUI m) {
 		for(int i = m.startLine;i<=m.endLine;i++){
 			addMarkUi(i, m);
-//			marksUi.add(i, m);
 		}
 	}
 

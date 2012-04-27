@@ -260,16 +260,28 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	public void addMark(Mark m){
 		ContentValues val = new ContentValues(4);
 		val.put("type", m.type);
-//		val.put("date", (int)(new Date().getTime()));
 		val.put("chapter", m.idChap);
 		val.put("book", m.idBook);
 		val.put("note", m.note);
 		val.put("start", m.startChar);
 		val.put("end", m.endChar);
-//		myDataBase.beginTransaction();
 		myDataBase.insert(MARK_TAB, null, val);
-//		myDataBase.endTransaction();
-		
+	}
+	
+	public void updateMark(Mark m){
+		ContentValues val = new ContentValues(4);
+		val.put("type", m.type);
+		val.put("chapter", m.idChap);
+		val.put("book", m.idBook);
+		val.put("note", m.note);
+		val.put("start", m.startChar);
+		val.put("end", m.endChar);
+		myDataBase.update(MARK_TAB, val, "_id = ?",  new String[]{String.valueOf(m.markId) });
+	}
+	
+	public void deleteMark(int id)
+	{
+		myDataBase.delete(MARK_TAB, "_id = ?",  new String[]{String.valueOf(id) });
 	}
         // Add your public helper methods to access and get content from the database.
        // You could return cursors by doing "return myDataBase.query(....)" so it'd be easy

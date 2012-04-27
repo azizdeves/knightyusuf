@@ -10,7 +10,7 @@ public class TextSelection {
 	TextCursor editingCursor;
 	static Focusable focusA ;
 	static Focusable focusB ;
-//	MarkUI markUi;
+	static MarkUI markUi;
 	
 	public TextSelection(){ 
 		startCursor = new TextCursor();
@@ -84,9 +84,11 @@ public class TextSelection {
 	}
 
 	public static TextSelection getCurrentSelection(){
+		
 		return currentSelection;
 	}
 	public static TextSelection getInstance(){
+		markUi = null;
 		return currentSelection = new TextSelection();
 	}
 	public static boolean isLineInSelction(int numLine) {
@@ -163,6 +165,7 @@ class TextCursor{
 	int idxChar;
 }
 class MarkUI{
+	boolean isActive;
 	int startX;
 	int endX;
 	int startLine;
@@ -171,11 +174,42 @@ class MarkUI{
 	MarkUI next;
 	public MarkUI(int startX, int endX, int startLine, int endLine, int markId) {
 		super();
+		isActive = true;
 		this.startX = startX;
 		this.endX = endX;
 		this.startLine = startLine;
 		this.endLine = endLine;
 		this.markId = markId;
+	}
+	
+	static public MarkUI getMarkUiByEvent(MarkUI mrk , int line , int x){
+		MarkUI m = null;
+		while(mrk != null){
+			if(mrk.isActive){
+				if(mrk.startLine == line){
+					if(mrk.startX >= x){
+						if(mrk.endLine == line){
+							if(mrk.endX <= x){
+								m = mrk;
+							}
+						}
+						else
+							m=mrk;
+					}
+				}else
+					if(mrk.endLine == line){
+						if(mrk.startX <= x){
+							m=mrk;
+						}
+					}
+					else
+						if(mrk.startLine < line && mrk.endLine > line){
+							m = mrk;
+						}
+			}
+			mrk = mrk.next;
+		}
+		return m;
 	}
 	
 }
