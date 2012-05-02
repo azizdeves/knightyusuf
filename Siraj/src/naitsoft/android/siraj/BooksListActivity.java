@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.graphics.Color;
@@ -17,6 +18,7 @@ import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,12 +52,13 @@ public class BooksListActivity extends FragmentActivity {
 
 		paint = new Paint();
         paint.setAntiAlias(true);
-        paint.setTextSize(20);
         paint.setStyle(Style.FILL);
         paint.setColor(Color.WHITE);
         paint.setAntiAlias(true);
         paint.setTextAlign(Align.RIGHT);
         ArabicTextView.mPaint = paint;
+        SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(this);
+//        paint.setTextSize(pref.getInt("txtSize", 20) );
 
 	}
 	private void callSirajActiv(int idBook){
@@ -90,7 +93,7 @@ class ImageAdapter extends BaseAdapter {
         ImageView imageView;
         if (convertView == null) {  // if it's not recycled, initialize some attributes
             imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
+            imageView.setLayoutParams(new GridView.LayoutParams(100, 100));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(8, 8, 8, 8);
         } else {

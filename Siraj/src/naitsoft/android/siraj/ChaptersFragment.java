@@ -29,7 +29,7 @@ import android.widget.ListView;
 public class ChaptersFragment extends Fragment {
 
 	private ChaptersAdapter chapterAdapter;
-	private ListView listView;
+//	private ListView listView;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -53,7 +53,10 @@ public class ChaptersFragment extends Fragment {
 		}
 		else 
 			chapterAdapter.setIdBook( 1);
-
+		
+		setHasOptionsMenu(true);
+		ActionBar actionBar = ((FragmentActivity) getActivity()).getSupportActionBar();
+	    actionBar.setDisplayHomeAsUpEnabled(true);
 
 	}
 	
@@ -70,9 +73,7 @@ public class ChaptersFragment extends Fragment {
 			}
 		});
 		
-		setHasOptionsMenu(true);
-		ActionBar actionBar = ((FragmentActivity) getActivity()).getSupportActionBar();
-	    actionBar.setDisplayHomeAsUpEnabled(true);
+		
 	    
 		return v;
 	}
@@ -81,6 +82,7 @@ public class ChaptersFragment extends Fragment {
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 //		MenuInflater inflater = getMenuInflater();
 		//inflater.inflate(R.layout.menu, menu);
+		inflater.inflate(R.layout.menu, menu);
 	}
 	
 	
@@ -91,6 +93,14 @@ public class ChaptersFragment extends Fragment {
 		case android.R.id.home:
 			Intent intent = new Intent(getActivity(), BooksListActivity.class);
 			startActivity(intent);
+			break;
+			
+		case R.id.menu_info: 
+//			Intent intent = new Intent(this, PreferencesActivity.class);
+//			startActivity(intent);
+			Intent chapIntent = new Intent(getActivity(),MarksListActivity.class);	
+			chapIntent.putExtra("idBook", chapterAdapter.idBook);
+			startActivity(chapIntent);
 			break;
 		}
 	   
@@ -112,12 +122,12 @@ public class ChaptersFragment extends Fragment {
 class ChaptersAdapter implements ListAdapter
 {
 
-	ArrayList<Chapter> chapters;
+	ArrayList<ChapterItem> chapters;
 	private LayoutInflater mInflater;
 	private ChaptersFragment activity;
 	private int size;
 	int idBook=1;
-	private HashMap<Integer, Chapter> map;
+	private HashMap<Integer, ChapterItem> map;
 
 
 	public ChaptersAdapter(ChaptersFragment activ){
@@ -128,7 +138,7 @@ class ChaptersAdapter implements ListAdapter
 
 	}
 
-	public Chapter getChapter(int pos) {
+	public ChapterItem getChapter(int pos) {
 
 		return chapters.get(pos);
 	}
@@ -146,19 +156,19 @@ class ChaptersAdapter implements ListAdapter
 		else{
 			holder = (ViewHolder) view.getTag();
 		}
-		holder.arabText.setText(chapters.get(position).title);
+		((ArabicTextView) holder.arabText).setText(chapters.get(position).title);
 		return view;
 	}
 
 	public void loadChapters(int idBook){
 		DataBaseHelper dbHelper = DataBaseHelper.getInstance(activity.getActivity());
 		Cursor cur = dbHelper.getChaptersOfBook(idBook);
-		Chapter c;
-		chapters = new  ArrayList<Chapter>(cur.getCount());
-		map = new HashMap<Integer, Chapter>(cur.getCount());
+		ChapterItem c;
+		chapters = new  ArrayList<ChapterItem>(cur.getCount());
+		map = new HashMap<Integer, ChapterItem>(cur.getCount());
 		if(cur.moveToFirst()){			//TODO cur empty		
 			do{
-				c=new Chapter(cur); //TODO optimiz
+				c=new ChapterItem(cur); //TODO optimiz
 				map.put(c.idChap,c);
 				chapters.add(c);
 			}while(cur.moveToNext());
@@ -171,10 +181,10 @@ class ChaptersAdapter implements ListAdapter
 	private void initLevels(){
 		//		Chapter tmpChap = new Chapter();
 		Integer idParent = new Integer(0);
-		Chapter parentChap ;
+		ChapterItem parentChap ;
 		int i ;
-		Chapter rootChap = new Chapter();
-		for(Chapter c : chapters){
+		ChapterItem rootChap = new ChapterItem();
+		for(ChapterItem c : chapters){
 			if(c.idChap==c.idParent)
 			{
 				rootChap.addSubChapter(c);
@@ -199,11 +209,11 @@ class ChaptersAdapter implements ListAdapter
 
 
 	}
-	private void constructList(Chapter c){
+	private void constructList(ChapterItem c){
 		chapters.add(c);
 		if(c.subChapters == null)
 			return ;
-		for(Chapter sc : c.subChapters)
+		for(ChapterItem sc : c.subChapters)
 			constructList(sc);
 	}
 	public void setIdBook(int id){
@@ -264,14 +274,14 @@ class ChaptersAdapter implements ListAdapter
 	}
 
 }
-class Chapter{
+class ChapterItem{
 	public int idParent;
 	public String title;
 	public char level;
 	public Integer idChap;
-	public ArrayList<Chapter> subChapters;
+	public ArrayList<ChapterItem> subChapters;
 
-	public Chapter(Cursor cur) {
+	public ChapterItem(Cursor cur) {
 		init(cur);
 //		subChapters = new ArrayList<Chapter>();
 		//		this._id = cur.getInt(3);
@@ -282,16 +292,16 @@ class Chapter{
 		idParent = cur.getInt(1);
 //		cur.close();
 	}
-	public void addSubChapter(Chapter c){
+	public void addSubChapter(ChapterItem c){
 		if(subChapters == null)
-			subChapters = new ArrayList<Chapter>();
+			subChapters = new ArrayList<ChapterItem>();
 		subChapters.add(c);
 	}
-	public Chapter() {
+	public ChapterItem() {
 		idChap = new Integer(0);
 	}
 	public boolean equals(Object o){
-		return ((Chapter)o).idChap == idChap;
+		return ((ChapterItem)o).idChap == idChap;
 
 	}
 }

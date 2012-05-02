@@ -85,7 +85,8 @@ public class ArticleFragment extends Fragment {
 		setHasOptionsMenu(true);
 		ActionBar actionBar = ((FragmentActivity) getActivity()).getSupportActionBar();
 	    actionBar.setDisplayHomeAsUpEnabled(true);
-	    
+//	    SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(getActivity());
+//		textSize = pref.getInt("textSize", 60);
 
 	}
 	@Override
@@ -101,6 +102,7 @@ public class ArticleFragment extends Fragment {
 		articleTextView.setOnScrollListener(arabicAdapter);
 //		listTextLineView.setOverScrollMode(ListView.OVER_SCROLL_NEVER);
 		articleTextView.setDividerHeight(0);
+		
 		markBar = (LinearLayout) v.findViewById(R.id.mark_bar);
 
 		return v; 
@@ -128,9 +130,13 @@ public class ArticleFragment extends Fragment {
 			articleTextView.startSelection();
 			markBar.setVisibility(View.VISIBLE);
 			break;
-		case 2: 
-//			Intent intent = new Intent(this, PreferencesActivity.class);
-//			startActivity(intent);
+		case R.id.menu_info: 
+			Intent intent = new Intent(this.getActivity(), PreferencesActivity.class);
+			startActivity(intent);
+//			Intent chapIntent = new Intent(getActivity(),MarksListActivity.class);	
+//			chapIntent.putExtra("idBook", livre);
+//			chapIntent.putExtra("idChap", chapitre);
+//			startActivity(chapIntent);
 			break;
 		case R.id.menu_share:
 			String selectionTxt = ArabicListAdapter.getTextFromSelection(TextSelection.getCurrentSelection());

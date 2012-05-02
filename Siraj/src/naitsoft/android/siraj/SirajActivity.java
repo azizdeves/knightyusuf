@@ -251,4 +251,34 @@ public class SirajActivity extends FragmentActivity {
 
 
 }
+class Chapter{
+	String content;
+	int idChap;
+	String title;
+	
+	public Chapter()
+	{
+		content = "";
+		title = "";
+	}
+	public String getContent() {
+		return content;
+	}
+	public void setContent(String content) {
+		this.content = content;
+	}
+	public int getIdChap() {
+		return idChap;
+	}
+	public void setIdChap(int idChap) {
+		this.idChap = idChap;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	
+}
 

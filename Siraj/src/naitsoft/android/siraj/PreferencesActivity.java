@@ -22,6 +22,6 @@ public class PreferencesActivity extends PreferenceActivity implements OnSharedP
 	public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
 		// TODO Check the shared preference and key parameters and change UI or
 		// behavior as appropriate.
-		prefs.getInt(key, 30);
+//		prefs.getInt(key, 30);
 	}
 }

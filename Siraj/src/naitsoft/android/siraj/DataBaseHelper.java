@@ -221,14 +221,16 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		return myDataBase.isOpen();
 	}
  
-	public static String getChapter(int livre , int chapitre)
+	public static Chapter getChapter(int livre , int chapitre)
 	{
-		Cursor cur = myDataBase.query(CONTENT_BOOK_TAB, new String[]{"contenu_chapitre"}, "id_chapitre=? and id_livre=?", new String[]{String.valueOf(chapitre),String.valueOf(livre)},null, null, null);
-		String s = "";
-		if(cur.moveToFirst())
-			s= cur.getString(0);
+		Chapter chap = new Chapter();
+		Cursor cur = myDataBase.query(CONTENT_BOOK_TAB, new String[]{"titre_chapitre","contenu_chapitre"}, "id_chapitre=? and id_livre=?", new String[]{String.valueOf(chapitre),String.valueOf(livre)},null, null, null);
+		if(cur.moveToFirst()){
+			chap.setTitle(cur.getString(0));
+			chap.setContent(cur.getString(1));
+		}
 		cur.close();
-		return s;
+		return chap;
 	}
 	
 	public  Cursor getChaptersOfBook(int livre)
@@ -236,8 +238,19 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		Cursor cur = myDataBase.query(CONTENT_BOOK_TAB, new String[]{"id_chapitre","id_chapitrep","titre_chapitre"},"id_livre=?", new String[]{String.valueOf(livre)}, null, null, null);
 		return cur;
 	}
+	
 	public static ArrayList<Mark> getMarks(int book, int chapter){
-		Cursor cur = myDataBase.query(MARK_TAB, new String[]{"_id","type","book","chapter","start","end","note"},"book=? and chapter=?", new String[]{String.valueOf(book), String.valueOf(chapter)}, null, null, "start asc");
+//		String constraint="" ;
+//		String[] valConstraint = null;
+//		if(book != -1){
+//			constraint = "book=?";
+//			valConstraint =  new String[]{String.valueOf(book)};
+//		}
+//		if(chapter != -1){
+//			constraint += " and chapter=?";
+//			valConstraint =  new String[]{String.valueOf(book), String.valueOf(chapter)};
+//		}
+		Cursor cur = myDataBase.query(MARK_TAB, new String[]{"_id","type","book","chapter","start","end","note"},"book=? and chapter=?",new String[]{String.valueOf(book), String.valueOf(chapter)} , null, null, "start asc");
 		ArrayList<Mark> marks = new ArrayList<Mark>();;
 		if(cur.moveToFirst()){			//TODO cur empty
 			Mark m;
@@ -256,6 +269,42 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		cur.close();
 		return marks;
 	}
+	public static ArrayList<MarkItem> getMarksItem(int book, int chapter){
+		String constraint="" ;
+		String[] valConstraint = null;
+		if(book != -1){
+			constraint = "m.book=?";
+			valConstraint =  new String[]{String.valueOf(book)};
+		}
+		if(chapter != -1){
+			constraint += " and m.chapter=?";
+			valConstraint =  new String[]{String.valueOf(book), String.valueOf(chapter)};
+		}
+		
+		String query = "select m._id,m.type,m.book,m.chapter,m.start,m.end,m.note,l.titre_chapitre " +
+				"from marks m inner join detail_livres l on m.book=l.id_livre and m.chapter=l.id_chapitre where "
+			+constraint+"order by m.book asc, m.chapter asc";
+		Cursor cur = myDataBase.rawQuery(query, valConstraint);
+		
+		ArrayList<MarkItem> marks = new ArrayList<MarkItem>();;
+		if(cur.moveToFirst()){			//TODO cur empty
+			MarkItem m;
+			do{
+				m = new MarkItem(); //TODO optimiz
+				m.mark.markId = cur.getInt(0);
+				m.mark.type = cur.getInt(1);
+				m.mark.idBook = cur.getInt(2);
+				m.mark.idChap = cur.getInt(3);
+				m.mark.startChar = cur.getInt(4);
+				m.mark.endChar = cur.getInt(5);
+				m.mark.note = cur.getString(6);
+				m.titleChapter = cur.getString(7);
+				marks.add(m);
+			}while(cur.moveToNext());
+		}
+		cur.close();
+		return marks;
+	}
 	
 	public void addMark(Mark m){
 		ContentValues val = new ContentValues(4);
@@ -265,7 +314,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		val.put("note", m.note);
 		val.put("start", m.startChar);
 		val.put("end", m.endChar);
-		myDataBase.insert(MARK_TAB, null, val);
+		m.markId = (int) myDataBase.insert(MARK_TAB, null, val);
 	}
 	
 	public void updateMark(Mark m){
@@ -286,5 +335,22 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         // Add your public helper methods to access and get content from the database.
        // You could return cursors by doing "return myDataBase.query(....)" so it'd be easy
        // to you to create adapters for your views.
+
+//	public Mark getMarks(int markId) {
+//		Cursor cur = myDataBase.query(MARK_TAB, new String[]{"_id","type","book","chapter","start","end","note"},"_id=? ", new String[]{String.valueOf(markId)}, null, null, null);
+//		Mark m=null;
+//		if(cur.moveToFirst()){			//TODO cur empty
+//				m = new Mark(); //TODO optimiz
+//				m.markId = cur.getInt(0);
+//				m.type = cur.getInt(1);
+//				m.idBook = cur.getInt(2);
+//				m.idChap = cur.getInt(3);
+//				m.startChar = cur.getInt(4);
+//				m.endChar = cur.getInt(5);
+//				m.note = cur.getString(6);
+//		}
+//		cur.close();
+//		return m;		
+//	}
  
 }

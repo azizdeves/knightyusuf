@@ -21,7 +21,7 @@ import android.widget.AbsListView.OnScrollListener;
 
 public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListener{
 
-	private String text;
+	private Chapter chapter;
 	ArrayList<Mark> marks ;
 	ArrayList<Mark> currentMarks ;
 	static ArrayList<MarkUI> marksUi ;
@@ -34,6 +34,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 	private ArrayList<Mark> tmpMarks;
 	//	boolean isLineInit=false;
 	static public  boolean mBusy;
+	private ArrayList<DataSetObserver> observers = new ArrayList<DataSetObserver>();
 
 
 	public ArabicListAdapter(SirajActivity activ){
@@ -62,6 +63,7 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		tmpMarks = new ArrayList<Mark>();
 		HashMap<Mark, MarkUI> markMap = new HashMap<Mark, MarkUI>();
 		width = -width;
+		String text = chapter.getContent();
 		//		marks.add(new Mark(0, 2, 10, 0, 0, ""));
 //		marks.add(new Mark(0, 5, 25, 0, 0, ""));
 
@@ -173,91 +175,91 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 
 	}
 
-	private void constructSimppeLine(){
-		lines.clear();
-		short numLine = 0;
-		short startCur = 0;
-		short lastSpace = -1;
-		boolean isNewLine=false;
-		boolean isBuildingMarkUi = false;
-		Mark currentMark = null;
-		MarkUI currentMarkUi = null;
-		int lineWidth=0;
-		float[] w = new float[1];
-		marksUi = new ArrayList<MarkUI>();
-
-		Iterator<Mark> iterMark = marks.iterator();
-		if(iterMark.hasNext())
-			currentMark = iterMark.next();
-
-		for(short i = 0; i<text.length(); i++){
-
-			if(currentMark !=null){
-				if(isBuildingMarkUi){
-
-					if(text.charAt(i) == currentMark.endChar){				
-						isBuildingMarkUi = false;
-						currentMarkUi.endX = lineWidth;
-						currentMarkUi.endLine = numLine;
-						if(iterMark.hasNext())
-							currentMark = iterMark.next();
-						else
-							currentMark = null;
-
-					}
-
-					if(isNewLine)
-						marksUi.add(currentMarkUi);
-				}else{
-					if(text.charAt(i) == currentMark.startChar){				
-						isBuildingMarkUi = true;
-						currentMarkUi = new MarkUI(lineWidth,lineWidth,numLine,numLine, currentMark.markId);
-
-						marksUi.add(currentMarkUi); 
-					}
-
-				}
-			}else{
-				if(isNewLine)
-					marksUi.add(currentMarkUi);
-
-			}
-			if(text.charAt(i)==' ')
-				lastSpace = i;
-			if(isNewLine){
-				startCur = i;
-				lineWidth = 0;
-				lastSpace = -1;
-				isNewLine = false;
-				//				if(isBuildingMarkUi)
-
-			}
-			if(text.charAt(i)=='\n'){
-				if(startCur!=i)
-				{
-					lines.add(new TextLine(text.substring(startCur, i),numLine++));
-					isNewLine = true;
-				}
-				continue;
-
-			}
-			//			if((lineWidth += ArabicTextView.getCharWidth(ArabicTextView.mPaint, text, i,w))> width){
-			if((lineWidth = ArabicTextView.mPaint.getTextWidths( text, startCur,i+1,w))> width){
-				lines.add(new TextLine(text.substring(startCur, lastSpace),numLine++));
-				i = lastSpace;
-				isNewLine = true;
-			}
-
-		}
-		if(isBuildingMarkUi){
-			currentMarkUi.endX = lineWidth;
-			currentMarkUi.endLine = numLine;
-		}
-		else
-			marksUi.add(null);
-
-		//		isLineInit = true;
-	}
+//	private void constructSimppeLine(){
+//		lines.clear();
+//		short numLine = 0;
+//		short startCur = 0;
+//		short lastSpace = -1;
+//		boolean isNewLine=false;
+//		boolean isBuildingMarkUi = false;
+//		Mark currentMark = null;
+//		MarkUI currentMarkUi = null;
+//		int lineWidth=0;
+//		float[] w = new float[1];
+//		marksUi = new ArrayList<MarkUI>();
+//
+//		Iterator<Mark> iterMark = marks.iterator();
+//		if(iterMark.hasNext())
+//			currentMark = iterMark.next();
+//
+//		for(short i = 0; i<text.length(); i++){
+//
+//			if(currentMark !=null){
+//				if(isBuildingMarkUi){
+//
+//					if(text.charAt(i) == currentMark.endChar){				
+//						isBuildingMarkUi = false;
+//						currentMarkUi.endX = lineWidth;
+//						currentMarkUi.endLine = numLine;
+//						if(iterMark.hasNext())
+//							currentMark = iterMark.next();
+//						else
+//							currentMark = null;
+//
+//					}
+//
+//					if(isNewLine)
+//						marksUi.add(currentMarkUi);
+//				}else{
+//					if(text.charAt(i) == currentMark.startChar){				
+//						isBuildingMarkUi = true;
+//						currentMarkUi = new MarkUI(lineWidth,lineWidth,numLine,numLine, currentMark.markId);
+//
+//						marksUi.add(currentMarkUi); 
+//					}
+//
+//				}
+//			}else{
+//				if(isNewLine)
+//					marksUi.add(currentMarkUi);
+//
+//			}
+//			if(text.charAt(i)==' ')
+//				lastSpace = i;
+//			if(isNewLine){
+//				startCur = i;
+//				lineWidth = 0;
+//				lastSpace = -1;
+//				isNewLine = false;
+//				//				if(isBuildingMarkUi)
+//
+//			}
+//			if(text.charAt(i)=='\n'){
+//				if(startCur!=i)
+//				{
+//					lines.add(new TextLine(text.substring(startCur, i),numLine++));
+//					isNewLine = true;
+//				}
+//				continue;
+//
+//			}
+//			//			if((lineWidth += ArabicTextView.getCharWidth(ArabicTextView.mPaint, text, i,w))> width){
+//			if((lineWidth = ArabicTextView.mPaint.getTextWidths( text, startCur,i+1,w))> width){
+//				lines.add(new TextLine(text.substring(startCur, lastSpace),numLine++));
+//				i = lastSpace;
+//				isNewLine = true;
+//			}
+//
+//		}
+//		if(isBuildingMarkUi){
+//			currentMarkUi.endX = lineWidth;
+//			currentMarkUi.endLine = numLine;
+//		}
+//		else
+//			marksUi.add(null);
+//
+//		//		isLineInit = true;
+//	}
 
 
 	@Override
@@ -278,12 +280,12 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		}
 		//		txt.setTxtSize(10f);
 
-		holder.arabText.setLine(lines.get(position));
+		((ArabicTextView) holder.arabText).setLine(lines.get(position));
 		return view;
 	}
 	public void loadChapter(int idBook, int idChap){ 
-		text = myDbHelper.getChapter(idBook, idChap);//.substring(0,300);//wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
-		text = DariGlyphUtils.reshapeText(text);
+		chapter = myDbHelper.getChapter(idBook, idChap);//.substring(0,300);//wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+		chapter.setContent( DariGlyphUtils.reshapeText(chapter.getContent()));
 		marks = myDbHelper.getMarks(idBook, idChap);
 	}
 
@@ -404,15 +406,18 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 		return false;
 	}
 
-	@Override
+
 	public void registerDataSetObserver(DataSetObserver observer) {
-
-
+	    observers.add(observer);
 	}
-
+	public void notifyDataSetChanged(){
+	    for (DataSetObserver observer: observers) {
+	        observer.onChanged();
+	    }
+	}
 	@Override
 	public void unregisterDataSetObserver(DataSetObserver observer) {
-
+		observers.remove(observer);
 
 	}
 
@@ -427,12 +432,12 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 
 		return true;
 	}
-	public String getText() {
-		return text;
-	}
-	public void setText(String text) {
-		this.text = text;
-	}
+//	public String getText() {
+//		return text;
+//	}
+//	public void setText(String text) {
+//		this.text = text;
+//	}
 	public Paint getPaint() {
 		return paint;
 	}
@@ -442,9 +447,16 @@ public class ArabicListAdapter implements ListAdapter , ListView.OnScrollListene
 	public int getWidth() {
 		return width;
 	}
+	
+	public Chapter getChapter() {
+		return chapter;
+	}
+	public void setChapter(Chapter chapter) {
+		this.chapter = chapter;
+	}
 	public void setWidth(int width) {
 		this.width = width;
-		if(text == null)return;
+		if(chapter == null)return;
 		constructLine();
 	}
 	public void saveMark(Mark mrk, boolean isPersist) {

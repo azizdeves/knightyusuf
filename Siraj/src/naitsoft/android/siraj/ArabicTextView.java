@@ -218,6 +218,6 @@ public class ArabicTextView extends View {
 //	
 //}
 class ViewHolder{
-	public ArabicTextView arabText;
+	public View arabText;
 
 }
