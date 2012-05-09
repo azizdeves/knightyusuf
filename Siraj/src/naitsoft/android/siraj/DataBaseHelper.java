@@ -7,7 +7,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -119,6 +122,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
         	try {
  
         		copyDatabaseSplited();
+        		openDataBase();
         		myDataBase.execSQL("create table marks(_id Integer primary key, type Integer, start Integer, end Integer, book Integer, chapter Integer, note text)");
         		
     		} catch (IOException e) {
@@ -235,7 +239,8 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	
 	public  Cursor getChaptersOfBook(int livre)
 	{
-		Cursor cur = myDataBase.query(CONTENT_BOOK_TAB, new String[]{"id_chapitre","id_chapitrep","titre_chapitre"},"id_livre=?", new String[]{String.valueOf(livre)}, null, null, null);
+		Cursor cur = myDataBase.query(CONTENT_BOOK_TAB, new String[]{"id_chapitre","id_chapitrep","titre_chapitre"},"id_livre=?", new String[]{String.valueOf(livre)}, null, null, 
+				" id_chapitrep asc, id_chapitre asc");
 		return cur;
 	}
 	
@@ -269,7 +274,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		cur.close();
 		return marks;
 	}
-	public static ArrayList<MarkItem> getMarksItem(int book, int chapter){
+	public  Collection<ArrayList<MarkItem>> getMarksItem(int book, int chapter){
 		String constraint="" ;
 		String[] valConstraint = null;
 		if(book != -1){
@@ -285,8 +290,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 				"from marks m inner join detail_livres l on m.book=l.id_livre and m.chapter=l.id_chapitre where "
 			+constraint+"order by m.book asc, m.chapter asc";
 		Cursor cur = myDataBase.rawQuery(query, valConstraint);
-		
-		ArrayList<MarkItem> marks = new ArrayList<MarkItem>();;
+		HashMap<Integer, ArrayList<MarkItem>> map = new HashMap<Integer, ArrayList<MarkItem>>();
 		if(cur.moveToFirst()){			//TODO cur empty
 			MarkItem m;
 			do{
@@ -299,13 +303,46 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 				m.mark.endChar = cur.getInt(5);
 				m.mark.note = cur.getString(6);
 				m.titleChapter = cur.getString(7);
-				marks.add(m);
+				if(!map.containsKey(m.mark.idChap ))
+					map.put(m.mark.idChap , new ArrayList<MarkItem>());
+				map.get(m.mark.idChap ).add(m);
+//				marks.add(m);
 			}while(cur.moveToNext());
 		}
 		cur.close();
-		return marks;
+		
+		return map.values();
 	}
 	
+	public  ArrayList<MarkItem> getSearchResult(int book, String token){
+
+		String constraint="contenu_chapitre like ?";
+		String[] valConstraint = null;
+		if(book != -1){
+			constraint += " and id_livre=?";
+			valConstraint =  new String[]{ "%"+token+"%",String.valueOf(book)};
+		}
+		else
+			valConstraint =  new String[]{"%"+token+"%"};
+			
+		String query = "select  id_chapitre, titre_chapitre, contenu_chapitre from detail_livres where " +constraint;
+		Cursor cur = myDataBase.rawQuery(query, valConstraint);
+		ArrayList<MarkItem> list = new ArrayList<MarkItem>();
+		if(cur.moveToFirst()){			//TODO cur empty
+			MarkItem m;
+			do{
+				m = new MarkItem(); //TODO optimiz
+				m.mark.idBook = book;
+				m.mark.idChap = cur.getInt(0);
+				m.titleChapter = cur.getString(1);
+				m.content = cur.getString(2);
+				list.add(m);
+			}while(cur.moveToNext());
+		}
+		cur.close();
+		
+		return list;
+	}
 	public void addMark(Mark m){
 		ContentValues val = new ContentValues(4);
 		val.put("type", m.type);

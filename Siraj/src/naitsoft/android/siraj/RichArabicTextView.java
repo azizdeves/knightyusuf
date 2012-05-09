@@ -44,7 +44,7 @@ public class RichArabicTextView extends ArabicTextView {
 					b=mrkUi.endX;
 				}else
 					b =-width ;
-				mPaint.setColor(Color.BLUE);
+				mPaint.setColor(mrkUi.mark.type);
 				mPaint.setAlpha(65);
 				canvas.drawRect(b, 0, a, stepLine, mPaint);
 				mPaint.setColor(fontColor); 
@@ -52,9 +52,9 @@ public class RichArabicTextView extends ArabicTextView {
 			mrkUi = mrkUi.next;
 		}
 		//Light draw
-		if(true){
+		
 			canvas.drawText(text, 0, y, mPaint);
-		}
+		
 
 		//Heavy draw lettre by lettre
 		for(int i =0, length=text.length(); i<length;i++){
@@ -77,7 +77,7 @@ public class RichArabicTextView extends ArabicTextView {
 		if(!TextSelection.isLineInSelction(line.numLine))
 			return;
 		select.initOrder(); 
-		mPaint.setColor(Color.BLUE);
+		mPaint.setColor(select.markUi.mark.type);
 		mPaint.setAlpha(65);
 		int start,end;
 		int i = 0 ;

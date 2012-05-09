@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import android.support.v4.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,6 +36,7 @@ import android.view.MenuInflater;
 
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -52,6 +54,7 @@ public class ArticleFragment extends Fragment {
 	private DataBaseHelper myDbHelper;
 	public int livre;
 	public int chapitre;
+	private int lastCharPos;
 	int textSize;
 	public static Context context;
 	public static ArticleFragment articleFrag;
@@ -60,33 +63,36 @@ public class ArticleFragment extends Fragment {
 	public ArabicListAdapter arabicAdapter;
 	public static MyListView articleTextView;
 	private LinearLayout linearLayout;
-	private Menu menu;
-	static public LinearLayout markBar;
+	static public  Menu menu;
+	static public MarkBar markBar;
 	public static TextView text;
-	static public Paint paint; 
+//	static public Paint paint; 
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		articleFrag = this;
 		context = getActivity().getApplicationContext();
 		livre = 1; 
 		chapitre = 5;
-		//        initDB();
-		//        loadShowChapter();
+		lastCharPos = -1;
 		Bundle bund = getActivity().getIntent().getExtras();
 		if(bund != null){ 
 			livre= bund.getInt("idBook");
 			chapitre = bund.getInt("idChap");
-			//			getListView().setSelection(bund.getInt("idBook"))
+			
 		}
 
 		setHasOptionsMenu(true);
 		ActionBar actionBar = ((FragmentActivity) getActivity()).getSupportActionBar();
 	    actionBar.setDisplayHomeAsUpEnabled(true);
-//	    SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(getActivity());
-//		textSize = pref.getInt("textSize", 60);
+	    SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(this.getActivity());
+        ArabicTextView.mPaint.setTextSize(Integer.parseInt(pref.getString("txtSize", "20") ));
+        lastCharPos = pref.getInt("lastCharPos",-1);
+        status = NORMAL;
+        TextSelection.clear();
 
 	}
 	@Override
@@ -103,8 +109,10 @@ public class ArticleFragment extends Fragment {
 //		listTextLineView.setOverScrollMode(ListView.OVER_SCROLL_NEVER);
 		articleTextView.setDividerHeight(0);
 		
-		markBar = (LinearLayout) v.findViewById(R.id.mark_bar);
-
+		markBar = new MarkBar(this,v);
+		
+//		if(lastCharPos != -1)
+//			scrollToChar(lastCharPos);
 		return v; 
 	}
 	
@@ -120,19 +128,27 @@ public class ArticleFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()){
 		case R.id.menu_edit:  
-			if(ArticleFragment.status == ArticleFragment.SELECTED && TextSelection.markUi != null){
-				arabicAdapter.deleteMark(TextSelection.markUi.markId);
-				status = NORMAL;
-				TextSelection.clear();
-				markBar.setVisibility(View.GONE);
+			if(status != NORMAL)
 				break;
-			}
 			articleTextView.startSelection();
 			markBar.setVisibility(View.VISIBLE);
+//			menu.getItem(3).setVisible(true);
+//			menu.getItem(1).setVisible(false);
+//			menu.getItem(4).setVisible(true);
+			
 			break;
 		case R.id.menu_info: 
+//			Intent intent = new Intent(this.getActivity(), PreferencesActivity.class);
+//			startActivity(intent);
+			break;
+		case R.id.menu_settings: 
 			Intent intent = new Intent(this.getActivity(), PreferencesActivity.class);
 			startActivity(intent);
+			break;
+		case R.id.menu_search: 
+			Bundle bundle = new Bundle();
+			bundle.putInt("idBook", livre);
+			getActivity().startSearch(null,false, bundle , false);
 //			Intent chapIntent = new Intent(getActivity(),MarksListActivity.class);	
 //			chapIntent.putExtra("idBook", livre);
 //			chapIntent.putExtra("idChap", chapitre);
@@ -146,25 +162,6 @@ public class ArticleFragment extends Fragment {
 			sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, selectionTxt);
 //			sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml("<p>"+selectionTxt+"</p>"));
 			startActivity(Intent.createChooser(sharingIntent,"Share using"));
-			break;
-		case R.id.menu_save:
-//			MenuItem item1 = menu.findItem(R.id.menu_share);
-			Mark mrk = arabicAdapter.getAbsoluteTextSelectPosition(TextSelection.getCurrentSelection());
-			if(TextSelection.markUi != null)
-			{
-				mrk.markId = TextSelection.markUi.markId;
-				arabicAdapter.saveMark(mrk,true);
-			}
-			else
-				arabicAdapter.saveMark(mrk, false);
-			
-			arabicAdapter.updateMarkUi(TextSelection.getCurrentSelection().getMarkUi(arabicAdapter.width));
-			status = NORMAL;
-			TextSelection.clear();
-			markBar.setVisibility(View.GONE);
-//			listTextLineView.invalidate();
-			
-
 			break;
 		case android.R.id.home:
 			callChaptersActivity();
@@ -202,14 +199,6 @@ public class ArticleFragment extends Fragment {
 //	}
 //	
 
-//	@Override
-//	protected void onStart() {
-//		super.onStart();
-//		SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(this);
-//		//ArabicTextView.mPaint.setTextSize(pref.getInt("textsize", 30));
-//		//		chapitre = pref.getInt("chap", 1);
-//		//		livre = pref.getInt("livre", 1);
-//	}
 
 //	protected void getPrevPage() {
 //
@@ -234,6 +223,12 @@ public class ArticleFragment extends Fragment {
 		}
 
 	}
+	public void scrollToChar(int indexChar){
+		while(arabicAdapter.getLastCharDrawn() < indexChar){
+			articleTextView.smoothScrollBy(50, 300);
+			
+		}
+	}
 
 	public void loadShowChapter(){
 		arabicAdapter.loadChapter(livre, chapitre);
@@ -251,15 +246,20 @@ public class ArticleFragment extends Fragment {
 //		}
 //	}
 
-//	@Override
-//	protected void onStop() {
-//		super.onStop();
-//		//		SharedPreferences.Editor editor = getSharedPreferences("state", MODE_PRIVATE).edit();
-//		//		editor.putInt("chap", chapitre);
-//		//		editor.putInt("livre", livre);
-//		//		editor.commit();
-//
-//	}
+	@Override
+	public void onStart() {
+		super.onStart();
+		
+	}
+	@Override
+	public void onStop() {
+		super.onStop();
+
+		SharedPreferences.Editor pref= PreferenceManager.getDefaultSharedPreferences(this.getActivity()).edit();
+		pref.putInt("lastCharPos", arabicAdapter.getLastCharDrawn());
+		pref.commit();
+
+	}
 
 	
 }
@@ -391,8 +391,8 @@ class MyListView extends ListView implements OnGestureListener
 		return false;
 	}	
 	@Override
-	public void onShowPress(MotionEvent e) {
-	}	
+	public void onShowPress(MotionEvent e) {	}
+	
 	@Override
 	public boolean onSingleTapUp(MotionEvent e) {
 		if(ArticleFragment.status == ArticleFragment.NORMAL){
@@ -404,6 +404,7 @@ class MyListView extends ListView implements OnGestureListener
 			m.isActive = false;
 			TextSelection sel = TextSelection.getInstance();	
 			TextSelection.markUi = m;
+			
 			sel.startCursor.x = m.startX+getWidth();
 			sel.endCursor.x = m.endX+getWidth();
 			sel.startCursor.numLine = m.startLine ;
@@ -413,6 +414,7 @@ class MyListView extends ListView implements OnGestureListener
 			ArticleFragment.status = ArticleFragment.SELECTED;
 //			invalidate();
 			ArticleFragment.markBar.setVisibility(View.VISIBLE);
+			ArticleFragment.menu.getItem(4).setVisible(true);
 		}
 		return true;
 	}
@@ -510,5 +512,90 @@ abstract class  Focusable{
 	}
 
 	public abstract void onTouchEvent(MotionEvent ev, int indexLine)  ;
+	
+}
+class MarkBar{
+
+	private LinearLayout parentView;
+	private ArticleFragment articleFragment;
+
+	public MarkBar(final ArticleFragment articleFragment, View v) {
+		this.articleFragment = articleFragment;
+		parentView = (LinearLayout) v.findViewById(R.id.mark_bar);
+		Button yellowBtn = (Button) v.findViewById(R.id.yellow_mrk);
+		Button blueBtn = (Button) v.findViewById(R.id.blue_mrk);
+		Button greenBtn = (Button) v.findViewById(R.id.green_mrk);
+		Button redBtn = (Button) v.findViewById(R.id.red_mrk);
+		ImageButton saveBtn = (ImageButton) v.findViewById(R.id.save_mrk);
+		ImageButton deleteBtn = (ImageButton) v.findViewById(R.id.delete_mrk);
+		
+		yellowBtn.setOnClickListener(new View.OnClickListener() {			
+			public void onClick(View v) {
+				TextSelection.markUi.mark.type = Color.YELLOW;
+				articleFragment.articleTextView.requestLayout();
+			}
+		});
+		redBtn.setOnClickListener(new View.OnClickListener() {			
+			public void onClick(View v) {
+				TextSelection.markUi.mark.type = Color.RED;
+				articleFragment.articleTextView.requestLayout();
+				
+			}
+		});
+		blueBtn.setOnClickListener(new View.OnClickListener() {			
+			public void onClick(View v) {
+				TextSelection.markUi.mark.type = Color.BLUE;
+				articleFragment.articleTextView.requestLayout();
+				
+			}
+		});
+		greenBtn.setOnClickListener(new View.OnClickListener() {			
+			public void onClick(View v) {
+				TextSelection.markUi.mark.type = Color.GREEN;
+				articleFragment.articleTextView.requestLayout();
+			}
+		});
+		saveBtn.setOnClickListener(new View.OnClickListener() {			
+			public void onClick(View v) {
+				Mark mrk = articleFragment.arabicAdapter.getAbsoluteTextSelectPosition(TextSelection.getCurrentSelection());
+				if(TextSelection.markUi.mark.markId != -1)
+				{
+					mrk.markId = TextSelection.markUi.mark.markId;
+					mrk.type = TextSelection.markUi.mark.type;
+					articleFragment.arabicAdapter.saveMark(mrk,true);
+				}
+				else
+					articleFragment.arabicAdapter.saveMark(mrk, false);
+				
+				MarkUI mrkUi = TextSelection.getCurrentSelection().getMarkUi(articleFragment.arabicAdapter.width);
+				mrkUi.mark = mrk;
+				articleFragment.arabicAdapter.updateMarkUi(mrkUi);
+				ArticleFragment.status = ArticleFragment.NORMAL;
+				TextSelection.clear();
+				setVisibility(View.GONE);
+//				menu.getItem(3).setVisible(false);
+//				menu.getItem(1).setVisible(true);
+//				menu.getItem(4).setVisible(false);
+//				listTextLineView.invalidate();
+			}
+		});
+		deleteBtn.setOnClickListener(new View.OnClickListener() {			
+			public void onClick(View v) {
+				if(ArticleFragment.status == ArticleFragment.SELECTED && TextSelection.markUi != null){
+					articleFragment.arabicAdapter.deleteMark(TextSelection.markUi.mark.markId);
+					articleFragment.status = articleFragment.NORMAL;
+					TextSelection.clear();
+					setVisibility(View.GONE);
+				}
+			}
+		});
+		
+		
+	}
+
+	public void setVisibility(int visibility) {
+		parentView.setVisibility(visibility );
+		
+	}
 	
 }

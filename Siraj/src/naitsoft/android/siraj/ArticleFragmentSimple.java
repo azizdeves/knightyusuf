@@ -141,18 +141,18 @@ public class ArticleFragmentSimple extends Fragment {
 //			sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, Html.fromHtml("<p>"+selectionTxt+"</p>"));
 			startActivity(Intent.createChooser(sharingIntent,"Share using"));
 			break;
-		case R.id.menu_save:
-//			MenuItem item1 = menu.findItem(R.id.menu_share);
-			Mark mrk = arabicAdapter.getAbsoluteTextSelectPosition(TextSelection.getCurrentSelection());
-//			arabicAdapter.saveMark(mrk);
-			arabicAdapter.updateMarkUi(TextSelection.getCurrentSelection().getMarkUi(arabicAdapter.width));
-			status = NORMAL;
-			TextSelection.clear();
-			markBar.setVisibility(View.GONE);
-//			listTextLineView.invalidate();
+//		case R.id.menu_save:
+////			MenuItem item1 = menu.findItem(R.id.menu_share);
+//			Mark mrk = arabicAdapter.getAbsoluteTextSelectPosition(TextSelection.getCurrentSelection());
+////			arabicAdapter.saveMark(mrk);
+//			arabicAdapter.updateMarkUi(TextSelection.getCurrentSelection().getMarkUi(arabicAdapter.width));
+//			status = NORMAL;
+//			TextSelection.clear();
+//			markBar.setVisibility(View.GONE);
+////			listTextLineView.invalidate();
 			
 
-			break;
+//			break;
 		case android.R.id.home:
 			callChaptersActivity();
 			break;

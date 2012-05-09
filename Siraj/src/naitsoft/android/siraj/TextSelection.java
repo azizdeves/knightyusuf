@@ -1,5 +1,6 @@
 package naitsoft.android.siraj;
 
+import android.graphics.Color;
 import android.view.MotionEvent;
 
 
@@ -16,6 +17,8 @@ public class TextSelection {
 		startCursor = new TextCursor();
 		endCursor = new TextCursor();
 		editingCursor = endCursor;
+		markUi = new MarkUI();
+		markUi.mark.type = Color.BLUE;
 		initFocus();
 		
 	}
@@ -88,7 +91,6 @@ public class TextSelection {
 		return currentSelection;
 	}
 	public static TextSelection getInstance(){
-		markUi = null;
 		return currentSelection = new TextSelection();
 	}
 	public static boolean isLineInSelction(int numLine) {
@@ -97,7 +99,7 @@ public class TextSelection {
 	}
 	
 	public MarkUI getMarkUi(int width){
-		return new MarkUI(currentSelection.focusA.x+width, currentSelection.focusB.x+width, currentSelection.startCursor.numLine, currentSelection.endCursor.numLine, 0);
+		return new MarkUI(currentSelection.focusA.x+width, currentSelection.focusB.x+width, currentSelection.startCursor.numLine, currentSelection.endCursor.numLine, null);
 	}
 	
 	public int getStartNumLine(){
@@ -170,16 +172,19 @@ class MarkUI{
 	int endX;
 	int startLine;
 	int endLine;
-	int markId;
+	Mark mark;
 	MarkUI next;
-	public MarkUI(int startX, int endX, int startLine, int endLine, int markId) {
+	public MarkUI(){
+		mark = new Mark();
+	}
+	public MarkUI(int startX, int endX, int startLine, int endLine, Mark mark) {
 		super();
 		isActive = true;
 		this.startX = startX;
 		this.endX = endX;
 		this.startLine = startLine;
 		this.endLine = endLine;
-		this.markId = markId;
+		this.mark = mark;
 	}
 	
 	static public MarkUI getMarkUiByEvent(MarkUI mrk , int line , int x){
@@ -221,8 +226,9 @@ class Mark{
 	int idChap;
 	int idBook;
 	String note;
+	
 	public Mark(){
-		
+		markId = -1;
 	}
 	public Mark(int markId, int i, int j, int idChap,
 			int idBook, String note) {
@@ -234,5 +240,14 @@ class Mark{
 		this.idBook = idBook;
 		this.note = note;
 	}
+	
+//	public  Color getColor(){
+//		switch(type){
+//		case 1:
+//			return Color.BLUE;
+//		case 2:
+//			return Color.RED
+//		}
+//	}
 	
 }

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import android.support.v4.app.ActionBar;
 import android.support.v4.app.FragmentManager;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -60,6 +61,8 @@ public class SirajActivity extends FragmentActivity {
 //	public static MyListView listTextLineView;
 //	private LinearLayout linearLayout;
 	private Menu menu;
+
+	private ProgressDialog dialog;
 	public static TextView text;
 	static public Paint paint; 
 
@@ -69,6 +72,8 @@ public class SirajActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		context = getApplicationContext(); 
+//		dialog = ProgressDialog.show(this, "", 
+//                "Loading. Please wait...", true);
 //		livre = 1; 
 //		chapitre = 5;
 		        initDB();
@@ -112,6 +117,8 @@ public class SirajActivity extends FragmentActivity {
 		if(!hasFocus)
 			return;
 		ArticleFragment.articleFrag.loadShowChapter();
+//		dialog.dismiss();
+//		dialog = null;
 		//		super.onWindowFocusChanged(hasFocus);
 //		loadShowChapter();
 

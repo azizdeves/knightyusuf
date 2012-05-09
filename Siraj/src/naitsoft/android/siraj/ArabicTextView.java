@@ -26,11 +26,13 @@ public class ArabicTextView extends View {
 	//	private ArabicTextEventListener  eventListener;
 	static public Paint mPaint = new Paint();
 	static int a,b;
-	static final int backColor = Color.rgb(238, 255, 237);
+//	static final int backColor = Color.rgb(238, 255, 237);
+	static final int backColor = Color.WHITE;
 	static final int fontColor = Color.BLACK;
 	String text;
 	TextLine line ;
-	int stepLine ;
+	static int stepLine ;
+	static int margin;
 	protected int width;
 	boolean dirty = true;
 	private Bitmap map;

@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 
 public class ChaptersFragment extends Fragment {
@@ -95,7 +96,7 @@ public class ChaptersFragment extends Fragment {
 			startActivity(intent);
 			break;
 			
-		case R.id.menu_info: 
+		case R.id.menu_edit: 
 //			Intent intent = new Intent(this, PreferencesActivity.class);
 //			startActivity(intent);
 			Intent chapIntent = new Intent(getActivity(),MarksListActivity.class);	
@@ -149,14 +150,14 @@ class ChaptersAdapter implements ListAdapter
 		if(view == null){
 			view = mInflater.inflate(R.layout.chapter_line, parent,false);
 			holder = new ViewHolder();
-			holder.arabText = (ArabicTextView) view.findViewById(R.id.textView);
+			holder.arabText = (TextView) view.findViewById(R.id.textView);
 //			holder.arabText.setCatchTouchEvent(false);
 			view.setTag(holder);
 		}
 		else{
 			holder = (ViewHolder) view.getTag();
 		}
-		((ArabicTextView) holder.arabText).setText(chapters.get(position).title);
+		((TextView) holder.arabText).setText(chapters.get(position).title);
 		return view;
 	}
 
@@ -195,7 +196,7 @@ class ChaptersAdapter implements ListAdapter
 			parentChap = map.get(idParent);
 			if(parentChap == null)
 				idParent=c.idParent;
-				
+			
 			c.level = (char) (parentChap.level+1);
 			parentChap.addSubChapter(c);
 			

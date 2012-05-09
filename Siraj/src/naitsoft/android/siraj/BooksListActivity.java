@@ -58,7 +58,7 @@ public class BooksListActivity extends FragmentActivity {
         paint.setTextAlign(Align.RIGHT);
         ArabicTextView.mPaint = paint;
         SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(this);
-//        paint.setTextSize(pref.getInt("txtSize", 20) );
+        paint.setTextSize(Integer.parseInt(pref.getString("txtSize", "20") ));
 
 	}
 	private void callSirajActiv(int idBook){
