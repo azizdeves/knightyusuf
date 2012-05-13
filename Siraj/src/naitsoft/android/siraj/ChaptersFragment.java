@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -22,6 +23,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -66,11 +68,13 @@ public class ChaptersFragment extends Fragment {
 			Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);
 		View v =  inflater.inflate(R.layout.chapters, container);
-		ListView lv = (ListView)(v.findViewById(R.id.listChapters));
+		final ListView lv = (ListView)(v.findViewById(R.id.listChapters));
 		lv.setAdapter(chapterAdapter);
 		lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-				callActivity(pos);
+				onItemChapClicked(pos);
+				chapterAdapter.notifyDataSetChanged();
+				
 			}
 		});
 		
@@ -109,8 +113,15 @@ public class ChaptersFragment extends Fragment {
 	}
 	
 	
-	private void callActivity(int pos)
+	private void onItemChapClicked(int pos)
 	{
+		ChapterItem item = chapterAdapter.getChapter(pos);
+		if(item.isParent()){
+			item.isExpanded = !item.isExpanded;
+			chapterAdapter.constructChaptersList();
+			
+			return;
+		}
 		Intent intent = new Intent(this.getActivity(),SirajActivity.class);
 		intent.putExtra("idBook", chapterAdapter.idBook);
 		intent.putExtra("idChap",chapterAdapter.getChapter(pos).idChap);
@@ -129,7 +140,8 @@ class ChaptersAdapter implements ListAdapter
 	private int size;
 	int idBook=1;
 	private HashMap<Integer, ChapterItem> map;
-
+	private ChapterItem rootChap;
+	private ArrayList<DataSetObserver> observers = new ArrayList<DataSetObserver>();
 
 	public ChaptersAdapter(ChaptersFragment activ){
 		mInflater = activ.getActivity().getLayoutInflater(); 
@@ -146,18 +158,36 @@ class ChaptersAdapter implements ListAdapter
 
 	@Override
 	public View getView(int position, View view, ViewGroup parent) {
-		ViewHolder holder;
+		ViewChapHolder holder;
 		if(view == null){
 			view = mInflater.inflate(R.layout.chapter_line, parent,false);
-			holder = new ViewHolder();
-			holder.arabText = (TextView) view.findViewById(R.id.textView);
-//			holder.arabText.setCatchTouchEvent(false);
+			holder = new ViewChapHolder();
+			holder.textView = (TextView) view.findViewById(R.id.textView);
+			//			holder.imageView = (ImageView) view.findViewById(R.id.imgStatut);
+			//			holder.arabText.setCatchTouchEvent(false);
 			view.setTag(holder);
 		}
 		else{
-			holder = (ViewHolder) view.getTag();
+			holder = (ViewChapHolder) view.getTag();
 		}
-		((TextView) holder.arabText).setText(chapters.get(position).title);
+		String title ="";
+		Drawable statusIcon ;
+		if(chapters.get(position).isParent())
+			if(chapters.get(position).isExpanded)
+				//				holder.imageView.setImageResource(android.R.drawable.ic_menu_more);
+				statusIcon = activity.getResources().getDrawable(android.R.drawable.ic_menu_more);
+			else
+				statusIcon = activity.getResources().getDrawable(android.R.drawable.ic_menu_add);
+		//				holder.imageView.setImageResource(android.R.drawable.ic_menu_add);
+		else
+			statusIcon = activity.getResources().getDrawable(android.R.drawable.radiobutton_off_background);
+//			statusIcon = null;
+//		if(statusIcon!=null)
+			statusIcon.setBounds(0, 0, 40, 40);
+//		holder.textView.setCompoundDrawablePadding(chapters.get(position).level*10);
+		holder.textView.setPadding(0,0,chapters.get(position).level*15,0);
+		holder.textView.setCompoundDrawables(null, null, statusIcon, null);
+		holder.textView.setText(title + chapters.get(position).title);
 		return view;
 	}
 
@@ -184,7 +214,8 @@ class ChaptersAdapter implements ListAdapter
 		Integer idParent = new Integer(0);
 		ChapterItem parentChap ;
 		int i ;
-		ChapterItem rootChap = new ChapterItem();
+		rootChap = new ChapterItem();
+		rootChap.expand();rootChap.title="";
 		for(ChapterItem c : chapters){
 			if(c.idChap==c.idParent)
 			{
@@ -200,19 +231,23 @@ class ChaptersAdapter implements ListAdapter
 			c.level = (char) (parentChap.level+1);
 			parentChap.addSubChapter(c);
 			
-			for(i = 1; i< c.level ; i++){
-				c.title=" | " +c.title;
-			}
+//			for(i = 1; i< c.level ; i++){
+//				c.title="	" +c.title;
+//			}
 		}
 		map = null;
-		chapters.clear();
-		constructList(rootChap);
+		constructChaptersList();
 
 
 	}
+	public void constructChaptersList(){
+		chapters.clear();
+		constructList(rootChap);
+		
+	}
 	private void constructList(ChapterItem c){
 		chapters.add(c);
-		if(c.subChapters == null)
+		if(c.subChapters == null || !c.isExpanded)
 			return ;
 		for(ChapterItem sc : c.subChapters)
 			constructList(sc);
@@ -254,16 +289,19 @@ class ChaptersAdapter implements ListAdapter
 	public int getItemViewType(int position) {
 		return 1;
 	}
-	@Override
 	public void registerDataSetObserver(DataSetObserver observer) {
-
+	    observers.add(observer);
 	}
-
+	public void notifyDataSetChanged(){
+	    for (DataSetObserver observer: observers) {
+	        observer.onChanged();
+	    }
+	}
 	@Override
 	public void unregisterDataSetObserver(DataSetObserver observer) {
+		observers.remove(observer);
 
 	}
-
 	@Override
 	public boolean areAllItemsEnabled() {
 		return true;
@@ -281,11 +319,20 @@ class ChapterItem{
 	public char level;
 	public Integer idChap;
 	public ArrayList<ChapterItem> subChapters;
+	boolean isExpanded;
 
 	public ChapterItem(Cursor cur) {
 		init(cur);
 //		subChapters = new ArrayList<Chapter>();
 		//		this._id = cur.getInt(3);
+	}
+	public boolean isParent() {
+		
+		return subChapters != null;
+	}
+	public void expand() {
+		isExpanded = true;
+		
 	}
 	public void init(Cursor cur){
 		title = DariGlyphUtils.reshapeText(cur.getString(2));
@@ -305,4 +352,8 @@ class ChapterItem{
 		return ((ChapterItem)o).idChap == idChap;
 
 	}
+}
+class ViewChapHolder{
+	TextView textView;
+	ImageView imageView;
 }

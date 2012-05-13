@@ -232,7 +232,7 @@ public class ArticleFragment extends Fragment {
 
 	public void loadShowChapter(){
 		arabicAdapter.loadChapter(livre, chapitre);
-		arabicAdapter.setWidth(articleTextView.getWidth());
+		arabicAdapter.setWidth(articleTextView.getWidth()-RichArabicTextView.pading*2);
 		articleTextView.setAdapter(arabicAdapter);
 		//		cursorEnd = lis.setText(contentChapter);
 	}
@@ -311,9 +311,9 @@ class MyListView extends ListView implements OnGestureListener
 			return super.onTouchEvent(ev); 
 		}
 		
+		ev.offsetLocation(-getWidth(), 0);
 		int line = getIndexLine(ev.getY());
 		if(ArticleFragment.status == ArticleFragment.SELECTING  ) {
-			
 			if(ev.getAction()== MotionEvent.ACTION_MOVE){
 				if(ev.getY()<50)
 					smoothScrollBy(-50, 3000);
@@ -359,8 +359,8 @@ class MyListView extends ListView implements OnGestureListener
 	{
 		ArticleFragment.status = ArticleFragment.SELECTED;
 		TextSelection sel = TextSelection.getInstance();	
-		sel.startCursor.x = (int) (getWidth()*0.6);
-		sel.endCursor.x = (int) (getWidth()*0.4);
+		sel.startCursor.x = (int) (-getWidth()*0.4);
+		sel.endCursor.x = (int) (-getWidth()*0.6);
 		int line = getIndexLine(getHeight()/2);
 		sel.startCursor.numLine = line ;
 		sel.endCursor.numLine = line ;
@@ -396,17 +396,17 @@ class MyListView extends ListView implements OnGestureListener
 	@Override
 	public boolean onSingleTapUp(MotionEvent e) {
 		if(ArticleFragment.status == ArticleFragment.NORMAL){
+			e.offsetLocation(-getWidth(), 0);
 			int line = getIndexLine(e.getY());
 			MarkUI m = ArabicListAdapter.marksUi.get(line);
-			m = MarkUI.getMarkUiByEvent(m, line, (int) e.getX()-getWidth());
+			m = MarkUI.getMarkUiByEvent(m, line, (int) e.getX());
 			if(m== null)
 				return true;
 			m.isActive = false;
 			TextSelection sel = TextSelection.getInstance();	
 			TextSelection.markUi = m;
-			
-			sel.startCursor.x = m.startX+getWidth();
-			sel.endCursor.x = m.endX+getWidth();
+			sel.startCursor.x = m.startX;
+			sel.endCursor.x = m.endX;
 			sel.startCursor.numLine = m.startLine ;
 			sel.endCursor.numLine = m.endLine ;
 			addFocus(sel.focusA);
@@ -567,7 +567,7 @@ class MarkBar{
 				else
 					articleFragment.arabicAdapter.saveMark(mrk, false);
 				
-				MarkUI mrkUi = TextSelection.getCurrentSelection().getMarkUi(articleFragment.arabicAdapter.width);
+				MarkUI mrkUi = TextSelection.getCurrentSelection().getMarkUi();
 				mrkUi.mark = mrk;
 				articleFragment.arabicAdapter.updateMarkUi(mrkUi);
 				ArticleFragment.status = ArticleFragment.NORMAL;

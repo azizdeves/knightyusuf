@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 
 public class RichArabicTextView extends ArabicTextView {
 
+	static public int pading = 15;
 
 	public RichArabicTextView(Context context,AttributeSet attr) {
 		super(context,attr);
@@ -26,12 +27,12 @@ public class RichArabicTextView extends ArabicTextView {
 		if(text == null)
 			return;
 		mPaint.setColor(fontColor); 
-		int cur=0;
+		int cur=-pading;
 		mPaint.getTextWidths(text, w);
 
 		float y = stepLine/1.5f;
 
-//		draw Mark
+		//		draw Mark
 		MarkUI mrkUi= ArabicListAdapter.marksUi.get(line.numLine);
 		while(mrkUi!=null ) {
 			if(mrkUi.isActive && mrkUi.startLine <= line.numLine && mrkUi.endLine >= line.numLine){
@@ -46,30 +47,30 @@ public class RichArabicTextView extends ArabicTextView {
 					b =-width ;
 				mPaint.setColor(mrkUi.mark.type);
 				mPaint.setAlpha(65);
-				canvas.drawRect(b, 0, a, stepLine, mPaint);
+				canvas.drawRect(b, 2, a, stepLine, mPaint);
 				mPaint.setColor(fontColor); 
 			}
 			mrkUi = mrkUi.next;
 		}
 		//Light draw
-		
-			canvas.drawText(text, 0, y, mPaint);
-		
 
+		canvas.drawText(text, -pading, y, mPaint);
+
+
+		if(ArticleFragment.status != ArticleFragment.SELECTING && ArticleFragment.status != ArticleFragment.SELECTED)
+			return;
 		//Heavy draw lettre by lettre
 		for(int i =0, length=text.length(); i<length;i++){
 			if(text.charAt(i)=='\n')continue;
-				cur-=w[i];
-				if(ArticleFragment.status == ArticleFragment.SELECTING || ArticleFragment.status == ArticleFragment.SELECTED)
-					w[i]=cur;
-//			}
+			cur-=w[i];
+//			if(ArticleFragment.status == ArticleFragment.SELECTING || ArticleFragment.status == ArticleFragment.SELECTED)
+				w[i]=cur;
+			//			}
 		}
-		if(ArticleFragment.status != ArticleFragment.SELECTING && ArticleFragment.status != ArticleFragment.SELECTED)
-			return;
 		if(TextSelection.getCurrentSelection()==null)
 			return;
 		TextSelection select = TextSelection.getCurrentSelection();
-		canvas.translate(-canvas.getWidth(), 0);
+		//		canvas.translate(-canvas.getWidth(), 0);
 		if(line.numLine == select.focusA.line)
 			select.focusA.draw(canvas);
 		if(line.numLine == select.focusB.line)
@@ -82,34 +83,32 @@ public class RichArabicTextView extends ArabicTextView {
 		int start,end;
 		int i = 0 ;
 		if(line.numLine == select.getStartNumLine()){
-			start = select.getStartX()-width;
-			for(; i< w.length && w[i]>start; i++);	
-			start = i == 0? width:(int) w[i-1];
-			start+=width;
-//			select.startCursor.x = start;
+			start = select.getStartX();
+			for(; i< w.length && w[i]>=start; i++);	
+			start = i == 0? 0:(int) w[i-1];
+
+			//			select.startCursor.x = start;
 			select.focusA.x = start;
+			select.startCursor.x = start;
 			select.startCursor.idxChar=i;
 			select.focusA.line = line.numLine+1;
 		}
 		else
-			start = width;
+			start = 0;
 
 		if(line.numLine == select.getEndNumLine()) {
 
-			end = select.getEndX()-width;
-			for(i=0; i< w.length && w[i]>end; i++) 		;	
-			if(i>= w.length)
-				end = (int) w[--i];
-			else
-				end = (int) w[i];
-			end+=width;
+			end = select.getEndX();
+			for(i=5; i< w.length && w[i]>=end; i++) 		;	
+			end = i == w.length? width:(int) w[i-1];
+			select.endCursor.x = end;
 			select.focusB.x = end;
 			select.endCursor.idxChar=i+1;
 			select.focusB.line = line.numLine+1;
 		}
 		else
-			end = 0;
+			end = -width;
 
-		canvas.drawRect(end, 0, start, stepLine, mPaint);
+		canvas.drawRect(end, 2, start, stepLine, mPaint);
 	}
 }

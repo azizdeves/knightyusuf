@@ -30,7 +30,7 @@ public class TextSelection {
 	private void initFocus(){
 		focusA = new Focusable(android.R.drawable.ic_input_add) {			
 			public void onTouchEvent(MotionEvent ev, int indexLine) {
-				handleTouchEvent(this, ev,  indexLine);				
+				handleTouchEvent(this, ev,  indexLine);					
 			}
 		};
 		focusB = new Focusable(android.R.drawable.ic_input_add) {			
@@ -58,10 +58,11 @@ public class TextSelection {
 //			select.setEndX( (int) ev.getX());
 		}
 		if(ev.getAction()== MotionEvent.ACTION_MOVE){
-			select = TextSelection.getCurrentSelection();
+//			select = TextSelection.getCurrentSelection();
 			cur.textCursor.numLine = indexLine-1;
-			cur.textCursor.x = (int) ev.getX();
-			ArticleFragment.articleTextView.invalidate();
+				cur.textCursor.x = (int) ev.getX();
+				
+			ArticleFragment.articleTextView.requestLayout();
 		}
 		if(ev.getAction()== MotionEvent.ACTION_UP){ 
 			ArticleFragment.status = ArticleFragment.SELECTED;
@@ -98,8 +99,8 @@ public class TextSelection {
 				|| currentSelection.startCursor.numLine <= numLine && currentSelection.endCursor.numLine >= numLine;
 	}
 	
-	public MarkUI getMarkUi(int width){
-		return new MarkUI(currentSelection.focusA.x+width, currentSelection.focusB.x+width, currentSelection.startCursor.numLine, currentSelection.endCursor.numLine, null);
+	public MarkUI getMarkUi(){
+		return new MarkUI(currentSelection.startCursor.x, currentSelection.endCursor.x, currentSelection.startCursor.numLine, currentSelection.endCursor.numLine, null);
 	}
 	
 	public int getStartNumLine(){
@@ -116,7 +117,7 @@ public class TextSelection {
 	}
 	public void initOrder(){
 		if(getStartNumLine() == getEndNumLine()){
-			if(getStartX()<getEndX()){
+			if(getStartX() < getEndX()){
 				swapCursor();
 			}
 		}
