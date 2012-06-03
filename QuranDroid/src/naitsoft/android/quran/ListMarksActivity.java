@@ -183,7 +183,7 @@ class ListMarkAdapter extends BaseAdapter implements ListAdapter
 //		TextView txt1 = (TextView) view.findViewById(R.id.textView2);
 		ImageButton deleteMarkBtn = (ImageButton) view.findViewById(R.id.deleteMark);
 		txt.setTextSize(30);
-		txt.setText(mrk.sura+" : "+mrk.aya);
+		txt.setText(mrk.sura+" : "+QuranDroidActivity.suratName[mrk.sura]+"   ("+mrk.aya+")");
 		txt.setOnClickListener(new View.OnClickListener() {
 			
 			@Override

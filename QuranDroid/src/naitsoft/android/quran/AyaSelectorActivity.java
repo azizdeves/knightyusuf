@@ -72,7 +72,7 @@ private Button goButton;
 		ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
 		
 		for(int i = 1; i<115 ; i++)
-			spinAdapter.add(String.valueOf(i) + QuranDroidActivity.suratName[i]);
+			spinAdapter.add("	"+String.valueOf(i) +"	"+ QuranDroidActivity.suratName[i]+"	");
 		suraSpinner.setAdapter(spinAdapter );
 		suraSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
