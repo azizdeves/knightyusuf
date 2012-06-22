@@ -30,14 +30,15 @@ public class Saf7a extends View {
 		map = Bitmap.createScaledBitmap(map, canvas.getWidth(), canvas.getHeight(), true);
 		int numLines[] = new int[100];
 		boolean isLineClean = true;
-		
+		int[] pixels = new int[map.getWidth()*map.getHeight()];
+		map.getPixels(pixels , 0, map.getWidth(), 0, 0, map.getWidth(),map.getHeight() );
 		int cur = 0;
 		int pixel = 0;
-		for(int y = 0; y < canvas.getHeight() ; y++){
+		for(int y = 0; y < canvas.getHeight()/2 ; y++){
 			cumul = 0;
 			for(int x = 0; x<canvas.getWidth(); x++){
 				pixel = map.getPixel(x, y);
-				if(Color.red(pixel)+Color.blue(pixel)+Color.green(pixel)> 740){
+				if(Color.red(pixel)+Color.blue(pixel)+Color.green(pixel)> 700){
 					cumul++;
 //					isLineClean = false;
 //					break;
@@ -49,6 +50,7 @@ public class Saf7a extends View {
 //		canvas.scale(map.getWidth(), map.getHeight());
 //		map.setDensity(canvas.getDensity());
 		canvas.drawBitmap(map,0,0,  paint);	
+		paint.setColor(Color.RED);
 		for(int i = 0; i< numLines.length && numLines[i]<canvas.getHeight(); i++){
 			
 			canvas.drawLine(0, numLines[i], canvas.getWidth(), numLines[i], paint);
