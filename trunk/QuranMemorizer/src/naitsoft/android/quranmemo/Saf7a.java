@@ -78,11 +78,11 @@ public class Saf7a extends View implements OnGestureListener {
 			if(m.startLine == m.endLine)
 				canvas.drawRect(m.endX, getY(m.startLine - 1), m.startX,getY(m.startLine), paint);
 			else{
-				canvas.drawRect(m.startX, getY(m.startLine - 1),0 ,getY(m.startLine), paint);
+				canvas.drawRect(0, getY(m.startLine - 1),m.startX ,getY(m.startLine), paint);
 				for(int i = m.startLine+1;i< m.endLine ; i++)
-					canvas.drawRect(0, getY(i), getWidth(),getY(i), paint);
+					canvas.drawRect(0, getY(i-1), getWidth(),getY(i), paint);
 					
-				canvas.drawRect(getWidth(), getY(m.endLine - 1), m.endX,getY(m.endLine), paint);
+				canvas.drawRect(m.endX, getY(m.endLine - 1), getWidth(),getY(m.endLine), paint);
 			}
 		
 		
@@ -161,20 +161,20 @@ public class Saf7a extends View implements OnGestureListener {
 	 * @param event
 	 * @return
 	 */
-	private int getNearstCursor(MotionEvent event) {
+	private int getNearstCursor(MotionEvent event) { 
 		int d1 = (int) Math.abs(2 * event.getX() - editingMask.startX
 				- getY(editingMask.startLine));
 		int d2 = (int) Math.abs(2 * event.getX() - editingMask.endX
 				- getY(editingMask.endLine));
 		if (d1 < d2)
 			if (d1 < 200)
-				return 0;
+				return 1;
 			else
-				return -1;
+				return 0;
 		else if (d2 < 200)
-			return 1;
+			return 2;
 		else
-			return -1;
+			return 0;
 
 	}
 
@@ -187,7 +187,26 @@ public class Saf7a extends View implements OnGestureListener {
 			editingMask.endX = (int) event.getX();
 			editingMask.endLine = getNumLine((int) event.getY());
 		}
+		switchCursor();
 		invalidate();
+	}
+
+	private void switchCursor() {
+		int x , line;
+		if(editingMask.startLine > editingMask.endLine
+				|| (editingMask.startLine == editingMask.endLine && editingMask.startX < editingMask.endX)){
+			x = editingMask.startX;
+			line = editingMask.startLine;
+			editingMask.startX = editingMask.endX;
+			editingMask.startLine = editingMask.endLine;
+			editingMask.endLine = line;
+			editingMask.endX = x;
+			
+			isEditing = isEditing == 2? 1 : 2;
+			
+			
+		}
+		
 	}
 
 	private int getNumLine(int y) {
