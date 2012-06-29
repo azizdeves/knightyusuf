@@ -114,28 +114,28 @@ public class Saf7a extends View implements OnGestureListener {
 	public boolean onTouchEvent(MotionEvent event) {
 		super.onTouchEvent(event);
 
-		if(isEditing==-1){
+//		if(isEditing==-1){
 			gestDetect.onTouchEvent(event);
-			return true;
-		}
+//			return true;
+//		}
 
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			if (isEditing == 0) {
-				isEditing = getNearstCursor(event);
+				getNearstCursor(event);
 
 			} else {
 //				getClickedMask(event);
 			}
 			break;
 		case MotionEvent.ACTION_MOVE:
-			updateMask(event);
-
+			if (isEditing > 0) {
+				updateMask(event);
+			}
 			break;
 		case MotionEvent.ACTION_UP:
-			if(isEditing == 0)
-				break;
-			isEditing = 0;
+			if(isEditing > 0)
+				isEditing = 0;
 			//masks.add(editingMask);
 			//editingMask = null;
 			break;
@@ -145,6 +145,8 @@ public class Saf7a extends View implements OnGestureListener {
 	}
 
 	private Mask getClickedMask(MotionEvent event) {
+		if(isEditing !=- 1)
+			return null;
 		int line = getNumLine((int) event.getY());
 		for (Mask m : masks) {
 			if (m.startLine == line || m.endLine == line
@@ -161,20 +163,17 @@ public class Saf7a extends View implements OnGestureListener {
 	 * @param event
 	 * @return
 	 */
-	private int getNearstCursor(MotionEvent event) { 
-		int d1 = (int) Math.abs(2 * event.getX() - editingMask.startX
-				- getY(editingMask.startLine));
-		int d2 = (int) Math.abs(2 * event.getX() - editingMask.endX
-				- getY(editingMask.endLine));
-		if (d1 < d2)
+	private void getNearstCursor(MotionEvent event) { 
+		
+		int d1 = (int) ( Math.abs( event.getX() - editingMask.startX) +	Math.abs(event.getY() - getY(editingMask.startLine)));
+		int d2 = (int) (Math.abs( event.getX() - editingMask.endX )+		Math.abs(event.getY() - getY(editingMask.endLine)));
+		if (d1 < d2){
 			if (d1 < 200)
-				return 1;
-			else
-				return 0;
+				isEditing = 1;
+		}
 		else if (d2 < 200)
-			return 2;
-		else
-			return 0;
+			isEditing = 2;
+		
 
 	}
 
@@ -182,10 +181,10 @@ public class Saf7a extends View implements OnGestureListener {
 
 		if (isEditing == 1) {
 			editingMask.startX = (int) event.getX();
-			editingMask.startLine = getNumLine((int) event.getY());
+			editingMask.startLine = getNumLine((int) event.getY())-1;
 		} else if (isEditing == 2) {
 			editingMask.endX = (int) event.getX();
-			editingMask.endLine = getNumLine((int) event.getY());
+			editingMask.endLine = getNumLine((int) event.getY())-1;
 		}
 		switchCursor();
 		invalidate();
@@ -231,6 +230,22 @@ public class Saf7a extends View implements OnGestureListener {
 		masks.add(editingMask);
 		invalidate();
 	}
+	
+	@Override
+	public boolean onSingleTapUp(MotionEvent e) {
+		Mask m = getClickedMask(e);
+		if(m==null){
+			isEditing = -1;
+			editingMask = null;
+			
+		}else{
+		
+		editingMask = m;
+		isEditing = 0;
+		}
+		invalidate();
+		return true;
+	}
 
 	@Override
 	public boolean onDown(MotionEvent e) {
@@ -241,12 +256,6 @@ public class Saf7a extends View implements OnGestureListener {
 	@Override
 	public void onShowPress(MotionEvent e) {
 
-	}
-
-	@Override
-	public boolean onSingleTapUp(MotionEvent e) {
-
-		return false;
 	}
 
 	@Override
