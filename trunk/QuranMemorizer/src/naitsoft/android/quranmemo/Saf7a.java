@@ -2,33 +2,51 @@ package naitsoft.android.quranmemo;
 
 import java.util.ArrayList;
 
-import android.R.color;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.GestureDetector.OnGestureListener;
+import android.view.View.MeasureSpec;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.PopupWindow;
+import android.widget.Toast;
 
 public class Saf7a extends View implements OnGestureListener {
 
+	final static int  EDITING_START = 1;
+	final static int  EDITING_END = 2;
+	final static int  EDITING_READY = 0;
+	final static int  NO_EDITING = -1;
+	
 	int stepLines[];
-	private int isEditing = -1;
+	private int isEditing = NO_EDITING;
 	ArrayList<Mask> masks = new ArrayList<Mask>();
 	Mask editingMask;
+	boolean isEditedMaskDirty ;
 	private Bitmap map;
+	int height;
+	int page = 17;
+	String sPage;
 	private GestureDetector gestDetect = new GestureDetector(this);
+	private ProgressDialog dialog;
 
 	public Saf7a(Context context, AttributeSet attrs) {
 		super(context, attrs);
-
+	}
+	
+	public void loadMasks(){
+		masks = QuranMemorizerActivity.getMasks(page);
 	}
 
 	@Override
@@ -38,10 +56,37 @@ public class Saf7a extends View implements OnGestureListener {
 		paint.setColor(Color.WHITE);
 		int seuil = 5;
 		int cumul = 0;
-		if (map == null) {
-			map = BitmapFactory.decodeFile("/mnt/sdcard/QuranPages/a.jpg");
-			map = Bitmap.createScaledBitmap(map, canvas.getWidth(),
-					canvas.getHeight(), true);
+		View popView = inflate(getContext(), R.layout.popup, null);
+		PopupWindow pop = new PopupWindow(popView);
+		pop.setHeight(50);
+		pop.setWidth(getWidth());
+		ImageButton btn = (ImageButton) popView.findViewById(R.id.delete_mrk);
+		btn.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String s = "kj";
+				
+			}
+		});
+//		pop.setContentView(popView);
+		pop.showAtLocation(this, Gravity.TOP, 0, 0);
+		if(true)
+		return;
+		if (map == null || height != getHeight()) {
+			height = getHeight();
+			sPage = QuranMemorizerActivity.addZero(page);
+			map = BitmapFactory.decodeFile("/mnt/sdcard/QuranPages/"+sPage+".jpg");
+			if(map == null){
+				dialog = ProgressDialog.show(QuranMemorizerActivity.activity, "",     "Loading. Please wait...", true);
+				dialog.show();
+				Toast.makeText(QuranMemorizerActivity.activity, "loading", Toast.LENGTH_SHORT);
+				QuranMemorizerActivity.activity.downloadPage(sPage);
+				dialog.dismiss();
+				map = BitmapFactory.decodeFile("/mnt/sdcard/QuranPages/"+sPage+".jpg");
+			}
+			map = Bitmap.createScaledBitmap(map, getWidth(),	getHeight(), true);
+			stepLines = null;
 		}
 		if (stepLines == null) {
 			int numLines[] = new int[1000];
@@ -75,6 +120,20 @@ public class Saf7a extends View implements OnGestureListener {
 		}
 		canvas.drawBitmap(map, 0, 0, paint);
 		for (Mask m : masks){
+			if(m.isHidden){
+				paint.setColor(Color.GREEN);
+//				paint.setStyle(Paint.Style.STROKE);
+				paint.setAlpha(65);
+			}else{
+				if(editingMask != null && m == editingMask){
+					paint.setColor(Color.GREEN);
+					paint.setAlpha(65);
+				}
+				else
+					paint.setColor(Color.WHITE);
+//				paint.setStyle(Paint.Style.FILL_AND_STROKE);
+			}
+				
 			if(m.startLine == m.endLine)
 				canvas.drawRect(m.endX, getY(m.startLine - 1), m.startX,getY(m.startLine), paint);
 			else{
@@ -87,7 +146,8 @@ public class Saf7a extends View implements OnGestureListener {
 		
 		
 		}
-
+		
+		
 		if (isEditing == -1)
 			return;
 
@@ -134,14 +194,21 @@ public class Saf7a extends View implements OnGestureListener {
 			}
 			break;
 		case MotionEvent.ACTION_UP:
-			if(isEditing > 0)
+			if(isEditing > 0){
+				saveMask();
 				isEditing = 0;
+			}
 			//masks.add(editingMask);
 			//editingMask = null;
 			break;
 		}
 
 		return true;
+	}
+
+	private void saveMask() {
+		QuranMemorizerActivity.saveMask(editingMask);
+		
 	}
 
 	private Mask getClickedMask(MotionEvent event) {
@@ -178,7 +245,7 @@ public class Saf7a extends View implements OnGestureListener {
 	}
 
 	private void updateMask(MotionEvent event) {
-
+		isEditedMaskDirty = true;
 		if (isEditing == 1) {
 			editingMask.startX = (int) event.getX();
 			editingMask.startLine = getNumLine((int) event.getY())-1;
@@ -202,50 +269,58 @@ public class Saf7a extends View implements OnGestureListener {
 			editingMask.endX = x;
 			
 			isEditing = isEditing == 2? 1 : 2;
-			
-			
 		}
 		
 	}
 
 	private int getNumLine(int y) {
 		int i = 0;
-		for (; i < stepLines.length && stepLines[i] < y; i++)
-			;
+		for (; i < stepLines.length && stepLines[i] < y; i++);
 		return i;
 	}
 
 	@Override
 	public void onLongPress(MotionEvent event) {
-		isEditing = 0;
-		editingMask = new Mask();
-		editingMask.startX = (int) event.getX() + 100;
-		if (editingMask.startX > getWidth())
-			editingMask.startX = getWidth();
-		editingMask.startLine = getNumLine((int) event.getY());
-		editingMask.endX = (int) event.getX() - 100;
-		if (editingMask.endX < 0)
-			editingMask.endX = 0;
-		editingMask.endLine = getNumLine((int) event.getY());
-		masks.add(editingMask);
-		invalidate();
+		Mask m = getClickedMask(event);
+		if(m==null){
+			isEditing = 0;
+			editingMask = new Mask();
+			editingMask.page = page;
+			editingMask.startX = (int) event.getX() + 100;
+			if (editingMask.startX > getWidth())
+				editingMask.startX = getWidth();
+			editingMask.startLine = getNumLine((int) event.getY());
+			editingMask.endX = (int) event.getX() - 100;
+			if (editingMask.endX < 0)
+				editingMask.endX = 0;
+			editingMask.endLine = getNumLine((int) event.getY());
+			masks.add(editingMask);
+		}else{
+			editingMask = m;
+			m.isHidden = false;
+			isEditing = 0;
+		}
+//		QuranMemorizerActivity.activity.markBar.setVisibility(View.VISIBLE);
+		invalidate(); 
 	}
 	
 	@Override
 	public boolean onSingleTapUp(MotionEvent e) {
 		Mask m = getClickedMask(e);
 		if(m==null){
+//			if(isEditing == EDITING_READY){
 			isEditing = -1;
 			editingMask = null;
+//			QuranMemorizerActivity.activity.markBar.setVisibility(View.GONE);
 			
 		}else{
+			m.isHidden = !m.isHidden;
 		
-		editingMask = m;
-		isEditing = 0;
 		}
 		invalidate();
-		return true;
+		return true; 
 	}
+		
 
 	@Override
 	public boolean onDown(MotionEvent e) {
@@ -268,15 +343,63 @@ public class Saf7a extends View implements OnGestureListener {
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
 			float velocityY) {
+		if(Math.abs(velocityX)>1000 && Math.abs(velocityY)<500)
+			if(velocityX>0)
+				load(1);
+			else
+				load(-1);
+				
+				return false;
 
-		return false;
 	}
+	
+	private void load(int i) {
+		page += i;
+		map = null;
+		init();
+		
+	}
+
+
+
+	public void removeEditingMask(){
+		masks.remove(editingMask);
+		isEditing = -1;
+		editingMask = null;
+		invalidate();
+	}
+
+	public void setPage(int i) {
+		page = i;
+		
+	}
+
+	public void init() {
+		
+		loadMasks();
+		invalidate();
+	}
+    
+//    @Override
+//    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+//    	int width = MeasureSpec.getSize(widthMeasureSpec);
+//    	int height = MeasureSpec.getSize(heightMeasureSpec);
+//    	
+//    	setMeasuredDimension(width, height);
+//    }
 
 }
 
 class Mask {
+	public Mask(){
+		id = -1;
+		page = 1;
+	}
+	int id;
+	boolean isHidden;
 	int startLine;
 	int endLine;
 	int startX;
 	int endX;
+	int page;
 }

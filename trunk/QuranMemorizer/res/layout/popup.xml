@@ -1,25 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/linearLayout"
-	android:layout_width="fill_parent" android:layout_height="fill_parent" android:orientation="vertical">
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical" android:layout_weight="0.9">
-
-    <naitsoft.android.quranmemo.Saf7a
-        android:id="@+id/saf7a"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        />
 
-</LinearLayout>
-
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mark_bar"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:layout_weight="1"  android:visibility="gone">
+    android:layout_height="fill_parent"
+    android:layout_weight="1"  >
 
     <ImageButton
         android:id="@+id/delete_mrk"
@@ -39,4 +26,3 @@
 
 </LinearLayout>
 
-</LinearLayout>
