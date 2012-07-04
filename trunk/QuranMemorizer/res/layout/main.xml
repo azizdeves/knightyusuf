@@ -14,29 +14,5 @@
 
 </LinearLayout>
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/mark_bar"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:layout_weight="1"  android:visibility="gone">
-
-    <ImageButton
-        android:id="@+id/delete_mrk"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="fill_vertical"
-        android:layout_weight="1"
-        android:src="@android:drawable/ic_menu_delete" />
-
-    <ImageButton
-        android:id="@+id/save_mrk"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="fill_vertical"
-        android:layout_weight="1"
-        android:src="@android:drawable/ic_menu_save" />
-
-</LinearLayout>
 
 </LinearLayout>
