@@ -37,7 +37,7 @@ public class QuranMemorizerActivity extends Activity {
         initDB();
         saf7a.setPage(17);
         saf7a.init();
-        markBar = new MarkBar(this);
+//        markBar = new MarkBar(this);
     }
     
     public static ArrayList<Mask> getMasks(int page){
