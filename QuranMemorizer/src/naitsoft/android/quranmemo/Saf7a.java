@@ -87,11 +87,13 @@ public class Saf7a extends View implements OnGestureListener {
 						cumul++;
 					}
 				}
-				if (cumul < seuil)
+				if (cumul < seuil){
 					numLines[cur++] = y;
+					numLines[cur] = y+10;//pour ajouter une ligne en fin
+				}
 			}
 
-			paint.setColor(Color.WHITE);
+			paint.setColor(Color.BLUE);
 			cur = 0;
 			int startSpace, endSpace;
 			startSpace = 0;
@@ -105,8 +107,9 @@ public class Saf7a extends View implements OnGestureListener {
 			}
 			
 			stepLines = new int[cur];
-			for(int i = 0; i<cur; i ++)
+			for(int i = 0; i<cur; i ++){
 				stepLines[i] = tempStepLines[i];
+			}
 			
 		}
 		canvas.drawBitmap(map, 0, -scroll, paint);
@@ -137,10 +140,29 @@ public class Saf7a extends View implements OnGestureListener {
 		
 		
 		}
-		
+//		paint.setColor(Color.RED);
+//		for(int i = 0; i<stepLines.length; i ++){
+//			canvas.drawRect(0, stepLines[i], getWidth(), stepLines[i]+5, paint);
+//		}
+		if(pop == null){
+			View popView = inflate(getContext(), R.layout.popup, null);
+			pop = new PopupWindow(popView);
+			pop.setHeight(50);
+			pop.setWidth(getWidth());
+			ImageButton btn = (ImageButton) popView.findViewById(R.id.delete_mrk);
+			btn.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					removeEditingMask();
+
+				}
+			});
+		}
 		
 		if (isEditing == -1)
 			return;
+			
 
 		BitmapDrawable curDraw = (BitmapDrawable) getContext().getResources()
 				.getDrawable(android.R.drawable.ic_input_add);
@@ -155,30 +177,24 @@ public class Saf7a extends View implements OnGestureListener {
 				getY(editingMask.endLine) + 100);
 		curDraw.draw(canvas);
 		
-		if(pop == null){
-			View popView = inflate(getContext(), R.layout.popup, null);
-			pop = new PopupWindow(popView);
-			pop.setHeight(50);
-			pop.setWidth(getWidth());
-			ImageButton btn = (ImageButton) popView.findViewById(R.id.delete_mrk);
-			btn.setOnClickListener(new View.OnClickListener() {
 
-				@Override
-				public void onClick(View v) {
-					String s = "kj";
-
-				}
-			});
+		if(isEditing != 0){
+			pop.dismiss();
+			return;
 		}
 //		pop.setContentView(popView);
-		pop.showAtLocation(this, Gravity.TOP, 0, 0);
+		if(getHeight()-getY(editingMask.endLine) < getY(editingMask.startLine)) 
+			pop.showAtLocation(this, Gravity.TOP, 0, 0);
+		else
+			pop.showAtLocation(this, Gravity.BOTTOM, 0, 0);
 		
 
 	}
 
 	private int getY(int numLine) {
-//		if(numLine > stepLines.length)
-//			numLine = stepLines.length-1;
+		if(numLine == -1)
+			numLine = 0;
+		
 		return stepLines[numLine]-scroll;
 	}
 
@@ -209,6 +225,10 @@ public class Saf7a extends View implements OnGestureListener {
 			if(isEditing > 0){
 				saveMask();
 				isEditing = 0;
+				if(getHeight()-getY(editingMask.endLine) < getY(editingMask.startLine)) 
+					pop.showAtLocation(this, Gravity.TOP, 0, 0);
+				else
+					pop.showAtLocation(this, Gravity.BOTTOM, 0, 0);
 			}
 			//masks.add(editingMask);
 			//editingMask = null;
@@ -259,14 +279,14 @@ public class Saf7a extends View implements OnGestureListener {
 		isEditedMaskDirty = true;
 		if (isEditing == 1) {
 			editingMask.startX = (int) event.getX();
-			editingMask.startLine = getNumLine((int) event.getY()+scroll)-1;
+			editingMask.startLine = getNumLine((int) event.getY())-1;
 		} else if (isEditing == 2) {
 			editingMask.endX = (int) event.getX();
-			editingMask.endLine = getNumLine((int) event.getY()+scroll)-1;
+			editingMask.endLine = getNumLine((int) event.getY())-1;
 		}
 		switchCursor();
-		if(isEditing == 2){
-			scroll = (int) (Math.pow(event.getY()/	getHeight(),3)*50); 
+		if(true){
+			scroll = (int) (Math.pow(event.getY()/	getHeight(),3)*100); 
 		}
 		invalidate();
 	}
@@ -291,8 +311,8 @@ public class Saf7a extends View implements OnGestureListener {
 		int i = 0;
 		y = y+scroll;
 		for (; i < stepLines.length && stepLines[i] < y; i++);
-		if(i == stepLines.length )
-			return i-1;
+//		if(i == stepLines.length )
+//			return i-1;
 		return i;
 	}
 
@@ -329,6 +349,7 @@ public class Saf7a extends View implements OnGestureListener {
 			isEditing = -1;
 			editingMask = null;
 			scroll = 0;
+			pop.dismiss();
 //			QuranMemorizerActivity.activity.markBar.setVisibility(View.GONE);
 			
 		}else{
@@ -372,6 +393,7 @@ public class Saf7a extends View implements OnGestureListener {
 	}
 	
 	private void load(int i) {
+		isEditing = -1;
 		page += i;
 		map = null;
 		init();
@@ -381,9 +403,11 @@ public class Saf7a extends View implements OnGestureListener {
 
 
 	public void removeEditingMask(){
+		QuranMemorizerActivity.deleteMask(editingMask);
 		masks.remove(editingMask);
 		isEditing = -1;
 		editingMask = null;
+		pop.dismiss();
 		invalidate();
 	}
 
