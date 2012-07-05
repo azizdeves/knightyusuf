@@ -22,7 +22,7 @@ import android.widget.LinearLayout;
 public class QuranMemorizerActivity extends Activity {
     
 	private static DataBaseHelper myDbHelper;
-	 MarkBar markBar;
+//	 MarkBar markBar;
 	private Saf7a saf7a;
 	static QuranMemorizerActivity activity;
 	
@@ -52,16 +52,11 @@ public class QuranMemorizerActivity extends Activity {
 		}
 
 	}
-	public void deleteMask(){
-		int id = saf7a.editingMask.id;
-		if(id != -1){
+	public static  void deleteMask(Mask msk){
+		if(msk.id != -1){
 			
-			deleteMask(id);
-			saf7a.removeEditingMask();
+			myDbHelper.deleteMask(msk.id);
 		}
-	}
-	public void deleteMask(int id){
-		myDbHelper.deleteMask(id);
 	}
 
     public void downloadPage(String sPage)
@@ -114,37 +109,37 @@ public class QuranMemorizerActivity extends Activity {
 		
 	}
 }
-class MarkBar{
-
-	private LinearLayout parentView;
-	private QuranMemorizerActivity qActivity;
-
-	public MarkBar(final QuranMemorizerActivity qActivity) {
-		this.qActivity = qActivity;
-		parentView = (LinearLayout) qActivity.findViewById(R.id.mark_bar);
-//		Button greenBtn = (Button) qActivity.findViewById(R.id.green_mrk);
-		ImageButton saveBtn = (ImageButton) qActivity.findViewById(R.id.save_mrk);
-		ImageButton deleteBtn = (ImageButton) qActivity.findViewById(R.id.delete_mrk);
-		
-	
-		saveBtn.setOnClickListener(new View.OnClickListener() {			
-			public void onClick(View v) {
-				
-			}
-		});
-		deleteBtn.setOnClickListener(new View.OnClickListener() {			
-			public void onClick(View v) {
-				qActivity.deleteMask();
-				setVisibility(View.GONE);
-			}
-		});
-		
-		
-	}
-
-	public void setVisibility(int visibility) {
-		parentView.setVisibility(visibility );
-		
-	}
-
-}
+//class MarkBar{
+//
+//	private LinearLayout parentView;
+//	private QuranMemorizerActivity qActivity;
+//
+//	public MarkBar(final QuranMemorizerActivity qActivity) {
+//		this.qActivity = qActivity;
+//		parentView = (LinearLayout) qActivity.findViewById(R.id.mark_bar);
+////		Button greenBtn = (Button) qActivity.findViewById(R.id.green_mrk);
+//		ImageButton saveBtn = (ImageButton) qActivity.findViewById(R.id.save_mrk);
+//		ImageButton deleteBtn = (ImageButton) qActivity.findViewById(R.id.delete_mrk);
+//		
+//	
+//		saveBtn.setOnClickListener(new View.OnClickListener() {			
+//			public void onClick(View v) {
+//				
+//			}
+//		});
+//		deleteBtn.setOnClickListener(new View.OnClickListener() {			
+//			public void onClick(View v) {
+//				qActivity.deleteMask();
+//				setVisibility(View.GONE);
+//			}
+//		});
+//		
+//		
+//	}
+//
+//	public void setVisibility(int visibility) {
+//		parentView.setVisibility(visibility );
+//		
+//	}
+//
+//}
