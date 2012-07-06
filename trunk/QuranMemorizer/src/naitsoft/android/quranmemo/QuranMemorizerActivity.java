@@ -10,8 +10,10 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -27,16 +29,17 @@ public class QuranMemorizerActivity extends Activity {
 	static QuranMemorizerActivity activity;
 	
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
         activity = this;
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.main);
         saf7a = (Saf7a) findViewById(R.id.saf7a);
         initDB();
-        saf7a.setPage(17);
-        saf7a.init();
+        if(bundle != null)
+        	saf7a.setPage(bundle.getInt("page", 1));
+        
 //        markBar = new MarkBar(this);
     }
     
@@ -107,6 +110,31 @@ public class QuranMemorizerActivity extends Activity {
 		String s = "000"+nb;
 		return s.substring(s.length()-4);
 		
+	}
+	@Override
+	protected void onStart() {
+		super.onStart();
+		SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(this);
+		saf7a.setPage(pref.getInt("page", 1));
+		saf7a.init();
+	}
+	@Override
+	protected void onRestoreInstanceState(Bundle bundle) {
+		super.onRestoreInstanceState(bundle);
+		saf7a.setPage(bundle.getInt("page", 1));
+	}
+//	@Override
+//	protected void onSaveInstanceState(Bundle outState) {
+//		super.onSaveInstanceState(outState);
+//		outState.putInt("page", saf7a.page);
+//		
+//	}
+	@Override
+	protected void onPause() {
+		super.onStop();
+		SharedPreferences.Editor pref= PreferenceManager.getDefaultSharedPreferences(this).edit();
+		pref.putInt("page", saf7a.page);
+		pref.commit();
 	}
 }
 //class MarkBar{

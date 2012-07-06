@@ -36,7 +36,7 @@ public class Saf7a extends View implements OnGestureListener {
 	boolean isEditedMaskDirty ;
 	private Bitmap map;
 	int height;
-	int page = 17;
+	int page = 1;
 	int scroll;
 	String sPage;
 	private GestureDetector gestDetect = new GestureDetector(this);
@@ -318,6 +318,8 @@ public class Saf7a extends View implements OnGestureListener {
 
 	@Override
 	public void onLongPress(MotionEvent event) {
+		if(isEditing !=- 1)
+			return ;
 		Mask m = getClickedMask(event);
 		if(m==null){
 			isEditing = 0;
@@ -382,7 +384,7 @@ public class Saf7a extends View implements OnGestureListener {
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
 			float velocityY) {
-		if(Math.abs(velocityX)>1000 && Math.abs(velocityY)<500)
+		if(Math.abs(velocityX)>700 && Math.abs(velocityY)<500)
 			if(velocityX>0)
 				load(1);
 			else
