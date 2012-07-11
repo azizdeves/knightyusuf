@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
@@ -43,6 +44,10 @@ public class Saf7a extends View implements OnGestureListener {
 	private ProgressDialog dialog;
 	private PopupWindow pop;
 	Paint paint = new Paint();
+	Rect srcRect = new Rect();
+	Rect dstRect = new Rect();
+	int streamCur ;
+	int streamLine;
 
 	public Saf7a(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -58,6 +63,7 @@ public class Saf7a extends View implements OnGestureListener {
 		paint.setColor(Color.WHITE);
 		int seuil = 5;
 		int cumul = 0;
+		int i = 0;
 //		if(true)
 //			return;
 		if (map == null || height != getHeight()) {
@@ -98,7 +104,7 @@ public class Saf7a extends View implements OnGestureListener {
 			int startSpace, endSpace;
 			startSpace = 0;
 			int[] tempStepLines = new int[30];
-			for (int i = 1; i < numLines.length; i++) {
+			for ( i = 1; i < numLines.length; i++) {
 				if (numLines[i] - numLines[i - 1] > 5) {
 					endSpace = numLines[i - 1];
 					tempStepLines[cur++] = startSpace + (endSpace - startSpace) / 2;
@@ -107,11 +113,31 @@ public class Saf7a extends View implements OnGestureListener {
 			}
 			
 			stepLines = new int[cur];
-			for(int i = 0; i<cur; i ++){
+			for( i = 0; i<cur; i ++){
 				stepLines[i] = tempStepLines[i];
 			}
 			
 		}
+		if(streamCur>getWidth()){
+			streamLine++;
+			if(streamLine==stepLines.length-1)
+				streamLine = 0;
+			streamCur=0;
+		}
+		srcRect.set(0, stepLines[streamLine], getWidth(), stepLines[streamLine+1]);
+		dstRect.set(streamCur, stepLines[0], getWidth()+streamCur, stepLines[1]);
+		canvas.drawBitmap(map, srcRect, dstRect, paint);
+	
+		srcRect.set(0, stepLines[streamLine+1], getWidth(), stepLines[streamLine+2]);
+		dstRect.set(streamCur-getWidth(), stepLines[0], streamCur, stepLines[1]);
+		canvas.drawBitmap(map, srcRect, dstRect, paint);
+		
+		
+		streamCur += 3;
+		
+		invalidate();
+		if(true)
+			return;
 		canvas.drawBitmap(map, 0, -scroll, paint);
 		for (Mask m : masks){
 			if(m.isHidden){
@@ -132,7 +158,7 @@ public class Saf7a extends View implements OnGestureListener {
 				canvas.drawRect(m.endX, getY(m.startLine - 1), m.startX,getY(m.startLine), paint);
 			else{
 				canvas.drawRect(0, getY(m.startLine - 1),m.startX ,getY(m.startLine), paint);
-				for(int i = m.startLine+1;i< m.endLine ; i++)
+				for( i = m.startLine+1;i< m.endLine ; i++)
 					canvas.drawRect(0, getY(i-1), getWidth(),getY(i), paint);
 					
 				canvas.drawRect(m.endX, getY(m.endLine - 1), getWidth(),getY(m.endLine), paint);
@@ -140,10 +166,10 @@ public class Saf7a extends View implements OnGestureListener {
 		
 		
 		}
-//		paint.setColor(Color.RED);
-//		for(int i = 0; i<stepLines.length; i ++){
-//			canvas.drawRect(0, stepLines[i], getWidth(), stepLines[i]+5, paint);
-//		}
+		paint.setColor(Color.GRAY);
+		for( i = 0; i<stepLines.length && isEditing == -1; i ++){
+			canvas.drawLine(0, stepLines[i], getWidth(), stepLines[i], paint);
+		}
 		if(pop == null){
 			View popView = inflate(getContext(), R.layout.popup, null);
 			pop = new PopupWindow(popView);
@@ -384,12 +410,23 @@ public class Saf7a extends View implements OnGestureListener {
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
 			float velocityY) {
-		if(Math.abs(velocityX)>700 && Math.abs(velocityY)<500)
+		if(Math.abs(velocityX)>700 && Math.abs(velocityY)<500){
 			if(velocityX>0)
 				load(1);
 			else
 				load(-1);
+		}else
+		if(Math.abs(velocityY)>700 && Math.abs(velocityX)<500){
+			boolean b ;
+			if(velocityY>0)
+				b=true;
+			else
+				b= false;
+			for(Mask m : masks)
+				m.isHidden = b;
+			invalidate();
 				
+		}
 				return false;
 
 	}
