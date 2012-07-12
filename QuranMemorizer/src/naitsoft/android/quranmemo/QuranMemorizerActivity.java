@@ -38,7 +38,7 @@ public class QuranMemorizerActivity extends Activity {
         saf7a = (Saf7a) findViewById(R.id.saf7a);
         initDB();
         if(bundle != null)
-        	saf7a.setPage(bundle.getInt("page", 1));
+        	saf7a.setPage(bundle.getInt("page", 3));
         
 //        markBar = new MarkBar(this);
     }
@@ -62,7 +62,7 @@ public class QuranMemorizerActivity extends Activity {
 		}
 	}
 
-    public void downloadPage(String sPage)
+    public static void downloadPage(String sPage)
     {
 //    	"http://c00022506.cdn1.cloudfiles.rackspacecloud.com/39_2.png"
     	File fileTmp = null;
@@ -115,7 +115,7 @@ public class QuranMemorizerActivity extends Activity {
 	protected void onStart() {
 		super.onStart();
 		SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(this);
-		saf7a.setPage(pref.getInt("page", 1));
+		saf7a.setPage(pref.getInt("page", 3));
 		saf7a.init();
 	}
 	@Override
