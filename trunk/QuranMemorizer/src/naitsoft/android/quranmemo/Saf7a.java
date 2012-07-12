@@ -61,88 +61,23 @@ public class Saf7a extends View implements OnGestureListener {
 	protected void onDraw(Canvas canvas) {
 		super.onDraw(canvas);
 		paint.setColor(Color.WHITE);
-		int seuil = 5;
-		int cumul = 0;
-		int i = 0;
 //		if(true)
 //			return;
 		if (map == null || height != getHeight()) {
 			height = getHeight();
 			sPage = QuranMemorizerActivity.addZero(page);
-			map = BitmapFactory.decodeFile("/mnt/sdcard/QuranPages/"+sPage+".jpg");
-			if(map == null){
-				dialog = ProgressDialog.show(QuranMemorizerActivity.activity, "",     "Loading. Please wait...", true);
-				dialog.show();
-				Toast.makeText(QuranMemorizerActivity.activity, "loading", Toast.LENGTH_SHORT);
-				QuranMemorizerActivity.activity.downloadPage(sPage);
-				dialog.dismiss();
-				map = BitmapFactory.decodeFile("/mnt/sdcard/QuranPages/"+sPage+".jpg");
-			}
-			map = Bitmap.createScaledBitmap(map, getWidth(),	getHeight(), true);
+			map = loadBitmap(sPage);
+			map = Bitmap.createScaledBitmap(map, getWidth(), getHeight(), true);
 			stepLines = null;
 		}
 		if (stepLines == null) {
-			int numLines[] = new int[1000];
-			int cur = 0;
-			int pixel = 0;
-			for (int y = 0; y < map.getHeight(); y++) {
-				cumul = 0;
-				for (int x = 0; x < map.getWidth(); x++) {
-					pixel = map.getPixel(x, y);
-					if (Color.red(pixel) + Color.blue(pixel)+ Color.green(pixel) < 500) {
-						cumul++;
-					}
-				}
-				if (cumul < seuil){
-					numLines[cur++] = y;
-					numLines[cur] = y+10;//pour ajouter une ligne en fin
-				}
-			}
-
-			paint.setColor(Color.BLUE);
-			cur = 0;
-			int startSpace, endSpace;
-			startSpace = 0;
-			int[] tempStepLines = new int[30];
-			for ( i = 1; i < numLines.length; i++) {
-				if (numLines[i] - numLines[i - 1] > 5) {
-					endSpace = numLines[i - 1];
-					tempStepLines[cur++] = startSpace + (endSpace - startSpace) / 2;
-					startSpace = numLines[i];
-				}
-			}
-			
-			stepLines = new int[cur];
-			for( i = 0; i<cur; i ++){
-				stepLines[i] = tempStepLines[i];
-			}
-			
+			stepLines = calculStepLines(map);
 		}
-		if(streamCur>getWidth()){
-			streamLine++;
-			if(streamLine==stepLines.length-1)
-				streamLine = 0;
-			streamCur=0;
-		}
-		srcRect.set(0, stepLines[streamLine], getWidth(), stepLines[streamLine+1]);
-		dstRect.set(streamCur, stepLines[0], getWidth()+streamCur, stepLines[1]);
-		canvas.drawBitmap(map, srcRect, dstRect, paint);
-	
-		srcRect.set(0, stepLines[streamLine+1], getWidth(), stepLines[streamLine+2]);
-		dstRect.set(streamCur-getWidth(), stepLines[0], streamCur, stepLines[1]);
-		canvas.drawBitmap(map, srcRect, dstRect, paint);
-		
-		
-		streamCur += 3;
-		
-		invalidate();
-		if(true)
-			return;
 		canvas.drawBitmap(map, 0, -scroll, paint);
+		int i =0;
 		for (Mask m : masks){
 			if(m.isHidden){
 				paint.setColor(Color.GREEN);
-//				paint.setStyle(Paint.Style.STROKE);
 				paint.setAlpha(65);
 			}else{
 				if(editingMask != null && m == editingMask){
@@ -151,7 +86,6 @@ public class Saf7a extends View implements OnGestureListener {
 				}
 				else
 					paint.setColor(Color.WHITE);
-//				paint.setStyle(Paint.Style.FILL_AND_STROKE);
 			}
 				
 			if(m.startLine == m.endLine)
@@ -215,6 +149,63 @@ public class Saf7a extends View implements OnGestureListener {
 			pop.showAtLocation(this, Gravity.BOTTOM, 0, 0);
 		
 
+	}
+
+	public static  int[] calculStepLines(Bitmap map) {
+
+		int seuil = 5;
+		int cumul = 0;
+		int i = 0;
+		int numLines[] = new int[1000];
+		int cur = 0;
+		int pixel = 0;
+		for (int y = 0; y < map.getHeight(); y++) {
+			cumul = 0;
+			for (int x = 0; x < map.getWidth(); x++) {
+				pixel = map.getPixel(x, y);
+				if (Color.red(pixel) + Color.blue(pixel)+ Color.green(pixel) < 500) {
+					cumul++;
+				}
+			}
+			if (cumul < seuil ){
+				numLines[cur++] = y;
+				numLines[cur] = y+10;//pour ajouter une ligne en fin
+			}
+		}
+
+		cur = 0;
+		int startSpace, endSpace;
+		startSpace = 0;
+		int[] tempStepLines = new int[30];
+		for ( i = 1; i < numLines.length; i++) {
+			if (numLines[i] - numLines[i - 1] > 20) {
+				endSpace = numLines[i - 1];
+				tempStepLines[cur++] = startSpace + (endSpace - startSpace) / 2;
+				startSpace = numLines[i];
+			}
+		}
+		
+		int[] stepLines = new int[cur];
+		for( i = 0; i<cur; i ++){
+			stepLines[i] = tempStepLines[i];
+		}
+		
+		return stepLines;
+	
+	}
+
+	public static Bitmap loadBitmap(String sPage) {
+		Bitmap map;
+		map = BitmapFactory.decodeFile("/mnt/sdcard/QuranPages/"+sPage+".jpg"); 
+			if(map == null){
+//				dialog = ProgressDialog.show(QuranMemorizerActivity.activity, "",     "Loading. Please wait...", true);
+//				dialog.show();
+				Toast.makeText(QuranMemorizerActivity.activity, "loading", Toast.LENGTH_SHORT);
+				QuranMemorizerActivity.downloadPage(sPage);
+//				dialog.dismiss();
+				map = BitmapFactory.decodeFile("/mnt/sdcard/QuranPages/"+sPage+".jpg");
+			}
+			return map;
 	}
 
 	private int getY(int numLine) {
@@ -410,7 +401,9 @@ public class Saf7a extends View implements OnGestureListener {
 	@Override
 	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
 			float velocityY) {
-		if(Math.abs(velocityX)>700 && Math.abs(velocityY)<500){
+		if(isEditing != -1)
+			return true;
+		if(Math.abs(e1.getX()-e2.getX()) > getWidth()*0.75 && Math.abs(e1.getY()-e2.getY()) < getHeight()*0.25){
 			if(velocityX>0)
 				load(1);
 			else
@@ -427,7 +420,7 @@ public class Saf7a extends View implements OnGestureListener {
 			invalidate();
 				
 		}
-				return false;
+				return true;
 
 	}
 	
@@ -452,6 +445,7 @@ public class Saf7a extends View implements OnGestureListener {
 
 	public void setPage(int i) {
 		page = i;
+		
 		
 	}
 
