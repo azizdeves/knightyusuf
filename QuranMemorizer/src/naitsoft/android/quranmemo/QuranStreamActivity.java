@@ -36,18 +36,24 @@ public class QuranStreamActivity extends Activity {
 	protected void onStart() {
 		super.onStart();
 		SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(this);
+		stream.streamCur= pref.getInt("streamCur",0);
+		stream.streamLine= pref.getInt("streamLine",0);
 		stream.setPage(pref.getInt("pageStream", 4));
 	}
 	@Override
 	protected void onRestoreInstanceState(Bundle bundle) {
 		super.onRestoreInstanceState(bundle);
+		stream.streamCur= bundle.getInt("streamCur",0);
+		stream.streamLine= bundle.getInt("streamLine",0);
 		stream.setPage(bundle.getInt("pageStream", 4));
 	}
 	@Override
 	protected void onPause() {
-		super.onStop();
+		super.onPause();
 		SharedPreferences.Editor pref= PreferenceManager.getDefaultSharedPreferences(this).edit();
 		pref.putInt("pageStream", stream.page);
+		pref.putInt("streamLine", stream.streamLine);
+		pref.putInt("streamCur", stream.streamCur);
 		pref.commit();
 	}
 }
