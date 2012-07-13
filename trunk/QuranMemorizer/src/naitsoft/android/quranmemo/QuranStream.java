@@ -32,9 +32,11 @@ public class QuranStream extends View implements OnGestureListener {
 	int speed;
 	private Bitmap streamMap;
 	private float xStick;
+	private int oldSpeed;
 
 	public QuranStream(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		paint.setTextSize(20);
 	}
 	
 
@@ -45,6 +47,9 @@ public class QuranStream extends View implements OnGestureListener {
 		super.onDraw(canvas);
 		paint.setColor(Color.WHITE);
 		canvas.drawRect(0, 0, getWidth(), getHeight()/3, paint);
+		paint.setColor(Color.BLUE);
+		
+		canvas.drawText(sPage, 10, 20, paint);
 		if (map == null || height != getHeight()) {
 			height = getHeight();
 			sPage = QuranMemorizerActivity.addZero(page);
@@ -54,105 +59,45 @@ public class QuranStream extends View implements OnGestureListener {
 		}
 		if (stepLines == null) {
 			stepLines = Saf7a.calculStepLines(map);
+			if(speed>=0)
+				streamLine = 0;
+			else
+				streamLine = stepLines.length-3;
+			speed = 0;
+			
 			
 		}
 		
 		if(streamCur>getWidth() || streamCur < 0){
-			if(speed>=0)
+			if(speed>=0){
 				streamLine++;
-			else
-				streamLine--;
-			if((speed>0 && streamLine==stepLines.length-2 )|| (speed<0&&streamLine==-2)){
-				map = null;
-				page += streamLine == 0 ?-1: 1;
-				streamLine = 0;
-				speed = 0;
-				invalidate();
-				return;
+				streamCur=0;
 			}
-//			else
-//				if(streamLine==0)
-			streamCur=0;
+			else{
+				streamCur=getWidth();
+				streamLine--;
+			}
+			if((speed>0 && streamLine==stepLines.length-2 )|| (speed<0 && streamLine==-1)){
+				map = null;
+				page += streamLine == -1 ?-1: 1;
+				
+				invalidate();
+				return; 
+			}
+			
 		}
-		if(speed >=0 ){
 			srcRect.set(0, stepLines[streamLine], getWidth(), stepLines[streamLine+1]);
-			dstRect.set(streamCur, 50, getWidth()+streamCur, 50+stepLines[streamLine+1]-stepLines[streamLine]);
+			dstRect.set(streamCur, 100, getWidth()+streamCur, 100+stepLines[streamLine+1]-stepLines[streamLine]);
 			canvas.drawBitmap(map, srcRect, dstRect, paint);
 
 			srcRect.set(0, stepLines[streamLine+1], getWidth(), stepLines[streamLine+2]);
-			dstRect.set(streamCur-getWidth(),50, streamCur, 50+stepLines[streamLine+2]-stepLines[streamLine+1]);
+			dstRect.set(streamCur-getWidth(),100, streamCur, 100+stepLines[streamLine+2]-stepLines[streamLine+1]);
 			canvas.drawBitmap(map, srcRect, dstRect, paint);
 			streamCur += speed;
-		}else{
-			srcRect.set(0, stepLines[streamLine], getWidth(), stepLines[streamLine+1]);
-			dstRect.set(-streamCur, 50, getWidth()-streamCur, 50+stepLines[streamLine+1]-stepLines[streamLine]);
-			canvas.drawBitmap(map, srcRect, dstRect, paint);
-			
-			srcRect.set(0, stepLines[streamLine-1], getWidth(), stepLines[streamLine-2]);
-			dstRect.set(getWidth()-streamCur,50, 2*getWidth()-streamCur, 50+stepLines[streamLine-2]-stepLines[streamLine-1]);
-			canvas.drawBitmap(map, srcRect, dstRect, paint);
-			streamCur -= speed;
-		}
-		
-//		try {
-//			Thread.currentThread().sleep(500);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 		if(speed!=0)
 			invalidate();
 
 	}
-/*	@Override
-	protected void onDraw(Canvas canvas) {
-		super.onDraw(canvas);
-		paint.setColor(Color.WHITE);
-		canvas.drawRect(0, 0, getWidth(), getHeight(), paint);
-		if (map == null || height != getHeight()) {
-			height = getHeight();
-			sPage = QuranMemorizerActivity.addZero(page);
-			map = Saf7a.loadBitmap(sPage);
-			map = Bitmap.createScaledBitmap(map, getWidth(), getHeight(), true);
-			stepLines = null;
-		}
-		if (stepLines == null) {
-			stepLines = Saf7a.calculStepLines(map);
-			streamMap = Bitmap.createBitmap(stepLines.length * getWidth(), stepLines[1],  Config.RGB_565);
-			Canvas c = new Canvas(streamMap);
-			for(int i = 0; i<stepLines.length-1; ){
-				srcRect.set(0, stepLines[i], getWidth(), stepLines[i+1]);
-				dstRect.set(i*getWidth(), 0, ++i*getWidth(), stepLines[streamLine+1]);
-				c.drawBitmap(map, srcRect, dstRect, paint);
-			}
-		}
-		
-		canvas.drawBitmap(streamMap,streamCur, 50 , paint);
-//		
-//		if(streamCur>getWidth()){
-//			streamLine++;
-//			if(streamLine==stepLines.length-2)
-//				streamLine = 0;
-//			streamCur=0;
-//		}
-//		srcRect.set(0, stepLines[streamLine], getWidth(), stepLines[streamLine+1]);
-//		dstRect.set(streamCur, 50, getWidth()+streamCur, 50+stepLines[streamLine+1]-stepLines[streamLine]);
-//		canvas.drawBitmap(map, srcRect, dstRect, paint);
-//	
-//		srcRect.set(0, stepLines[streamLine+1], getWidth(), stepLines[streamLine+2]);
-//		dstRect.set(streamCur-getWidth(),50, streamCur, 50+stepLines[streamLine+2]-stepLines[streamLine+1]);
-//		canvas.drawBitmap(map, srcRect, dstRect, paint);
-		streamCur += 3;
-//		try {
-//			Thread.currentThread().sleep(500);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		invalidate();
-
-	}
-*/
 
 
 
@@ -160,14 +105,16 @@ public class QuranStream extends View implements OnGestureListener {
 	public boolean onTouchEvent(MotionEvent event) {
 		super.onTouchEvent(event);
 
-//			gestDetect.onTouchEvent(event);
 
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
 			xStick = event.getX();
 			break;
 		case MotionEvent.ACTION_MOVE:
+			oldSpeed = speed;
 			speed = (int) (xStick - event.getX())/35;
+//			if(oldSpeed * speed<0)
+//				streamLine--;
 			invalidate();
 			break;
 		case MotionEvent.ACTION_UP:
