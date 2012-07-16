@@ -185,11 +185,11 @@ public class Saf7a extends View implements OnGestureListener {
 			}
 		}
 		
-		int[] stepLines = new int[cur];
+		int[] stepLines = new int[cur+1];
 		for( i = 0; i<cur; i ++){
 			stepLines[i] = tempStepLines[i];
 		}
-		
+		stepLines[cur]=800;
 		return stepLines;
 	
 	}

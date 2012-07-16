@@ -33,6 +33,7 @@ public class QuranStream extends View implements OnGestureListener {
 	private Bitmap streamMap;
 	private float xStick;
 	private int oldSpeed;
+	private boolean isSliding;
 
 	public QuranStream(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -48,8 +49,8 @@ public class QuranStream extends View implements OnGestureListener {
 		paint.setColor(Color.WHITE);
 		canvas.drawRect(0, 0, getWidth(), getHeight()/3, paint);
 		paint.setColor(Color.BLUE);
-		
-		canvas.drawText(sPage, 10, 20, paint);
+		 
+	
 		if (map == null || height != getHeight()) {
 			height = getHeight();
 			sPage = QuranMemorizerActivity.addZero(page);
@@ -59,12 +60,13 @@ public class QuranStream extends View implements OnGestureListener {
 		}
 		if (stepLines == null) {
 			stepLines = Saf7a.calculStepLines(map);
-			if(speed>=0)
+			if(speed>0)
 				streamLine = 0;
 			else
-				streamLine = stepLines.length-3;
+				if(speed<0)
+					streamLine = stepLines.length-3;
 			speed = 0;
-			
+			isSliding = false;
 			
 		}
 		
@@ -77,7 +79,7 @@ public class QuranStream extends View implements OnGestureListener {
 				streamCur=getWidth();
 				streamLine--;
 			}
-			if((speed>0 && streamLine==stepLines.length-2 )|| (speed<0 && streamLine==-1)){
+			if((speed>0 && streamLine==stepLines.length-1 )|| (speed<0 && streamLine==-1)){
 				map = null;
 				page += streamLine == -1 ?-1: 1;
 				
@@ -86,13 +88,16 @@ public class QuranStream extends View implements OnGestureListener {
 			}
 			
 		}
+		canvas.drawText("page:"+sPage+" line:"+streamLine+"/"+stepLines.length+" cur:"+streamCur, 10, 20, paint);
 			srcRect.set(0, stepLines[streamLine], getWidth(), stepLines[streamLine+1]);
 			dstRect.set(streamCur, 100, getWidth()+streamCur, 100+stepLines[streamLine+1]-stepLines[streamLine]);
 			canvas.drawBitmap(map, srcRect, dstRect, paint);
 
-			srcRect.set(0, stepLines[streamLine+1], getWidth(), stepLines[streamLine+2]);
-			dstRect.set(streamCur-getWidth(),100, streamCur, 100+stepLines[streamLine+2]-stepLines[streamLine+1]);
-			canvas.drawBitmap(map, srcRect, dstRect, paint);
+			if(streamLine+2<stepLines.length){
+				srcRect.set(0, stepLines[streamLine+1], getWidth(), stepLines[streamLine+2]);
+				dstRect.set(streamCur-getWidth(),100, streamCur, 100+stepLines[streamLine+2]-stepLines[streamLine+1]);
+				canvas.drawBitmap(map, srcRect, dstRect, paint);
+			}
 			streamCur += speed;
 		if(speed!=0)
 			invalidate();
@@ -108,10 +113,12 @@ public class QuranStream extends View implements OnGestureListener {
 
 		switch (event.getAction()) {
 		case MotionEvent.ACTION_DOWN:
+			isSliding = true;
 			xStick = event.getX();
 			break;
 		case MotionEvent.ACTION_MOVE:
-			oldSpeed = speed;
+//			oldSpeed = speed;
+			if(!isSliding)break;
 			speed = (int) (xStick - event.getX())/35;
 //			if(oldSpeed * speed<0)
 //				streamLine--;
@@ -119,6 +126,7 @@ public class QuranStream extends View implements OnGestureListener {
 			break;
 		case MotionEvent.ACTION_UP:
 			speed = 0;
+			isSliding = false;
 			break;
 		}
  
