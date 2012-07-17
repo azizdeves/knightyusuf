@@ -10,14 +10,19 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
@@ -26,6 +31,7 @@ public class QuranMemorizerActivity extends Activity {
 	private static DataBaseHelper myDbHelper;
 //	 MarkBar markBar;
 	private Saf7a saf7a;
+	private Dialog dialog;
 	static QuranMemorizerActivity activity;
 	
     @Override
@@ -136,38 +142,60 @@ public class QuranMemorizerActivity extends Activity {
 		pref.putInt("page", saf7a.page);
 		pref.commit();
 	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		super.onCreateOptionsMenu(menu);
+		menu.add(0,1,1,"Memo");
+		menu.add(0,2,2,"Stream");
+		menu.add(0,3,3,"Seek");
+		return true;
+	}
+
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem 
+			item) {
+		switch(item.getItemId()){
+		case 1:
+			Intent memoIntent = new Intent(this,QuranMemorizerActivity.class);
+//			markIntent.putExtra("aya", aya);
+//			markIntent.putExtra("sura", sura);
+			startActivity(memoIntent);
+			break;
+		case 2:
+			Intent streamIntent = new Intent(this,QuranStreamActivity.class);
+//			markIntent.putExtra("aya", aya);
+//			markIntent.putExtra("sura", sura);
+			startActivity(streamIntent);
+			break;
+		case 3:
+			showDialog(0);
+		}
+
+		return true;
+	}
+
+	@Override
+	protected Dialog onCreateDialog(int id, Bundle args) {
+		// TODO Auto-generated method stub
+//		return super.onCreateDialog(id, args);
+		dialog = new Dialog(this);
+		dialog.setContentView(R.layout.page_select);
+		final EditText pageText = (EditText) dialog.findViewById(R.id.pageTextSelect);
+		Button goBtn = (Button) dialog.findViewById(R.id.go_btn);
+		goBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				
+				saf7a.setPage(Integer.parseInt(pageText.getText().toString()));
+				dialog.dismiss();
+				saf7a.init();
+			}
+		});
+		return dialog;
+	}
+	private void showDialog() {
+
+	}
 }
-//class MarkBar{
-//
-//	private LinearLayout parentView;
-//	private QuranMemorizerActivity qActivity;
-//
-//	public MarkBar(final QuranMemorizerActivity qActivity) {
-//		this.qActivity = qActivity;
-//		parentView = (LinearLayout) qActivity.findViewById(R.id.mark_bar);
-////		Button greenBtn = (Button) qActivity.findViewById(R.id.green_mrk);
-//		ImageButton saveBtn = (ImageButton) qActivity.findViewById(R.id.save_mrk);
-//		ImageButton deleteBtn = (ImageButton) qActivity.findViewById(R.id.delete_mrk);
-//		
-//	
-//		saveBtn.setOnClickListener(new View.OnClickListener() {			
-//			public void onClick(View v) {
-//				
-//			}
-//		});
-//		deleteBtn.setOnClickListener(new View.OnClickListener() {			
-//			public void onClick(View v) {
-//				qActivity.deleteMask();
-//				setVisibility(View.GONE);
-//			}
-//		});
-//		
-//		
-//	}
-//
-//	public void setVisibility(int visibility) {
-//		parentView.setVisibility(visibility );
-//		
-//	}
-//
-//}

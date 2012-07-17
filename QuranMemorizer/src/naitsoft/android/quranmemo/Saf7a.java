@@ -153,7 +153,7 @@ public class Saf7a extends View implements OnGestureListener {
 
 	public static  int[] calculStepLines(Bitmap map) {
 
-		int seuil = 5;
+		int seuil = 8;
 		int cumul = 0;
 		int i = 0;
 		int numLines[] = new int[1000];
@@ -450,7 +450,7 @@ public class Saf7a extends View implements OnGestureListener {
 	}
 
 	public void init() {
-		
+		map = null;
 		loadMasks();
 		invalidate();
 	}

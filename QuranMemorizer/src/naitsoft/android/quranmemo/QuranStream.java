@@ -60,6 +60,8 @@ public class QuranStream extends View implements OnGestureListener {
 		}
 		if (stepLines == null) {
 			stepLines = Saf7a.calculStepLines(map);
+			
+			
 			if(speed>0)
 				streamLine = 0;
 			else
@@ -88,7 +90,7 @@ public class QuranStream extends View implements OnGestureListener {
 			}
 			
 		}
-		canvas.drawText("page:"+sPage+" line:"+streamLine+"/"+stepLines.length+" cur:"+streamCur, 10, 20, paint);
+		canvas.drawText("page:"+sPage+" line:"+streamLine, 10, 20, paint);
 			srcRect.set(0, stepLines[streamLine], getWidth(), stepLines[streamLine+1]);
 			dstRect.set(streamCur, 100, getWidth()+streamCur, 100+stepLines[streamLine+1]-stepLines[streamLine]);
 			canvas.drawBitmap(map, srcRect, dstRect, paint);
@@ -179,6 +181,15 @@ public class QuranStream extends View implements OnGestureListener {
 	public void setPage(int i) {
 		page = i;
 		sPage = QuranMemorizerActivity.addZero(page);
+		invalidate();
+		
+	}
+
+
+
+
+	public void init() {
+		// TODO Auto-generated method stub
 		
 	}
 
