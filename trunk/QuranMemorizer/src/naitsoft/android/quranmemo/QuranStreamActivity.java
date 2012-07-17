@@ -1,16 +1,24 @@
 package naitsoft.android.quranmemo;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
 
 public class QuranStreamActivity extends Activity {
     
 	private static DataBaseHelper myDbHelper;
 	private QuranStream stream;
+	private Dialog dialog;
 	static QuranStreamActivity activity;
 	
     @Override
@@ -55,5 +63,63 @@ public class QuranStreamActivity extends Activity {
 		pref.putInt("streamLine", stream.streamLine);
 		pref.putInt("streamCur", stream.streamCur);
 		pref.commit();
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+
+		super.onCreateOptionsMenu(menu);
+		// Create the menu item and keep a reference to it.
+//		MenuItem menuItem = menu.add(groupId, menuItemId,
+//				menuItemOrder, menuItemText);
+
+//		menu.add(0,2,0,"Preference");
+		menu.add(0,1,1,"Memo");
+		menu.add(0,2,2,"Stream");
+		menu.add(0,3,3,"Seek");
+		return true;
+	}
+
+	@Override
+	public boolean onMenuItemSelected(int featureId, MenuItem 
+			item) {
+		switch(item.getItemId()){
+		case 1:
+			Intent memoIntent = new Intent(this,QuranMemorizerActivity.class);
+//			markIntent.putExtra("aya", aya);
+//			markIntent.putExtra("sura", sura);
+			startActivity(memoIntent);
+			break;
+		case 2:
+			Intent streamIntent = new Intent(this,QuranStreamActivity.class);
+//			markIntent.putExtra("aya", aya);
+//			markIntent.putExtra("sura", sura);
+			startActivity(streamIntent);
+			break;
+		case 3:
+			showDialog(0);
+			break;
+		}
+
+		return true;
+	}
+	@Override
+	protected Dialog onCreateDialog(int id, Bundle args) {
+		// TODO Auto-generated method stub
+//		return super.onCreateDialog(id, args);
+		dialog = new Dialog(this);
+		dialog.setContentView(R.layout.page_select);
+		final EditText pageText = (EditText) dialog.findViewById(R.id.pageTextSelect);
+		Button goBtn = (Button) dialog.findViewById(R.id.go_btn);
+		goBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				
+				stream.setPage(Integer.parseInt(pageText.getText().toString()));
+				dialog.dismiss();
+//				stream.init();
+			}
+		});
+		return dialog;
 	}
 }
