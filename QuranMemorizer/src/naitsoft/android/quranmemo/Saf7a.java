@@ -153,10 +153,10 @@ public class Saf7a extends View implements OnGestureListener {
 
 	public static  int[] calculStepLines(Bitmap map) {
 
-		int seuil = 8;
+		int seuil = 10;
 		int cumul = 0;
 		int i = 0;
-		int numLines[] = new int[1000];
+		int numLines[] = new int[map.getHeight()];
 		int cur = 0;
 		int pixel = 0;
 		for (int y = 0; y < map.getHeight(); y++) {
@@ -189,7 +189,7 @@ public class Saf7a extends View implements OnGestureListener {
 		for( i = 0; i<cur; i ++){
 			stepLines[i] = tempStepLines[i];
 		}
-		stepLines[cur]=800;
+		stepLines[cur]=map.getHeight();
 		return stepLines;
 	
 	}
