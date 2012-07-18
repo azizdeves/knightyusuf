@@ -19,6 +19,7 @@ public class QuranStreamActivity extends Activity {
 	private static DataBaseHelper myDbHelper;
 	private QuranStream stream;
 	private Dialog dialog;
+	private EditText pageText;
 	static QuranStreamActivity activity;
 	
     @Override
@@ -26,7 +27,7 @@ public class QuranStreamActivity extends Activity {
         super.onCreate(bundle);
         activity = this;
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.quran_stream);
         stream = (QuranStream) findViewById(R.id.stream);
         initDB();
@@ -54,6 +55,14 @@ public class QuranStreamActivity extends Activity {
 		stream.streamCur= bundle.getInt("streamCur",0);
 		stream.streamLine= bundle.getInt("streamLine",0);
 		stream.setPage(bundle.getInt("pageStream", 4));
+	}
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		// TODO Auto-generated method stub
+		super.onSaveInstanceState(outState);
+		outState.putInt("pageStream", stream.page);
+		outState.putInt("streamLine", stream.streamLine);
+		outState.putInt("streamCur", stream.streamCur);
 	}
 	@Override
 	protected void onPause() {
@@ -98,6 +107,7 @@ public class QuranStreamActivity extends Activity {
 			break;
 		case 3:
 			showDialog(0);
+			pageText.setText(String.valueOf(stream.page));
 			break;
 		}
 
@@ -109,7 +119,7 @@ public class QuranStreamActivity extends Activity {
 //		return super.onCreateDialog(id, args);
 		dialog = new Dialog(this);
 		dialog.setContentView(R.layout.page_select);
-		final EditText pageText = (EditText) dialog.findViewById(R.id.pageTextSelect);
+		 pageText = (EditText) dialog.findViewById(R.id.pageTextSelect);
 		Button goBtn = (Button) dialog.findViewById(R.id.go_btn);
 		goBtn.setOnClickListener(new View.OnClickListener() {
 			@Override
