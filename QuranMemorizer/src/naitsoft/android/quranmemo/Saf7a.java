@@ -159,6 +159,7 @@ public class Saf7a extends View implements OnGestureListener {
 		int numLines[] = new int[map.getHeight()];
 		int cur = 0;
 		int pixel = 0;
+//		map.getPixels(new int[map.getHeight()*map.getWidth()], 0, map.getWidth(), 0, 0, map.getWidth(), map.getHeight());
 		for (int y = 0; y < map.getHeight(); y++) {
 			cumul = 0;
 			for (int x = 0; x < map.getWidth(); x++) {
@@ -192,6 +193,12 @@ public class Saf7a extends View implements OnGestureListener {
 		stepLines[cur]=map.getHeight();
 		return stepLines;
 	
+	}
+	public static int[] scaleStepLines(int[] lines , float scale)
+	{
+		for(int i =0 ; i<lines.length; i++)
+			lines[i] = (int) (lines[i]*scale);
+		return lines;
 	}
 
 	public static Bitmap loadBitmap(String sPage) {
