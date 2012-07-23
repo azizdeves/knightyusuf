@@ -162,12 +162,14 @@ public class QuranMemorizerActivity extends Activity {
 //			markIntent.putExtra("aya", aya);
 //			markIntent.putExtra("sura", sura);
 			startActivity(memoIntent);
+			finish();
 			break;
 		case 2:
 			Intent streamIntent = new Intent(this,QuranStreamActivity.class);
 //			markIntent.putExtra("aya", aya);
 //			markIntent.putExtra("sura", sura);
 			startActivity(streamIntent);
+			finish();
 			break;
 		case 3:
 			showDialog(0);

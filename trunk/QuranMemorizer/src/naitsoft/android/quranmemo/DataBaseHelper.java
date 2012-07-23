@@ -81,6 +81,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
  
         		openDataBase();
         		myDataBase.execSQL("create table Masks(_id Integer primary key,  page Integer, startX Integer, endX Integer, startLine Integer, endLine Integer)");
+        		myDataBase.execSQL("create table StepLines(_id Integer primary key,  page Integer, step String)");
         		
     		} catch (Exception e) {
  

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:orientation="vertical">
+
+	<LinearLayout
+	    android:id="@+id/linearLayout1"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:baselineAligned="true" >
+
+	 <ImageButton
+	     android:id="@+id/backBtn"
+	     android:layout_width="wrap_content"
+	     android:layout_height="match_parent"
+	     android:layout_weight="0.35"
+	     android:src="@android:drawable/ic_menu_revert" />
+
+    <Spinner
+        android:id="@+id/dikrSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.9" />
+
+    <ImageButton
+        android:id="@+id/pauseBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.1"
+        android:src="@android:drawable/ic_media_pause" />
+
+</LinearLayout>
+
+
+
+    <naitsoft.android.quranmemo.SubhaView
+        android:id="@+id/subha"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        />
+
+
+
+</LinearLayout>

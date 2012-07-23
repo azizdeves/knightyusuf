@@ -1,10 +1,7 @@
 package naitsoft.android.quranmemo;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.Config;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -17,8 +14,6 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.GestureDetector.OnGestureListener;
-import android.view.View.MeasureSpec;
-import android.widget.SlidingDrawer;
 
 public class QuranStream extends View implements OnGestureListener ,ScaleGestureDetector.OnScaleGestureListener {
 

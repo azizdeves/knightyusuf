@@ -11,16 +11,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Spinner;
 
-public class QuranStreamActivity extends Activity {
+public class SubhaActivity extends Activity {
 
 	private static DataBaseHelper myDbHelper;
 	private QuranStream stream;
 	private Dialog dialog;
 	private EditText pageText;
-	static QuranStreamActivity activity;
+	private Spinner dikrSpinner;
+	private ImageButton backBtn;
+	private ImageButton pauseBtn;
+	private SubhaView subhaView;
+	static SubhaActivity activity;
 
 	@Override
 	public void onCreate(Bundle bundle) {
@@ -28,15 +36,50 @@ public class QuranStreamActivity extends Activity {
 		activity = this;
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		//        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		setContentView(R.layout.quran_stream);
-		stream = (QuranStream) findViewById(R.id.stream);
+		setContentView(R.layout.subha);
+		subhaView = (SubhaView) findViewById(R.id.subha);
+		dikrSpinner = (Spinner) findViewById(R.id.dikrSpinner);
 		initDB();
 		if(bundle != null){
-			stream.streamLine= bundle.getInt("streamLine",0);
-			stream.setScale(bundle.getFloat("scale",1));
-			stream.filter=bundle.getInt("filter",0);
-			stream.setPage(bundle.getInt("pageStream", 4));
 		}
+		backBtn = (ImageButton) findViewById(R.id.backBtn); 
+		pauseBtn = (ImageButton) findViewById(R.id.pauseBtn); 
+		
+		backBtn.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				Intent streamIntent = new Intent(activity,QuranStreamActivity.class);
+				startActivity(streamIntent);
+				finish();
+			}
+		});
+		pauseBtn.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				if(	subhaView.status == SubhaView.PAUSED )
+					subhaView.setStatus( SubhaView.COUNTING);
+				else
+					subhaView.setStatus(SubhaView.PAUSED);
+			}
+		});
+		ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
+		spinAdapter.add("لا إله إلا الله");
+		spinAdapter.add("الصلاة على رسول الله ص");
+		spinAdapter.add("الإستغفار");
+		spinAdapter.add("التسبيح");
+		
+		dikrSpinner.setAdapter(spinAdapter );
+		dikrSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view,
+					int position, long id) {
+
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+				
+			}
+		});
 
 	}
 
@@ -49,40 +92,19 @@ public class QuranStreamActivity extends Activity {
 	protected void onStart() {
 		super.onStart();
 		SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(this);
-		stream.streamCur= pref.getInt("streamCur",0);
-		stream.streamLine= pref.getInt("streamLine",0);
-		stream.setScale(pref.getFloat("scale",1));
-		stream.filter=pref.getInt("filter",0);
-		stream.setPage(pref.getInt("pageStream", 4));
 	}
 	@Override
 	protected void onRestoreInstanceState(Bundle bundle) {
 		super.onRestoreInstanceState(bundle);
-		stream.streamCur= bundle.getInt("streamCur",0);
-		stream.streamLine= bundle.getInt("streamLine",0);
-		stream.setScale(bundle.getFloat("scale",1));
-		stream.filter=bundle.getInt("filter");
-		stream.setPage(bundle.getInt("pageStream", 4));
 	}
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		// TODO Auto-generated method stub
 		super.onSaveInstanceState(outState);
-		outState.putInt("pageStream", stream.page);
-		outState.putInt("streamLine", stream.streamLine);
-		outState.putInt("streamCur", stream.streamCur);
-		outState.putInt("filter", stream.filter);
-		outState.putFloat("scale", stream.scale);
 	}
 	@Override
 	protected void onPause() {
 		super.onPause();
 		SharedPreferences.Editor pref= PreferenceManager.getDefaultSharedPreferences(this).edit();
-		pref.putInt("pageStream", stream.page);
-		pref.putInt("streamLine", stream.streamLine);
-		pref.putInt("streamCur", stream.streamCur);
-		pref.putInt("filter", stream.filter);
-		pref.putFloat("scale", stream.scale);
 		pref.commit();
 	}
 
@@ -93,8 +115,6 @@ public class QuranStreamActivity extends Activity {
 		menu.add(0,1,1,"Memo");
 		menu.add(0,2,2,"Stream");
 		menu.add(0,3,3,"Seek");
-		menu.add(0,4,4,"Subha");
-		
 		return true;
 	}
 
@@ -108,13 +128,8 @@ public class QuranStreamActivity extends Activity {
 			finish();
 			break;
 		case 2:
-			Intent streamIntent = new Intent(this,QuranStreamActivity.class);
+			Intent streamIntent = new Intent(this,SubhaActivity.class);
 			startActivity(streamIntent);
-			finish();
-			break;
-		case 4:
-			Intent subhaIntent = new Intent(this,SubhaActivity.class);
-			startActivity(subhaIntent);
 			finish();
 			break;
 		case 3:
@@ -125,19 +140,8 @@ public class QuranStreamActivity extends Activity {
 
 		return true;
 	}
+	
 	@Override
-	protected Dialog onCreateDialog(int id, Bundle args) {
-		dialog = new Dialog(this);
-		dialog.setContentView(R.layout.page_select);
-		pageText = (EditText) dialog.findViewById(R.id.pageTextSelect);
-		Button goBtn = (Button) dialog.findViewById(R.id.go_btn);
-		goBtn.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				stream.setPage(Integer.parseInt(pageText.getText().toString()));
-				dialog.dismiss();
-			}
-		});
-		return dialog;
+	public void onBackPressed() {
 	}
 }
