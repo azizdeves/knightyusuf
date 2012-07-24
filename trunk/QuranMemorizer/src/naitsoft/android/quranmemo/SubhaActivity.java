@@ -1,9 +1,13 @@
 package naitsoft.android.quranmemo;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -44,7 +48,9 @@ public class SubhaActivity extends Activity {
 		}
 		backBtn = (ImageButton) findViewById(R.id.backBtn); 
 		pauseBtn = (ImageButton) findViewById(R.id.pauseBtn); 
-		
+		pauseBtn.setBackgroundColor(Color.BLACK);
+		backBtn.setBackgroundColor(Color.BLACK);
+//		dikrSpinner.setBackgroundColor(Color.BLACK);
 		backBtn.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				Intent streamIntent = new Intent(activity,QuranStreamActivity.class);
@@ -58,24 +64,28 @@ public class SubhaActivity extends Activity {
 					subhaView.setStatus( SubhaView.COUNTING);
 				else
 					subhaView.setStatus(SubhaView.PAUSED);
+				subhaView.invalidate();
 			}
+			
 		});
 		ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item);
 		spinAdapter.add("لا إله إلا الله");
 		spinAdapter.add("الصلاة على رسول الله ص");
-		spinAdapter.add("الإستغفار");
+		spinAdapter.add("الإستغفار"); 
 		spinAdapter.add("التسبيح");
 		
 		dikrSpinner.setAdapter(spinAdapter );
 		dikrSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-			@Override
-			public void onItemSelected(AdapterView<?> parent, View view,
-					int position, long id) {
-
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				if(subhaView.jalsa.count>0)
+					myDbHelper.addJalsa(subhaView.jalsa);
+				subhaView.status = SubhaView.READY;
+				subhaView.jalsa = new Jalsa();
+				subhaView.jalsa.dikr= position;
+				subhaView.sCount = "0";
+				subhaView.jalsaTotal = loadTodayJalasate(position);
+				subhaView.invalidate();
 			}
-
-			@Override
 			public void onNothingSelected(AdapterView<?> parent) {
 				
 			}
@@ -92,6 +102,24 @@ public class SubhaActivity extends Activity {
 	protected void onStart() {
 		super.onStart();
 		SharedPreferences pref= PreferenceManager.getDefaultSharedPreferences(this);
+		subhaView.status = subhaView.READY;
+		subhaView.jalsa = new Jalsa();
+		subhaView.jalsaTotal = loadTodayJalasate(0);
+		subhaView.sCount ="0";
+		
+	}
+	private Jalsa loadTodayJalasate(int dikr) {
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.HOUR, 0);
+		cal.set(Calendar.MINUTE, 0);
+		return myDbHelper.getTodayJalasate((int) (cal.getTimeInMillis()/1000), dikr);
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		if(subhaView.jalsa.count>0)
+			myDbHelper.addJalsa(subhaView.jalsa);
 	}
 	@Override
 	protected void onRestoreInstanceState(Bundle bundle) {
