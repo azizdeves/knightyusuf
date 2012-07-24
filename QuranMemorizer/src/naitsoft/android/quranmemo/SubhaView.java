@@ -1,5 +1,7 @@
 package naitsoft.android.quranmemo;
 
+import java.util.Date;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -8,6 +10,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.os.Vibrator;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -24,22 +27,31 @@ public class SubhaView extends View implements OnGestureListener  {
 	
 	private GestureDetector gestDetect = new GestureDetector(this);
 	Paint paint = new Paint();
+	Paint secondPaint = new Paint();
 	private WakeLock wakeLock;
 	private int width;
 	private int height;
-	int count;
 	String sCount;
 	private Rect bounds;
 	SubhaView subha;
 	Jalsa jalsa;
 	int status;
 	private Thread timer;
+	Vibrator v;
+	public Jalsa jalsaTotal;
+	 
+	
+
 	
 
 	public SubhaView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		v = (Vibrator) SubhaActivity.activity.getSystemService(Context.VIBRATOR_SERVICE);
 		paint.setTextSize(50);
 		paint.setAntiAlias(true);
+		secondPaint.setTextSize(30);
+		secondPaint.setAntiAlias(true);
+		secondPaint.setColor(Color.GRAY);
 		bounds = new Rect();
 		sCount = "0";
 		subha = this;
@@ -54,6 +66,7 @@ public class SubhaView extends View implements OnGestureListener  {
 					while(true){
 						if(status == COUNTING){
 							jalsa.duration++;
+							jalsaTotal.duration++;
 							subha.postInvalidate();
 						}
 						sleep(1000);
@@ -78,10 +91,16 @@ public class SubhaView extends View implements OnGestureListener  {
 			canvas.drawRect(0, 0, width, height, paint);
 			paint.setColor(Color.WHITE);
 //			paint.getTextBounds(sCount, 0, sCount.length(), bounds);
-			if(jalsa != null)
-				canvas.drawText(jalsa.getDuration()+(status==PAUSED?"(Paused)":""), 0, 50, paint);
+//			if(jalsa.count != 0)
+			paint.setTextSize(40);
+			canvas.drawText(jalsa.getDuration()+(status==PAUSED?"(Paused)":""), 0, 50, paint);
+			paint.setTextSize(60);
 			paint.getTextBounds(sCount, 0, sCount.length(), bounds);
-			canvas.drawText(String.valueOf(count), width/2-bounds.right/2, height/3, paint);
+			canvas.drawText(sCount, width/2-bounds.right/2, height/3, paint);
+			canvas.drawText("الحصيلة اليوم", 0, height*0.8f, secondPaint);
+			canvas.drawText(jalsaTotal.getDuration(), 0, height*0.85f, secondPaint);
+			canvas.drawText(String.valueOf(jalsaTotal.count), 0, height*0.9f, secondPaint);
+			
 			
 		}finally{
 
@@ -104,14 +123,18 @@ public class SubhaView extends View implements OnGestureListener  {
 		case MotionEvent.ACTION_DOWN:
 			//			wakeLock.acquire();
 			if(status == READY){
-				jalsa = new Jalsa();
 
 				status = COUNTING;
+				jalsa.start= (new Date()).getTime()/1000;
 			}
 			if(status!=PAUSED)
 			{
-				count ++;
-				sCount = String.valueOf(count);
+				jalsa.count ++;
+				jalsaTotal.count++;
+				sCount = String.valueOf(jalsa.count);
+//				sCountTotal = String.valueOf(jalsa.count);
+				if((jalsa.count%100)==0)
+					v.vibrate(100);
 				invalidate();
 			}
 			break;

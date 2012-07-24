@@ -2,6 +2,8 @@ package naitsoft.android.quranmemo;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -70,18 +72,16 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     	boolean dbExist = checkDataBase();
  
     	if(dbExist){
-    		//do nothing - database already exist
     	}else{
- 
-    		//By calling this method and empty database will be created into the default system path
-               //of your application so we are gonna be able to overwrite that database with our database.
         	this.getReadableDatabase();
  
         	try {
  
         		openDataBase();
         		myDataBase.execSQL("create table Masks(_id Integer primary key,  page Integer, startX Integer, endX Integer, startLine Integer, endLine Integer)");
-        		myDataBase.execSQL("create table StepLines(_id Integer primary key,  page Integer, step String)");
+//        		myDataBase.execSQL("create table StepLines(_id Integer primary key,  page Integer, step String)");
+        		myDataBase.execSQL("create table Jalsa(_id Integer primary key,  count Integer, dikr Integer, duration Integer, start Integer)");
+
         		
     		} catch (Exception e) {
  
@@ -198,6 +198,34 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 	{
 		myDataBase.delete(Mask_TAB, "_id = ?",  new String[]{String.valueOf(id) });
 	}
+	public void addJalsa(Jalsa m){
+		ContentValues val = new ContentValues(4);
+		val.put("count", m.count);
+		val.put("dikr", m.dikr);
+		val.put("duration", m.duration);
+		val.put("start", m.start);
+		myDataBase.insert("Jalsa", null, val);
+		
+	}
+	public Jalsa getTodayJalasate(int start,int dikr){
 
+		Cursor cur = myDataBase.query("Jalsa", new String[]{"count","duration"},"start>= ? and dikr = ?",new String[]{String.valueOf(start),String.valueOf(dikr)} , null, null, null);
+//		ArrayList<Jalsa> jalasate = new ArrayList<Jalsa>();;
+		Jalsa m;
+		m = new Jalsa(); 
+		if(cur.moveToFirst()){			
+			do{
+				m.count += cur.getInt(0);
+				m.duration += cur.getInt(1);
+//				m.startX = cur.getInt(2);
+//				m.endX = cur.getInt(3);
+//				m.startLine = cur.getInt(4);
+//				m.endLine = cur.getInt(5);
+//				jalasate.add(m);
+			}while(cur.moveToNext());
+		}
+		cur.close();
+		return m;
+	}
  
 }
