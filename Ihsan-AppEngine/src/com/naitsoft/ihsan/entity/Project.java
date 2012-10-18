@@ -6,13 +6,14 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Basic;
-import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity
+import com.google.appengine.api.datastore.Entity;
+
+@javax.persistence.Entity
 public class Project implements Serializable{
 	
 	@Id	
@@ -24,13 +25,34 @@ public class Project implements Serializable{
 	String resume;
 	String skills;
 	int rating;
-	@Basic(fetch = FetchType.LAZY)
-	ProjectDetail detail;
+	long detailId;
+	long orgId;
+	long longitude;
+	long latitude;
+	int radius;	
+
 
 
 	public Project(){
 	}
 
+	public Entity getEntity(){
+		Entity en = new Entity(this.getClass().getName(), id);
+		en.setProperty("pId", id);
+		en.setProperty("pOrgId", orgId);
+		en.setProperty("pLong", longitude);
+		en.setProperty("pLat", latitude);
+		String[] sks = skills.split("$");
+		if(sks!=null)
+		for(int i =0;i<sks.length;i++){
+			en.setProperty("pSkill"+i, "$k:"+sks[i]);
+			
+		}
+		
+		
+		
+		return en;
+	}
 	public String getName() {
 		return name;
 	}
@@ -51,59 +73,74 @@ public class Project implements Serializable{
 		return org;
 	}
 
-
-
 	public void setOrg(String org) {
 		this.org = org;
 	}
-
-
 
 	public String getResume() {
 		return resume;
 	}
 
-
-
 	public void setResume(String resume) {
 		this.resume = resume;
 	}
-
-
 
 	public String getSkills() {
 		return skills;
 	}
 
-
-
 	public void setSkills(String skills) {
 		this.skills = skills;
 	}
-
-
 
 	public int getRating() {
 		return rating;
 	}
 
-
-
 	public void setRating(int rating) {
 		this.rating = rating;
 	}
 
-
-
-	public ProjectDetail getDetail() {
-		return detail;
+	public long getDetailId() {
+		return detailId;
 	}
 
-
-
-	public void setDetail(ProjectDetail detail) {
-		this.detail = detail;
+	public void setDetailId(long detailId) {
+		this.detailId = detailId;
 	}
+
+	public long getOrgId() {
+		return orgId;
+	}
+
+	public void setOrgId(long orgId) {
+		this.orgId = orgId;
+	}
+
+	public long getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(long longitude) {
+		this.longitude = longitude;
+	}
+
+	public long getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(long latitude) {
+		this.latitude = latitude;
+	}
+
+	public int getRadius() {
+		return radius;
+	}
+
+	public void setRadius(int radius) {
+		this.radius = radius;
+	}
+
 
 
 	

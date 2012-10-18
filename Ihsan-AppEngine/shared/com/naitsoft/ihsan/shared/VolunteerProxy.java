@@ -16,4 +16,8 @@ public interface VolunteerProxy extends ValueProxy {
 
 	void setEmail(String email);
 
+	long getDetailId();
+
+	void setDetailId(long detailId);
+
 }

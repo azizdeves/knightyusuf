@@ -3,16 +3,106 @@ package com.naitsoft.ihsan.server;
 import java.util.List;
 
 import com.naitsoft.ihsan.annotation.ServiceMethod;
-import com.naitsoft.ihsan.entity.Momin;
 import com.naitsoft.ihsan.entity.OrgDetail;
 import com.naitsoft.ihsan.entity.Organization;
 import com.naitsoft.ihsan.entity.Project;
 import com.naitsoft.ihsan.entity.ProjectDetail;
+import com.naitsoft.ihsan.entity.StreamItem;
 import com.naitsoft.ihsan.entity.Volunteer;
 import com.naitsoft.ihsan.entity.VolunteerDetail;
 
 
 public class IhsanService {
+
+	@ServiceMethod
+	public VolunteerDetail createVolunteerDetail() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@ServiceMethod
+	public VolunteerDetail readVolunteerDetail(Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@ServiceMethod
+	public VolunteerDetail updateVolunteerDetail(VolunteerDetail volunteerdetail) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@ServiceMethod
+	public void deleteVolunteerDetail(VolunteerDetail volunteerdetail) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@ServiceMethod
+	public List<VolunteerDetail> queryVolunteerDetails() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@ServiceMethod
+	public StreamItem createStreamItem() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@ServiceMethod
+	public StreamItem readStreamItem(Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@ServiceMethod
+	public StreamItem updateStreamItem(StreamItem streamitem) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@ServiceMethod
+	public void deleteStreamItem(StreamItem streamitem) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@ServiceMethod
+	public List<StreamItem> queryStreamItems() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@ServiceMethod
+	public Volunteer createVolunteer() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@ServiceMethod
+	public Volunteer readVolunteer(Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@ServiceMethod
+	public Volunteer updateVolunteer(Volunteer volunteer) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@ServiceMethod
+	public void deleteVolunteer(Volunteer volunteer) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@ServiceMethod
+	public List<Volunteer> queryVolunteers() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@ServiceMethod
 	public Project createProject() {
@@ -40,36 +130,6 @@ public class IhsanService {
 
 	@ServiceMethod
 	public List<Project> queryProjects() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@ServiceMethod
-	public Momin createMomin() {
-
-		return null;
-	}
-
-	@ServiceMethod
-	public Momin readMomin(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@ServiceMethod
-	public Momin updateMomin(Momin momin) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@ServiceMethod
-	public void deleteMomin(Momin momin) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@ServiceMethod
-	public List<Momin> queryMomins() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -130,66 +190,6 @@ public class IhsanService {
 
 	@ServiceMethod
 	public List<ProjectDetail> queryProjectDetails() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@ServiceMethod
-	public VolunteerDetail createVolunteerDetail() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@ServiceMethod
-	public VolunteerDetail readVolunteerDetail(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@ServiceMethod
-	public VolunteerDetail updateVolunteerDetail(VolunteerDetail volunteerdetail) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@ServiceMethod
-	public void deleteVolunteerDetail(VolunteerDetail volunteerdetail) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@ServiceMethod
-	public List<VolunteerDetail> queryVolunteerDetails() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@ServiceMethod
-	public Volunteer createVolunteer() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@ServiceMethod
-	public Volunteer readVolunteer(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@ServiceMethod
-	public Volunteer updateVolunteer(Volunteer volunteer) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@ServiceMethod
-	public void deleteVolunteer(Volunteer volunteer) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@ServiceMethod
-	public List<Volunteer> queryVolunteers() {
 		// TODO Auto-generated method stub
 		return null;
 	}

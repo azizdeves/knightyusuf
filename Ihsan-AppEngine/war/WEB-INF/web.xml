@@ -54,6 +54,19 @@
       <url-pattern>/tasks/c2dm</url-pattern>
   </servlet-mapping>
 
+
+ <servlet>
+    <servlet-name>matches</servlet-name>
+    <servlet-class>
+      com.naitsoft.ihsan.server.MatchResponseServlet
+    </servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>matches</servlet-name>
+    <url-pattern>/_ah/prospective_search</url-pattern>
+  </servlet-mapping>
+  
+  
   <!-- Security -->
 
   <!--  Require user login for the .html welcome page -->

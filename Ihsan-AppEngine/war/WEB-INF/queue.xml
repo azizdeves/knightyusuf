@@ -19,4 +19,8 @@
     <name>c2dm</name>
     <rate>10/s</rate>
   </queue>
+  <queue>
+    <name>default</name>
+    <rate>10/s</rate>
+  </queue>
 </queue-entries>

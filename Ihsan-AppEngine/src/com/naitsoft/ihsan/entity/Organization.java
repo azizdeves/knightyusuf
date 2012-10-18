@@ -1,13 +1,7 @@
 package com.naitsoft.ihsan.entity;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.persistence.Basic;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -23,8 +17,8 @@ public class Organization implements Serializable{
 	String resume;
 	String interest;
 	int rating;
-	@Basic(fetch = FetchType.LAZY)
-	OrgDetail detail;
+//	@Basic(fetch = FetchType.LAZY)
+	long detailId;
 
 	public String getName() {
 		return name;
@@ -66,13 +60,14 @@ public class Organization implements Serializable{
 		this.rating = rating;
 	}
 
-	public OrgDetail getDetail() {
-		return detail;
+	public long getDetailId() {
+		return detailId;
 	}
 
-	public void setDetail(OrgDetail detail) {
-		this.detail = detail;
+	public void setDetailId(long detailId) {
+		this.detailId = detailId;
 	}
+
 
 	
 	

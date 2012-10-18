@@ -65,5 +65,4 @@ public interface MyRequestFactory extends RequestFactory {
 	IhsanRequest ihsanRequest();
 
 
-
 }

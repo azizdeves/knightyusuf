@@ -33,12 +33,14 @@ public class HelloWorldService {
     UserService userService = UserServiceFactory.getUserService();
     User user = userService.getCurrentUser();
     String message;
-    if (user == null) {
-      message = "No one is logged in!\nSent from App Engine at " + new Date();
-    } else {
-      message = "Hello, " + user.getEmail() + "!\nSent from App Engine at " + new Date();
-    }
-    log.info("Returning message \"" + message + "\"");
-    return message;
+//    if (user == null) {
+//      message = "No one is logged in!\nSent from App Engine at " + new Date();
+//    } else {
+//      message = "Hello, " + user.getEmail() + "!\nSent from App Engine at " + new Date();
+//    }
+//    log.info("Returning message \"" + message + "\"");
+    IhsanDao dao = new IhsanDao();
+    dao.updateProject(null);
+    return "done";
   }
 }

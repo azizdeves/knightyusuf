@@ -17,18 +17,11 @@ public class Volunteer implements Serializable{
 	String id;
 	
 	String name;
-	@Basic(fetch = FetchType.LAZY)
-	VolunteerDetail detail;
+//	@Basic(fetch = FetchType.LAZY)
+	long detailId;
 
 	String email;
 	
-//	@Basic(fetch = FetchType.EAGER)
-//	List<String> friendsCalendar;
-	
-//	@Lob
-//	HashMap<String, String> properties;
-	
-//	@Extension(vendorName = "datanucleus",            key = "gae.unindexed",            value = "true")
 
 	public Volunteer(){
 	}
@@ -39,17 +32,6 @@ public class Volunteer implements Serializable{
 		return id;
 	}
 
-//	public Momin clon()  {
-//		Momin m = new Momin();
-//		m.setEmail(email);
-//		if(this.getFriendsCalendar()!=null)
-//			m.setFriendsCalendar(new ArrayList<String>(friendsCalendar));
-//		
-//		m.setId(id);
-//		m.setName(name);
-//	
-//		return m;
-//	}
 
 	public void setId(String id) {
 		this.id = id;
@@ -70,16 +52,12 @@ public class Volunteer implements Serializable{
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-//
-//	public HashMap<String, String> getProperties() {
-//		return properties;
-//	}
-//
-//	public void setProperties(HashMap<String, String> properties) {
-//		this.properties = properties;
-//	}
-	
+	public long getDetailId() {
+		return detailId;
+	}
+	public void setDetailId(long detailId) {
+		this.detailId = detailId;
+	}
 	
 	
 	

@@ -9,6 +9,37 @@ import com.google.web.bindery.requestfactory.shared.ServiceName;
 @ServiceName(value = "com.naitsoft.ihsan.server.IhsanService", locator = "com.naitsoft.ihsan.server.IhsanServiceLocator")
 public interface IhsanRequest extends RequestContext {
 
+	Request<VolunteerDetailProxy> createVolunteerDetail();
+
+	Request<VolunteerDetailProxy> readVolunteerDetail(Long id);
+
+	Request<VolunteerDetailProxy> updateVolunteerDetail(
+			VolunteerDetailProxy volunteerdetail);
+
+	Request<Void> deleteVolunteerDetail(VolunteerDetailProxy volunteerdetail);
+
+	Request<List<VolunteerDetailProxy>> queryVolunteerDetails();
+
+	Request<StreamItemProxy> createStreamItem();
+
+	Request<StreamItemProxy> readStreamItem(Long id);
+
+	Request<StreamItemProxy> updateStreamItem(StreamItemProxy streamitem);
+
+	Request<Void> deleteStreamItem(StreamItemProxy streamitem);
+
+	Request<List<StreamItemProxy>> queryStreamItems();
+
+	Request<VolunteerProxy> createVolunteer();
+
+	Request<VolunteerProxy> readVolunteer(Long id);
+
+	Request<VolunteerProxy> updateVolunteer(VolunteerProxy volunteer);
+
+	Request<Void> deleteVolunteer(VolunteerProxy volunteer);
+
+	Request<List<VolunteerProxy>> queryVolunteers();
+
 	Request<ProjectProxy> createProject();
 
 	Request<ProjectProxy> readProject(Long id);
@@ -18,16 +49,6 @@ public interface IhsanRequest extends RequestContext {
 	Request<Void> deleteProject(ProjectProxy project);
 
 	Request<List<ProjectProxy>> queryProjects();
-
-	Request<MominProxy> createMomin();
-
-	Request<MominProxy> readMomin(Long id);
-
-	Request<MominProxy> updateMomin(MominProxy momin);
-
-	Request<Void> deleteMomin(MominProxy momin);
-
-	Request<List<MominProxy>> queryMomins();
 
 	Request<OrgDetailProxy> createOrgDetail();
 
@@ -49,27 +70,6 @@ public interface IhsanRequest extends RequestContext {
 	Request<Void> deleteProjectDetail(ProjectDetailProxy projectdetail);
 
 	Request<List<ProjectDetailProxy>> queryProjectDetails();
-
-	Request<VolunteerDetailProxy> createVolunteerDetail();
-
-	Request<VolunteerDetailProxy> readVolunteerDetail(Long id);
-
-	Request<VolunteerDetailProxy> updateVolunteerDetail(
-			VolunteerDetailProxy volunteerdetail);
-
-	Request<Void> deleteVolunteerDetail(VolunteerDetailProxy volunteerdetail);
-
-	Request<List<VolunteerDetailProxy>> queryVolunteerDetails();
-
-	Request<VolunteerProxy> createVolunteer();
-
-	Request<VolunteerProxy> readVolunteer(Long id);
-
-	Request<VolunteerProxy> updateVolunteer(VolunteerProxy volunteer);
-
-	Request<Void> deleteVolunteer(VolunteerProxy volunteer);
-
-	Request<List<VolunteerProxy>> queryVolunteers();
 
 	Request<OrganizationProxy> createOrganization();
 

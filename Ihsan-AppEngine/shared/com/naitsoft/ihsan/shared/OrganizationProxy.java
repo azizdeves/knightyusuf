@@ -10,4 +10,22 @@ public interface OrganizationProxy extends ValueProxy {
 
 	void setName(String name);
 
+	Long getId();
+
+	String getResume();
+
+	void setResume(String resume);
+
+	String getInterest();
+
+	void setInterest(String interest);
+
+	int getRating();
+
+	void setRating(int rating);
+
+	long getDetailId();
+
+	void setDetailId(long detailId);
+
 }
