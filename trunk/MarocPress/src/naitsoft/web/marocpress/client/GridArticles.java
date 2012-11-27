@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+//import com.gwtmobile.ui.client.widgets.SlidePanel;
 
 public class GridArticles extends Composite{
 
@@ -20,14 +21,40 @@ public class GridArticles extends Composite{
 	private Grid grid;
 	private final GreetingServiceAsync service = GWT
 											.create(GreetingService.class);
+//	private SlidePanel slide;
 	
 	public GridArticles() {
-		grid = new Grid(10, 1);
+		grid = new Grid(10, 2);
 		initWidget(grid);
-		grid.setSize("100%", "43px");
+		grid.setSize("100%", "100%");
+//		slide = new SlidePanel();
+//		initWidget(slide);
+		
 		
 	}
 
+	private void initWithArticles(List<Article> articles) {
+		ArticleThumb thumb;
+		int row,column;row=column=0;
+		for(Article art : articles){
+			thumb = new ArticleThumb(art);
+			grid.setWidget(row, column++, thumb);
+			if(column>1)
+			{
+				column=0;
+				
+				row ++;
+			}
+////			slide.add(thumb);
+//			if(row>0)
+//			{
+//				row=0;
+//				
+//				column ++;
+//			}
+		}
+	}
+	
 	public void initContent() {
 		service.getArticles(new AsyncCallback<List<Article>>() {
 			
@@ -45,19 +72,7 @@ public class GridArticles extends Composite{
 		});
 	}
 
-	private void initWithArticles(List<Article> articles) {
-		ArticleThumb thumb;
-		int row,column;row=column=0;
-		for(Article art : articles){
-			thumb = new ArticleThumb(art);
-			grid.setWidget(row, column++, thumb);
-			if(column>0)
-			{
-				row++;
-				column = 0;
-			}
-		}
-	}
+
 	
 
 }

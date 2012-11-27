@@ -16,6 +16,7 @@ import javax.persistence.Query;
 
 import naitsoft.web.marocpress.server.entity.Article;
 import naitsoft.web.marocpress.server.entity.ArticleContentDto;
+import naitsoft.web.marocpress.server.entity.AudioWord;
 import naitsoft.web.marocpress.server.entity.Feed;
 import net.sf.jsr107cache.Cache;
 import net.sf.jsr107cache.CacheException;
@@ -70,12 +71,35 @@ public class Dao {
 	//
 	//        return list;
 	//    }
+	
+	public AudioWord getAudioWord(int hash){
+		
+		Query query;
+		List<AudioWord> list;
+		query = em.createQuery("select from "+AudioWord.class.getName()+" a where a.hash= :hash");   
+		query.setParameter("hash", hash);
+		list =new  ArrayList((List<AudioWord>)query.getResultList());
+		if(list.isEmpty())
+			return null;
+		return list.get(0);
+	}
 
+	public long getLastSeek(){
+		Query query;
+		List<AudioWord> list;
+		query = em.createQuery("select from "+AudioWord.class.getName()+" a  order by seek desc limit 1,1");   
+//		query.setMaxResults(10);
+		list =new  ArrayList((List<Article>)query.getResultList());
+		if( list.isEmpty())
+			return 0L;
+		return list.get(0).getSeek().longValue();
+		
+	}
 	public List<Article> getArticles(){
 		Query query;
 		List<Article> list;
 		query = em.createQuery("select from "+Article.class.getName()+" a  order by date desc limit 1,10 ");   
-		query.setMaxResults(5);
+		query.setMaxResults(10);
 		return list =new  ArrayList((List<Article>)query.getResultList());
 	}
 	public  List<Feed> getFeeds(){

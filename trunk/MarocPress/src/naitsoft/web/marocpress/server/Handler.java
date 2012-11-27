@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringBufferInputStream;
 import java.net.URL;
 
@@ -87,7 +88,12 @@ public class Handler {
 			connection.setRequestProperty("Accept-Encoding", "gzip,deflate,sdch");
 //			connection.setRequestProperty("Connection", "keep-alive");
 			log.info( "start cleaning ");
-			TagNode node = cleaner.clean(new GZIPInputStream(connection.getInputStream()),"UTF-8");
+			TagNode node=null;
+			try{
+			 node = cleaner.clean(new GZIPInputStream(connection.getInputStream()),"UTF-8");
+		} catch (IOException e) {
+			node = cleaner.clean(connection.getInputStream(),"UTF-8");
+		}
 			if(article.getFeed().getMediaXPath()!=null){
 				
 				Object[] myNodes = node.evaluateXPath(article.getFeed().getMediaXPath());
@@ -152,7 +158,7 @@ public class Handler {
 //		props.setOmitXmlDeclaration(true);
 
 		try {
-			URL url = new URL("http://hespress.com/societe/48050.html");
+			URL url = new URL("http://www.aljamaa.net/ar/document/52770.shtml");
 			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 			connection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");

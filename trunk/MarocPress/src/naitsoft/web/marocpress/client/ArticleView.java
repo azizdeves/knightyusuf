@@ -4,7 +4,10 @@ package naitsoft.web.marocpress.client;
 import naitsoft.web.marocpress.server.entity.Article;
 import naitsoft.web.marocpress.server.entity.ArticleContentDto;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.RootPanel;
@@ -24,12 +27,27 @@ public class ArticleView extends Composite{
 //		initContent();
 //	}
 	public ArticleView() {
-		panel = new HTMLPanel("<span id='content' class='article_body'></span>");
+		panel = new HTMLPanel("<div id='bar'></div><span id='content' class='article_body'></span>");
 		div = panel.getElementById("content");
+		Element bar = panel.getElementById("bar");
+		Button closeBtn = new Button("close");
+		closeBtn.setHeight("4em");
+		closeBtn.addClickHandler(new ClickHandler() {
+			
+			@Override
+			public void onClick(ClickEvent event) {
+				close();
+			}
+		});
+		panel.add(closeBtn,bar);
+		
 		initWidget(panel);
 //		panel.setSize("50%", "100%");
 //		setSize("50%", "100%");
 		view = this;
+	}
+	public void close(){
+		ArticleThumb.closeContentArticlePop();
 	}
 	
 	public ArticleView(ArticleContentDto art) {
