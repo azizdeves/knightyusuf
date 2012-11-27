@@ -55,7 +55,7 @@ public class MarocPress implements EntryPoint {
 		// Add the nameField and sendButton to the RootPanel
 		// Use RootPanel.get() to get the entire body element
 		RootPanel.get("listArticle").add(grid);
-		RootPanel.get("contentArticle").add(articleView);
+//		RootPanel.get("contentArticle").add(articleView);
 //		RootPanel.get("errorLabelContainer").add(errorLabel);
 
 		// Focus the cursor on the name field when the app loads

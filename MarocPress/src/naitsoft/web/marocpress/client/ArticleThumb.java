@@ -20,6 +20,7 @@ public class ArticleThumb extends Composite{
 	private final GreetingServiceAsync service = GWT
 								.create(GreetingService.class);
 	private HTMLPanel panel;
+	static public PopupPanel pop;
 //http://ugsmag.com  http://ugsmag.com	http://ugsmag.com
 //	public ArticleThumb(Article art) {
 //		this();
@@ -29,16 +30,16 @@ public class ArticleThumb extends Composite{
 	public ArticleThumb(Article art) {
 		article = art;
 		String htmlContent = "<span class='subfeature'>+" +
-				"<img id='img"+article.getId()+"' src='' alt='' class='post-image' width='100%' height='250'><div class='overlay'><a id='overlay"+article.getId()+"' href='#' title=''><img src='http://ugsmag.com/wp-content/themes/ugsmag2010/images/overlay-h250.png' width='100%' height='250' alt='' class='bigpng'></a></div>" +
-				"<div class='comcat'>" +
-				"<div class='category'><a href='' id='feed"+article.getId()+"' title='' rel='feed'></a></div>" +
-//				"<div class='commentsnum'><a href='http://ugsmag.com/2011/07/eric-steuer/#respond' title='Comment on Eric Steuer'>Comment</a></div>" +
-				"<div class='date'></div>" +
-				"</div>" +
-				"<div class='subfeature-txt'><h2 id='title"+article.getId()+"'><a id='h2href"+article.getId()+"' href='#' rel='bookmark' ></a></h2>" +
-				"<p id='desc"+article.getId()+"'></p>" +
-				"</div>" +
-				"</sapn>";
+		"<img id='img"+article.getId()+"' src='' alt='' class='post-image' width='100%' height='250'>				<div class='overlay'><a id='overlay"+article.getId()+"' href='#' title=''><img src='http://ugsmag.com/wp-content/themes/ugsmag2010/images/overlay-h250.png' width='310' height='250' alt='' class='bigpng'></a></div>" +
+		"<div class='comcat'>" +
+		"<div class='category'><a href='' id='feed"+article.getId()+"' title='' rel='feed'></a></div>" +
+//		"<div class='commentsnum'><a href='http://ugsmag.com/2011/07/eric-steuer/#respond' title='Comment on Eric Steuer'>Comment</a></div>" +
+		"<div class='date'></div>" +
+		"</div>" +
+		"<div class='subfeature-txt'><h2 id='title"+article.getId()+"'><a id='h2href"+article.getId()+"' href='#' rel='bookmark' ></a></h2>" +
+		"<p id='desc"+article.getId()+"'></p>" +
+		"</div>" +
+		"</div>";
 		panel = new HTMLPanel(htmlContent);
 		initContent();
 		initWidget(panel);
@@ -81,7 +82,7 @@ public class ArticleThumb extends Composite{
 			@Override
 			public void onSuccess(ArticleContentDto result) {
 				ArticleView.view.setContent(result);
-				PopupPanel pop = new PopupPanel(false,true);
+				pop = new PopupPanel(true,false);
 				pop.setStyleName("mypanel");
 				pop.setWidget(ArticleView.view);
 				pop.setAnimationEnabled(true);
@@ -99,6 +100,11 @@ public class ArticleThumb extends Composite{
 				
 			}
 		});
+	}
+	public static void closeContentArticlePop() {
+		if(pop!=null)
+			pop.hide();
+		
 	}
 	
 
