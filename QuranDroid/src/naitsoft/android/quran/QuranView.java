@@ -273,7 +273,7 @@ public class QuranView extends View {
 
 	public void setTxtSize(float txtSize) {
 		mPaint.setTextSize(txtSize);
-		harakaPaint.setTextSize(txtSize);
+		harakaPaint.setTextSize(txtSize+10);
 		
 	}
 
