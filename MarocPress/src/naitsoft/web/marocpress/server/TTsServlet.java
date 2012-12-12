@@ -16,19 +16,19 @@ import javax.servlet.http.HttpServletResponse;
 import naitsoft.web.marocpress.server.entity.AudioWord;
 import naitsoft.web.marocpress.server.entity.Feed;
 
-public class XsltTransformServlet extends HttpServlet {
+public class TTsServlet extends HttpServlet {
 
 	final static String hesRss = "http://hespress.com/feed/index.atom";
 	final static String lakomeRss = "http://lakome.com/index.php?format=feed&type=rss&title=";
 	final static String demainRss = "http://www.demainonline.com/feed/";
 	final static String hibaRss = "http://hibapress.com/rss.php";
-    private static final Logger log = Logger.getLogger(XsltTransformServlet.class.getName());
+    private static final Logger log = Logger.getLogger(TTsServlet.class.getName());
     
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException {
-//    	TTSservice tts = new TTSservice();
-//		tts.constructFiles();
+    	TTSservice tts = new TTSservice();
+		tts.constructFiles();
     	
     	
     }

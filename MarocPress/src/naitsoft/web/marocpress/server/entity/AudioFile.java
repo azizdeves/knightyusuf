@@ -18,7 +18,7 @@ import com.google.gwt.user.client.rpc.GwtTransient;
 import com.sun.syndication.feed.synd.SyndEntry;
 
 @Entity
-public class AudioWord implements Serializable{
+public class AudioFile implements Serializable{
         
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,7 +35,7 @@ public class AudioWord implements Serializable{
         public  Text text;
 
 		
-		public AudioWord() {
+		public AudioFile() {
 			// TODO Auto-generated constructor stub
 		}
 
