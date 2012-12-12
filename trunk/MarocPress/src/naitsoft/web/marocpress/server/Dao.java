@@ -95,6 +95,16 @@ public class Dao {
 		return list.get(0).getSeek().longValue();
 		
 	}
+	public List<AudioWord> getAudioWords(int start,int limit){
+		Query query;
+		List<AudioWord> list;
+		query = em.createQuery("select from "+AudioWord.class.getName()+" a  order by seek desc limit "+start+","+limit+start);   
+		query.setFirstResult(start);
+		query.setMaxResults(limit);
+		list =new  ArrayList((List<Article>)query.getResultList());
+		return list;
+		
+	}
 	public List<Article> getArticles(){
 		Query query;
 		List<Article> list;
@@ -210,11 +220,11 @@ public class Dao {
 		}
 		return ac;
 	}
-	public static void sendMail(Exception e){
+	public static void sendMail(String e){
 		MailService mailService = MailServiceFactory.getMailService();
-		Message message = new Message("naitsoft@gmail.com","sharpen.soul@gmail.com", "Exception",e.getMessage());
+		Message message = new Message("sharpen.soul@gmail.com",null, "Exception",e);
 		try {
-			mailService.send(message);
+			mailService.sendToAdmins(message);
 		} catch (IOException s) {
 			s.printStackTrace();
 		}
