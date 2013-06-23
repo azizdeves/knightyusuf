@@ -4,6 +4,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Date;
 
 
@@ -29,12 +31,14 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     private static String DB_PATH = "/data/data/naitsoft.android.quran/databases/";
  
     private static String DB_NAME = "quran.sql3";
+    private static String AUDIO_DB_NAME = "QuranAudioWord.sqlite";
     private static String QURAN_TAB = "quran_text";
     private static String MARK_TAB = "marks";
     
  
     static public DataBaseHelper myDbHelper;
     static private SQLiteDatabase myDataBase; 
+    static private SQLiteDatabase audioDataBase; 
  
     private final Context myContext;
  
@@ -158,6 +162,7 @@ public class DataBaseHelper extends SQLiteOpenHelper{
     	//Open the database
         String myPath = DB_PATH + DB_NAME;
     	myDataBase = SQLiteDatabase.openDatabase(myPath, null, SQLiteDatabase.OPEN_READWRITE);
+    	audioDataBase = SQLiteDatabase.openDatabase("/mnt/sdcard/"+AUDIO_DB_NAME, null, SQLiteDatabase.OPEN_READONLY);
  
     }
  
@@ -184,6 +189,22 @@ public class DataBaseHelper extends SQLiteOpenHelper{
 		return myDataBase.isOpen();
 	}
  
+	public byte[] getAudioWord(int hash){
+		try {
+			
+			Cursor cur = audioDataBase.rawQuery("select data from AudioWords where hash="+hash,null);
+			byte[] i = null;
+			//			rs.beforeFirst();
+			if(cur.moveToFirst())
+				i= cur.getBlob(0);
+			cur.close();
+			return i;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
 	public static String getAya(int sura , int aya)
 	{
 		Cursor cur = myDataBase.query(QURAN_TAB, new String[]{"text"}, "sura=? and aya=?", new String[]{String.valueOf(sura),String.valueOf(aya)}, null, null, null);

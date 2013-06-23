@@ -2,11 +2,13 @@ package naitsoft.android.quran;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
+import java.net.Socket;
 import java.net.URL;
 
 import android.app.Activity;
@@ -63,6 +65,13 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	//	Al-Fatiha", "Al-Baqara", "Al-i-Imran", "An-Nisa", "Al-Ma'ida", "Al-An'am", "Al-A'raf", "Al-Anfal", "At-Tawba", "Yunus", "Hud", "Yusuf", "Ar-Ra'd", "Ibrahim", "Al-Hijr", "An-Nahl", "Al-Isra", "Al-Kahf", "Maryam", "Ta-Ha", "Al-Anbiya", "Al-Hajj", "Al-Mu'minun", "An-Nur", "Al-Furqan", "Ash-Shu'ara", "An-Naml", "Al-Qasas", "Al-Ankabut", "Ar-Rum", "Luqman", "As-Sajda", "Al-Ahzab", "Saba", "Fatir", "Ya-Sin", "As-Saffat", "Sad", "Az-Zumar", "Ghafir", "Fussilat", "Ash-Shura", "Az-Zukhruf", "Ad-Dukhan", "Al-Jathiya", "Al-Ahqaf", "Muhammad", "Al-Fath", "Al-Hujurat", "Qaf", "Adh-Dhariyat", "At-Tur", "An-Najm", "Al-Qamar", "Ar-Rahman", "Al-Waqi'a", "Al-Hadid", "Al-Mujadila", "Al-Hashr", "Al-Mumtahina", "As-Saff", "Al-Jumu'a", "Al-Munafiqun", "At-Taghabun", "At-Talaq", "At-Tahrim", "Al-Mulk", "Al-Qalam", "Al-Haqqa", "Al-Ma'arij", "Nuh", "Al-Jinn", "Al-Muzzammil", "Al-Muddathir", "Al-Qiyama", "Al-Insan", "Al-Mursalat", "An-Naba'", "An-Nazi'at", "Abasa", "At-Takwir", "Al-Infitar", "Al-Mutaffifin", "Al-Inshiqaq", "Al-Buruj", "At-Tariq", "Al-A'la", "Al-Ghashiya", "Al-Fajr", "Al-Balad", "Ash-Shams", "Al-Lail", "Ad-Dhuha", "Ash-Sharh", "At-Tin", "Al-Alaq", "Al-Qadr", "Al-Bayyina", "Az-Zalzala", "Al-Adiyat", "Al-Qari'a", "At-Takathur", "Al-Asr", "Al-Humaza", "Al-Fil", "Quraysh", "Al-Ma'un", "Al-Kawthar", "Al-Kafirun", "An-Nasr", "Al-Masad", "Al-Ikhlas", "Al-Falaq", "An-Nas"
 	//	The Opening", "The Heifer", "The Family of Imran", "The Women", "The Table", "The Cattle", "The Heights", "The Spoils of War", "The Repentance", "Jonah", "Hud", "Joseph", "The Thunder", "Abraham", "The Stoneland", "The Honey Bees", "The Night Journey", "The Cave", "Mary", "Ta-Ha", "The Prophets", "The Pilgrimage", "The Believers", "The Light", "The Criterion", "The Poets", "The Ant", "The Stories", "The Spider", "The Romans", "Luqman", "The Prostration", "The Clans", "Sheba", "The Originator", "Yaseen", "Drawn up in Ranks", "The Letter Sad", "The Troops", "The Forgiver", "Explained in Detail", "The Consultation", "The Ornaments of Gold", "The Smoke", "Crouching", "The Dunes", "Muhammad", "The Victory", "The Inner Apartments", "The Letter Qaf", "The Winnowing Winds", "The Mount", "The Star", "The Moon", "The Beneficent", "The Inevitable", "The Iron", "The Pleading", "The Exile", "Examining Her", "The Ranks", "Friday", "The Hypocrites", "Mutual Disillusion", "Divorce", "The Prohibition", "The Sovereignty", "The Pen", "The Reality", "The Ascending Stairways", "Noah", "The Jinn", "The Enshrouded One", "The Cloaked One", "The Resurrection", "Human", "The Emissaries", "The Announcement", "Those Who Drag Forth", "He Frowned", "The Folding Up", "The Cleaving", "Defrauding", "The Splitting Open", "The Constellations", "The Morning Star", "The Most High", "The Overwhelming", "The Dawn", "The City", "The Sun", "The Night", "The Morning Hours", "The Consolation", "The Fig", "The Clot", "The Power, Fate", "The Evidence", "The Earthquake", "The Chargers", "The Calamity", "Competition", "The Time", "The Traducer", "The Elephant", "Quraysh", "Almsgiving", "Abundance", "The Disbelievers", "Divine Support", "The Palm Fibre", "Purity of Faith", "The Dawn", "Mankind"
 	static String[] suratName = {"","الفاتحة", "البقرة", "آل عمران", "النساء", "المائدة", "الأنعام", "الأعراف", "الأنفال", "التوبة", "يونس", "هود", "يوسف", "الرعد", "ابراهيم", "الحجر", "النحل", "الإسراء", "الكهف", "مريم", "طه", "الأنبياء", "الحج", "المؤمنون", "النور", "الفرقان", "الشعراء", "النمل", "القصص", "العنكبوت", "الروم", "لقمان", "السجدة", "الأحزاب", "سبإ", "فاطر", "يس", "الصافات", "ص", "الزمر", "غافر", "فصلت", "الشورى", "الزخرف", "الدخان", "الجاثية", "الأحقاف", "محمد", "الفتح", "الحجرات", "ق", "الذاريات", "الطور", "النجم", "القمر", "الرحمن", "الواقعة", "الحديد", "المجادلة", "الحشر", "الممتحنة", "الصف", "الجمعة", "المنافقون", "التغابن", "الطلاق", "التحريم", "الملك", "القلم", "الحاقة", "المعارج", "نوح", "الجن", "المزمل", "المدثر", "القيامة", "الانسان", "المرسلات", "النبإ", "النازعات", "عبس", "التكوير", "الإنفطار", "المطففين", "الإنشقاق", "البروج", "الطارق", "الأعلى", "الغاشية", "الفجر", "البلد", "الشمس", "الليل", "الضحى", "الشرح", "التين", "العلق", "القدر", "البينة", "الزلزلة", "العاديات", "القارعة", "التكاثر", "العصر", "الهمزة", "الفيل", "قريش", "الماعون", "الكوثر", "الكافرون", "النصر", "المسد", "الإخلاص", "الفلق", "الناس"};
+
+	private static String TAG = "ServerSocketTest";
+
+
+	static private byte[] audio;
+	private MediaPlayer med;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -70,6 +79,8 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		//Remove notification bar
 		//		this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+
 
 		setContentView(R.layout.main);
 		scrollAya = (ScrollView) findViewById(R.id.scroll);
@@ -85,15 +96,7 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		qv = (QuranView) findViewById(R.id.quranTxt);
 		initDB(); 
 
-		//		prevBtn.setText(">>>");
-		//		nextBtn.setText("<<<");
-
 		initFromBundle(savedInstanceState);
-		if(mTts == null){
-			Intent checkIntent = new Intent();
-			checkIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
-			startActivityForResult(checkIntent, TTS_CHECK_CODE);
-		}
 
 
 		qv.setEventListener(new QuranEventListener() {
@@ -109,34 +112,22 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 			}
 			@Override
 			public void onClick(QuranEvent event) {
-				final int FREQUENCY = 8000,
-				CHANNEL_CONFIG_OUT = AudioFormat.CHANNEL_OUT_MONO,
-				AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT,
-				PLAYER_CAPACITY = 6688,
-				STREAM_TYPE = AudioManager.STREAM_MUSIC,
-				PLAY_MODE = AudioTrack.MODE_STREAM;
-
-				AudioTrack mPlayer = new AudioTrack(STREAM_TYPE,
-						FREQUENCY,
-						CHANNEL_CONFIG_OUT,
-						AUDIO_ENCODING,
-						PLAYER_CAPACITY,
-						PLAY_MODE);
 				try {
-					URL u = new URL("http://hkaynpress.appspot.com/marocpress/feed?h=1412263041");
-					HttpURLConnection c = (HttpURLConnection) u.openConnection();
-					c.setRequestMethod("GET");
-					c.setDoOutput(true);
-					c.connect();
-					BufferedInputStream bis = new BufferedInputStream(c.getInputStream());
-					byte[] audio = new byte[6688];
-					bis.read(audio);
-					mPlayer.write(audio, 0, audio.length);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
+					String path = "mnt/sdcard/audioWord.mp3";
+					File file = new File(path);
+					FileOutputStream f = new FileOutputStream(file);
+
+					byte[] buffer = myDbHelper.getAudioWord(qv.getRoot(event.getWord()).hashCode());
+					f.write(buffer,0,buffer.length);
+
+					f.close();
+					med = new MediaPlayer();
+					med.setDataSource(path);
+					med.prepare();
+					med.start();
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
-//				mTts.speak(qv.getRoot(event.getWord()),TextToSpeech.QUEUE_FLUSH, null);
 			}
 		});
 		bigBtn.setOnClickListener(new View.OnClickListener() {
@@ -184,6 +175,7 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 			}
 		});
 	}
+
 
 	public void callMarkActivity()
 	{
@@ -250,7 +242,6 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		//		myDbHelper.addMark("", sura, aya);
 
 		SharedPreferences.Editor pref= PreferenceManager.getDefaultSharedPreferences(this).edit();
 		pref.putInt("sura", sura);
@@ -320,20 +311,21 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 				File fileTmp = null;
 				try {
 					Context ctx = getApplicationContext();
-					//	playBtn.setEnabled(false);
-
+				//	playBtn.setEnabled(false);
+					
 					ayaPath = ayaFolder
-					+addZero(sura)+addZero(aya)+	".mp3" ;
+							+addZero(sura)+addZero(aya)+	".mp3" ;
 					File file = new File(ayaPath);
-					if(true){
+					if(!file.exists()){
 						//						String path = Environment.getExternalStorageDirectory().getPath()+"/siraj.txt";
-						URL u = new URL("http://hkaynpress.appspot.com/marocpress/feed?h=14122630413");
+						URL u = new URL("http://tanzil.net/res/audio/abdulbasit-mjwd/" 
+								+addZero(sura)+addZero(aya)+	".mp3");
 						fileTmp = new File(ayaFolder+addZero(sura)+addZero(aya)+	"tmp.mp3" );
 						HttpURLConnection c = (HttpURLConnection) u.openConnection();
 						c.setRequestMethod("GET");
 						c.setDoOutput(true);
 						c.connect();
-						//						c.getHeaderFieldInt("Content-Length", 0);
+//						c.getHeaderFieldInt("Content-Length", 0);
 						File folder = new File(ayaFolder);
 						folder.mkdir();
 						FileOutputStream f = new FileOutputStream(fileTmp);
@@ -345,11 +337,11 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 						while ( ( length = in.read(buffer)) > 0 ) {
 							f.write(buffer,0,length);
 						}
-
+						
 						f.close();
 						fileTmp.renameTo(file);
 						fileTmp = null;
-
+						
 						//						player = MediaPlayer.create(ctx, Uri.parse("http://tanzil.net/res/audio/abdulbasit-mjwd/" 
 						//								+addZero(sura)+addZero(aya)+	".mp3"));
 					}
@@ -366,13 +358,13 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 					e.printStackTrace();
 				}
 				finally{
-
+					
 				}
-				//	playBtn.setEnabled(true);
+			//	playBtn.setEnabled(true);
 			}
 		};
 		audioThread.start();
-
+	
 	}
 
 	private boolean initFromBundle(Bundle bundle){
@@ -406,7 +398,7 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 			player.stop();
 		ayaTxt = getAya();
 		qv.setText(ayaTxt);
-		loadAudioAya(sura, aya);
+				loadAudioAya(sura, aya);
 		//		this.getWindow().getAttributes()Title("sura: " + sura +"    aya: "+ aya);
 		suraAyaTxt.setText(sura+":"+aya);
 
@@ -460,11 +452,6 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	public boolean onCreateOptionsMenu(Menu menu) {
 
 		super.onCreateOptionsMenu(menu);
-		// Create the menu item and keep a reference to it.
-		//		MenuItem menuItem = menu.add(groupId, menuItemId,
-		//				menuItemOrder, menuItemText);
-
-		//		menu.add(0,2,0,"Preference");
 		menu.add(0,1,1,"Marks");
 		menu.add(0,2,2,"Selector");
 		return true;
@@ -538,6 +525,7 @@ class Surah{
 //function lol(){
 //var t ;
 //var di = document.getElementById("article_body");
+
 //for(i=1;i<d.Sura.length;i++)
 //	t+=d.Sura[i][6]+", ";
 //di.innerText=t;

@@ -19,10 +19,12 @@ import android.graphics.Typeface;
 import android.speech.tts.TextToSpeech;
 import android.util.AttributeSet;
 import android.util.Config;
+import android.view.GestureDetector;
+import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 
-public class QuranView extends View {
+public class QuranView extends View  implements OnGestureListener{
 
 	private QuranEventListener  eventListener;
 	private int xStartDrag;
@@ -44,6 +46,7 @@ public class QuranView extends View {
 	private Rect clsRect = new Rect(-5000, 0, 0, 5000);
 	int textColor ;
 	int backColor;
+	private GestureDetector gestDetect = new GestureDetector(this);
 	
 	
 	
@@ -196,6 +199,7 @@ public class QuranView extends View {
     
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+    	gestDetect.onTouchEvent(event);
     	if(event.getAction()== MotionEvent.ACTION_MOVE){
     		isDraging = true;
     	}
@@ -212,10 +216,7 @@ public class QuranView extends View {
     			eventListener.onTouch(new QuranEvent(event, direct));
 
     		}else{
-    			Word w = getWord((int)event.getX()-width, (int)event.getY());
-    			if(w != null){
-    				eventListener.onClick(new QuranEvent(event, w));
-    			}
+    			
     			//this.invalidate();
     		}
     		isDraging = false;
@@ -275,6 +276,47 @@ public class QuranView extends View {
 		mPaint.setTextSize(txtSize);
 		harakaPaint.setTextSize(txtSize+10);
 		
+	}
+
+	@Override
+	public boolean onDown(MotionEvent e) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+			float velocityY) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void onLongPress(MotionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+			float distanceY) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void onShowPress(MotionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean onSingleTapUp(MotionEvent event) {
+		Word w = getWord((int)event.getX()-width, (int)event.getY());
+		if(w != null){
+			eventListener.onClick(new QuranEvent(event, w));
+		}
+		return true;
 	}
 
 }
