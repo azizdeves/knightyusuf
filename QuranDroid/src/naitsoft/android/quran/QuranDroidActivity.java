@@ -1,6 +1,8 @@
 package naitsoft.android.quran;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -10,6 +12,12 @@ import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.Socket;
 import java.net.URL;
+import java.util.zip.DataFormatException;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.Inflater;
+
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.Tracker;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -71,6 +79,7 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 
 	static private byte[] audio;
 	private MediaPlayer med;
+	private Tracker tracker;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -118,6 +127,7 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 					FileOutputStream f = new FileOutputStream(file);
 
 					byte[] buffer = myDbHelper.getAudioWord(qv.getRoot(event.getWord()).hashCode());
+					buffer = decompress(buffer);
 					f.write(buffer,0,buffer.length);
 
 					f.close();
@@ -125,8 +135,10 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 					med.setDataSource(path);
 					med.prepare();
 					med.start();
-				} catch (IOException e) {
+					tracker.sendEvent("EQ", "playWord", event.getWord().txt, null);
+				} catch (Exception e) {
 					e.printStackTrace();
+					tracker.sendException("playWord".concat(e.getMessage()) , true);
 				}
 			}
 		});
@@ -166,6 +178,7 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		markBtn.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				myDbHelper.addMark("*", sura, aya);
+				tracker.sendEvent("EQ", "bPress","mark" , (long) (sura*1000+aya));
 			}
 		});
 		suraAyaTxt.setOnClickListener( new View.OnClickListener() {
@@ -192,7 +205,45 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 		startActivityForResult(markIntent,MARK_CODE);
 	}
 
+	private byte[] decompressData(byte[] data){
+		byte[] buffer = new byte[data.length];
+		GZIPInputStream zipIn;
+		try {
+			zipIn = new GZIPInputStream(new ByteArrayInputStream(data));
+			zipIn.read(buffer, 0, data.length);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return buffer;
+	}
 
+
+
+
+	public static byte[] decompress(byte[] data)  {  
+		try {
+			Inflater inflater = new Inflater();   
+			
+			inflater.setInput(data);  
+
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream(data.length);  
+			byte[] buffer = new byte[1024];  
+			while (!inflater.finished()) {  
+				int count;
+				count = inflater.inflate(buffer);
+				outputStream.write(buffer, 0, count);  
+			}  
+			outputStream.close();  
+			byte[] output = outputStream.toByteArray();  
+
+			return output;  
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}  
+	}  
 
 
 	@Override
@@ -222,6 +273,8 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	@Override
 	protected void onStart() {
 		super.onStart();
+		EasyTracker.getInstance().activityStart(this);
+		tracker = EasyTracker.getTracker();
 		//		Surah s = myDbHelper.getLastMark();
 		//		if(s==null){
 		//			return;
@@ -242,7 +295,7 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 	@Override
 	protected void onStop() {
 		super.onStop();
-
+		EasyTracker.getInstance().activityStop(this);
 		SharedPreferences.Editor pref= PreferenceManager.getDefaultSharedPreferences(this).edit();
 		pref.putInt("sura", sura);
 		pref.putInt("aya", aya);
@@ -311,8 +364,8 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 				File fileTmp = null;
 				try {
 					Context ctx = getApplicationContext();
-				//	playBtn.setEnabled(false);
-					
+					//	playBtn.setEnabled(false);
+
 					ayaPath = ayaFolder
 							+addZero(sura)+addZero(aya)+	".mp3" ;
 					File file = new File(ayaPath);
@@ -325,7 +378,7 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 						c.setRequestMethod("GET");
 						c.setDoOutput(true);
 						c.connect();
-//						c.getHeaderFieldInt("Content-Length", 0);
+						//						c.getHeaderFieldInt("Content-Length", 0);
 						File folder = new File(ayaFolder);
 						folder.mkdir();
 						FileOutputStream f = new FileOutputStream(fileTmp);
@@ -337,11 +390,11 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 						while ( ( length = in.read(buffer)) > 0 ) {
 							f.write(buffer,0,length);
 						}
-						
+
 						f.close();
 						fileTmp.renameTo(file);
 						fileTmp = null;
-						
+						tracker.sendEvent("EQ", "Sys", "loadAya", (long) (sura*1000+aya));
 						//						player = MediaPlayer.create(ctx, Uri.parse("http://tanzil.net/res/audio/abdulbasit-mjwd/" 
 						//								+addZero(sura)+addZero(aya)+	".mp3"));
 					}
@@ -358,13 +411,13 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 					e.printStackTrace();
 				}
 				finally{
-					
+
 				}
-			//	playBtn.setEnabled(true);
+				//	playBtn.setEnabled(true);
 			}
 		};
 		audioThread.start();
-	
+
 	}
 
 	private boolean initFromBundle(Bundle bundle){
@@ -398,10 +451,11 @@ public class QuranDroidActivity extends Activity implements OnInitListener {
 			player.stop();
 		ayaTxt = getAya();
 		qv.setText(ayaTxt);
-				loadAudioAya(sura, aya);
+		loadAudioAya(sura, aya);
 		//		this.getWindow().getAttributes()Title("sura: " + sura +"    aya: "+ aya);
-		suraAyaTxt.setText(sura+":"+aya);
-
+		String suraya = sura+":"+aya;
+		suraAyaTxt.setText(suraya);
+		tracker.sendEvent("EQ", "loadShowAya", suraya, null);
 	}
 
 	private String getAya(){

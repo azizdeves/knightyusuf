@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -21,10 +22,12 @@ import android.util.AttributeSet;
 import android.util.Config;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
+import android.view.ScaleGestureDetector.OnScaleGestureListener;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 
-public class QuranView extends View  implements OnGestureListener{
+public class QuranView extends View  implements OnGestureListener,OnScaleGestureListener{
 
 	private QuranEventListener  eventListener;
 	private int xStartDrag;
@@ -47,11 +50,16 @@ public class QuranView extends View  implements OnGestureListener{
 	int textColor ;
 	int backColor;
 	private GestureDetector gestDetect = new GestureDetector(this);
+	private ScaleGestureDetector scaleDetect ;
+	private int padding ;
+	private float scale;
+	private boolean isScaling ;
 	
 	
 	
 	public QuranView(Context context,AttributeSet attr) {
 		super(context,attr);
+		scaleDetect = new ScaleGestureDetector(context,this);
 		//Typeface mFace = Typeface.createFromAsset(getContext().getAssets(),"fonts/Scheherazade.ttf");
 //		textColor = Color.WHITE;
 //		backColor = Color.BLACK;
@@ -59,16 +67,19 @@ public class QuranView extends View  implements OnGestureListener{
 		backColor = Color.WHITE;
         harakaPaint = new Paint();
         harakaPaint.setAntiAlias(true);
-        harakaPaint.setTextSize(80);
+        harakaPaint.setTextSize(200);
         harakaPaint.setStyle(Style.FILL);
         harakaPaint.setColor(Color.BLUE);
         harakaPaint.setAlpha(160);
+        harakaPaint.setTextAlign(Align.RIGHT);
         
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setTextSize(80);
         mPaint.setStyle(Style.FILL);
         mPaint.setColor(textColor);
+        mPaint.setTextAlign(Align.LEFT);
+        padding = -10;
 	}
 	
     public void init(boolean initText)
@@ -80,7 +91,7 @@ public class QuranView extends View  implements OnGestureListener{
         dirty = true;
         Rect rec = new  Rect();
         mPaint.getTextBounds("\u0644", 0, 1, rec);
-        stepLine = (int) (rec.height()*3);
+        stepLine = (int) (rec.height()*2);
         currentLine = (int) (stepLine*0.75);
     	widths = new float[text.length()];
         xpos = new int[text.length()];
@@ -110,7 +121,7 @@ public class QuranView extends View  implements OnGestureListener{
     	try{
     	wrds.clear();
     	currentLine = (int) (stepLine*0.75);
-         curseur=0;
+         curseur=padding ;
          int left,right;
          Word wrd = new Word();
          boolean isNewWrd = true;
@@ -167,16 +178,16 @@ public class QuranView extends View  implements OnGestureListener{
     		int i;
     		boolean stepUp = false;
     		for(Word w : wrds){
-    			for(i=w.idxRtxt;i<=w.idxLtxt;i++){
-    				if(DariGlyphUtils.isHaraka(text.charAt(i))){
-    					canvas.drawText(text,i,i+1, xpos[i], stepUp?w.line-15:w.line, harakaPaint);
-    					stepUp = true;
-    				}
-    				else{
-    					stepUp = false;
-    					canvas.drawText(text,i,i+1, xpos[i], w.line, mPaint);
-    				}
-    			}
+    			canvas.drawText(text,w.idxRtxt,w.idxLtxt, xpos[w.idxLtxt], w.line, mPaint);
+//    			for(i=w.idxRtxt;i<=w.idxLtxt;i++){
+//    				if(DariGlyphUtils.isHaraka(text.charAt(i))){
+//    					canvas.drawText(text,i,i+1, xpos[i], stepUp?w.line-15:w.line, harakaPaint);
+//    					stepUp = true;
+//    				}
+//    				else{
+//    					stepUp = false;
+//    				}
+//    			}
     		}
     	}
     	cnvs.drawBitmap(map, -width, 0, mPaint);
@@ -199,29 +210,37 @@ public class QuranView extends View  implements OnGestureListener{
     
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+    	if(!isScaling ){
+    		
     	gestDetect.onTouchEvent(event);
-    	if(event.getAction()== MotionEvent.ACTION_MOVE){
-    		isDraging = true;
-    	}
-    	if(event.getAction()== MotionEvent.ACTION_DOWN){
-    		xStartDrag = (int) event.getX();
-    	}
-    	if( event.getAction() == MotionEvent.ACTION_UP){
-    		if(isDraging ){
-    			if(Math.abs(xStartDrag - event.getX()) < width/3){
-    				isDraging = false;
-    				return false;
-    			}
-    			int direct = xStartDrag < event.getX() ? QuranEvent.SLIDE_RIGHT : QuranEvent.SLIDE_LEFT;
-    			eventListener.onTouch(new QuranEvent(event, direct));
-
-    		}else{
-    			
-    			//this.invalidate();
-    		}
-    		isDraging = false;
-    	}
+    	scaleDetect.onTouchEvent(event);
     	return true;
+    	}else{
+    		scaleDetect.onTouchEvent(event);
+    		return true;
+    	}
+//    	if(event.getAction()== MotionEvent.ACTION_MOVE){
+//    		isDraging = true;
+//    	}
+//    	if(event.getAction()== MotionEvent.ACTION_DOWN){
+//    		xStartDrag = (int) event.getX();
+//    	}
+//    	if( event.getAction() == MotionEvent.ACTION_UP){
+//    		if(isDraging ){
+//    			if(Math.abs(xStartDrag - event.getX()) < width/3){
+//    				isDraging = false;
+//    				return false;
+//    			}
+//    			int direct = xStartDrag < event.getX() ? QuranEvent.SLIDE_RIGHT : QuranEvent.SLIDE_LEFT;
+//    			eventListener.onTouch(new QuranEvent(event, direct));
+//
+//    		}else{
+//    			
+//    			//this.invalidate();
+//    		}
+//    		isDraging = false;
+//    	}
+//    	return super.onTouchEvent(event);
 	}
     
     @Override
@@ -246,7 +265,7 @@ public class QuranView extends View  implements OnGestureListener{
     }
 
 	private int newLine(){
-    	curseur = 0;
+    	curseur = padding;
     	return currentLine+=stepLine;
     }
 
@@ -317,6 +336,37 @@ public class QuranView extends View  implements OnGestureListener{
 			eventListener.onClick(new QuranEvent(event, w));
 		}
 		return true;
+	}
+
+	@Override
+	public boolean onScale(ScaleGestureDetector detector) {
+		scale += (detector.getCurrentSpan()-detector.getPreviousSpan())/100;
+		float size = mPaint.getTextSize()+(scale);
+		//		scale/=5;
+		//		scale = Math.max(-10f, Math.min(10f, scale));
+		//		ArabicTextView.stepLine *= scale*2.5;
+		if(size<10|| size>150){
+			scale -= (detector.getCurrentSpan()-detector.getPreviousSpan())/75;
+		}else{
+			setTxtSize(size);
+			init(false);
+		}
+		
+		
+		return true;
+	}
+
+	@Override
+	public boolean onScaleBegin(ScaleGestureDetector detector) {
+		isScaling = true;
+		return true;
+	}
+
+	@Override
+	public void onScaleEnd(ScaleGestureDetector detector) {
+		isScaling = false;
+		init(false);
+		scale = 0;
 	}
 
 }
